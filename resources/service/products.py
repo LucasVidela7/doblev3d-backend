@@ -18,7 +18,20 @@ def insert_product(request):
         cur = conn.cursor()
         cur.execute(sql, data)
         conn.commit()
-        return cur.lastrowid
+        id_product = cur.lastrowid
+        if id_product:
+            for pieza in request["piezas"]:
+                desc_piezas = pieza["descripcion"]
+                peso_piezas = pieza["peso"]
+                horas_piezas = pieza["horas"]
+                minutos_piezas = pieza["minutos"]
+                data = (desc_piezas, peso_piezas, horas_piezas, minutos_piezas, id_product)
+                sql = """INSERT INTO piezas(descripcion, peso, horas, minutos, id_producto)
+                        VALUES(?,?,?,?,?);
+                """
+                cur.execute(sql, data)
+                conn.commit()
+            return id_product
     except Error as e:
         print(str(e))
         return False
