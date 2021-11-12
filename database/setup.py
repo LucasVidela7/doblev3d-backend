@@ -15,7 +15,7 @@ def create_tables():
 
     try:
         cur = conn.cursor()
-        cur.executescript(sql)
+        cur.execute(sql)
         conn.commit()
         return True
     except Error as e:
@@ -23,5 +23,4 @@ def create_tables():
         return False
     finally:
         if conn:
-            cur.close()
             conn.close()

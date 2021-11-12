@@ -1,4 +1,4 @@
-import sqlite3
+import psycopg2.extras
 from sqlite3 import Error
 from database.connection import create_connection
 
@@ -8,8 +8,7 @@ def get_all_categories():
     sql = f"SELECT * FROM categorias"
 
     try:
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute(sql)
         products = cur.fetchall()
         return [dict(p) for p in products]
@@ -17,5 +16,4 @@ def get_all_categories():
         print(str(e))
     finally:
         if conn:
-            cur.close()
             conn.close()

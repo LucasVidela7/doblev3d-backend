@@ -1,6 +1,9 @@
-import sqlite3
 from datetime import datetime
 from sqlite3 import Error
+
+import psycopg2
+import psycopg2.extras
+
 from database.connection import create_connection
 
 
@@ -9,27 +12,24 @@ def insert_product(request):
     id_categoria = request['idCategoria']
     fecha_creacion = datetime.now().strftime('%x')  # 11/11/2021
 
-    data = (descripcion, id_categoria, fecha_creacion)
     conn = create_connection()
-    sql = """INSERT INTO productos(descripcion,idCategoria, fechaCreacion)
-            VALUES(?,?,?);
-    """
+    sql = f"""INSERT INTO productos(descripcion,idCategoria, fechaCreacion)
+            VALUES('{descripcion}','{id_categoria}','{fecha_creacion}') RETURNING id;"""
     try:
         cur = conn.cursor()
-        cur.execute(sql, data)
+        cur.execute(sql)
         conn.commit()
-        id_product = cur.lastrowid
+        id_product = cur.fetchone()[0]
         if id_product:
             for pieza in request["piezas"]:
                 desc_piezas = pieza["descripcion"]
                 peso_piezas = int(pieza["peso"])
                 horas_piezas = int(pieza["horas"])
                 minutos_piezas = int(pieza["minutos"])
-                data = (desc_piezas, peso_piezas, horas_piezas, minutos_piezas, id_product)
-                sql = """INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto)
-                        VALUES(?,?,?,?,?);
+                sql = f"""INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto)
+                        VALUES('{desc_piezas}','{peso_piezas}','{horas_piezas}','{minutos_piezas}','{id_product}');
                 """
-                cur.execute(sql, data)
+                cur.execute(sql)
                 conn.commit()
             return id_product
     except Error as e:
@@ -37,7 +37,6 @@ def insert_product(request):
         return False
     finally:
         if conn:
-            cur.close()
             conn.close()
 
 
@@ -46,8 +45,7 @@ def select_product_by_id(_id):
     sql = f"SELECT * FROM productos WHERE id= {_id}"
 
     try:
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute(sql)
         product = dict(cur.fetchone())
         return product
@@ -55,7 +53,6 @@ def select_product_by_id(_id):
         print(str(e))
     finally:
         if conn:
-            cur.close()
             conn.close()
 
 
@@ -64,8 +61,7 @@ def get_all_products():
     sql = f"SELECT * FROM productos"
 
     try:
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
+        cur = conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
         cur.execute(sql)
         products = cur.fetchall()
         return [dict(p) for p in products]
@@ -73,7 +69,6 @@ def get_all_products():
         print(str(e))
     finally:
         if conn:
-            cur.close()
             conn.close()
 
 
@@ -99,8 +94,8 @@ def update_product(id_product, request):
                 horas_piezas = int(pieza["horas"])
                 minutos_piezas = int(pieza["minutos"])
                 data = (desc_piezas, peso_piezas, horas_piezas, minutos_piezas, id_product)
-                sql = """INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto)
-                        VALUES(?,?,?,?,?);
+                sql = f"""INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto)
+                        VALUES('{desc_piezas}','{peso_piezas}','{horas_piezas}','{minutos_piezas}','{id_product}');
                 """
                 cur.execute(sql, data)
                 conn.commit()
@@ -110,5 +105,4 @@ def update_product(id_product, request):
         return False
     finally:
         if conn:
-            cur.close()
             conn.close()

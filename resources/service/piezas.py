@@ -1,6 +1,6 @@
-import sqlite3
 from sqlite3 import Error
 from database.connection import create_connection
+import psycopg2.extras
 
 
 def select_piezas_by_id_product(_id):
@@ -8,8 +8,7 @@ def select_piezas_by_id_product(_id):
     sql = f"SELECT * FROM piezas WHERE idProducto= {_id}"
 
     try:
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute(sql)
         piezas = cur.fetchall()
         return [dict(p) for p in piezas]
@@ -17,5 +16,4 @@ def select_piezas_by_id_product(_id):
         print(str(e))
     finally:
         if conn:
-            cur.close()
             conn.close()
