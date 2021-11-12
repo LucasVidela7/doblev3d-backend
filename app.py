@@ -13,5 +13,6 @@ CORS(app)
 app.register_blueprint(products_bp)
 app.register_blueprint(categorias_bp)
 
+
 if __name__ == '__main__':
     app.run(debug=True)

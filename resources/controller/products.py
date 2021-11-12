@@ -11,10 +11,29 @@ def add_products():
     if id_product:
         product_details = products.select_product_by_id(id_product)
         list_piezas = piezas.select_piezas_by_id_product(id_product)
-        return jsonify({"producto": product_details,"piezas":list_piezas})
+        return jsonify({"producto": product_details, "piezas": list_piezas})
     return jsonify({"message": "internal server error"})
 
 
 @products_bp.route('/productos', methods=['GET'])
 def all_products():
     return jsonify({"productos": products.get_all_products()})
+
+
+@products_bp.route('/productos/<int:id_product>', methods=['GET'])
+def get_product_by_id(id_product):
+    if id_product:
+        product_details = products.select_product_by_id(id_product)
+        list_piezas = piezas.select_piezas_by_id_product(id_product)
+        return jsonify({"producto": product_details, "piezas": list_piezas})
+    return jsonify({"message": "internal server error"})
+
+
+@products_bp.route('/productos/<int:id_product>', methods=['PUT'])
+def update_product(id_product):
+    if id_product:
+        products.update_product(id_product, request.json)
+        product_details = products.select_product_by_id(id_product)
+        list_piezas = piezas.select_piezas_by_id_product(id_product)
+        return jsonify({"producto": product_details, "piezas": list_piezas})
+    return jsonify({"message": "internal server error"})

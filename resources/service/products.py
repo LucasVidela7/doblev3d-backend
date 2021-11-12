@@ -22,9 +22,9 @@ def insert_product(request):
         if id_product:
             for pieza in request["piezas"]:
                 desc_piezas = pieza["descripcion"]
-                peso_piezas = pieza["peso"]
-                horas_piezas = pieza["horas"]
-                minutos_piezas = pieza["minutos"]
+                peso_piezas = int(pieza["peso"])
+                horas_piezas = int(pieza["horas"])
+                minutos_piezas = int(pieza["minutos"])
                 data = (desc_piezas, peso_piezas, horas_piezas, minutos_piezas, id_product)
                 sql = """INSERT INTO piezas(descripcion, peso, horas, minutos, id_producto)
                         VALUES(?,?,?,?,?);
@@ -71,6 +71,42 @@ def get_all_products():
         return [dict(p) for p in products]
     except Error as e:
         print(str(e))
+    finally:
+        if conn:
+            cur.close()
+            conn.close()
+
+
+def update_product(id_product, request):
+    descripcion = request['descripcion']
+    id_categoria = request['idCategoria']
+
+    conn = create_connection()
+    sql = f"UPDATE productos SET descripcion='{descripcion}', id_categoria='{id_categoria}' where id={id_product}"
+    try:
+        cur = conn.cursor()
+        cur.execute(sql)
+        conn.commit()
+        if id_product:
+            sql = f"DELETE FROM piezas where id_producto={id_product}"
+            cur.execute(sql)
+            conn.commit()
+
+            for pieza in request["piezas"]:
+                desc_piezas = pieza["descripcion"]
+                peso_piezas = int(pieza["peso"])
+                horas_piezas = int(pieza["horas"])
+                minutos_piezas = int(pieza["minutos"])
+                data = (desc_piezas, peso_piezas, horas_piezas, minutos_piezas, id_product)
+                sql = """INSERT INTO piezas(descripcion, peso, horas, minutos, id_producto)
+                        VALUES(?,?,?,?,?);
+                """
+                cur.execute(sql, data)
+                conn.commit()
+            return id_product
+    except Error as e:
+        print(str(e))
+        return False
     finally:
         if conn:
             cur.close()
