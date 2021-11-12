@@ -19,7 +19,7 @@ def add_products():
 
 
 @products_bp.route('/productos', methods=['GET'])
-@swag_from(os.getcwd() + "\documentation\get_productos.yml")
+@swag_from(os.getcwd() + "/documentation/get_productos.yml")
 def all_products():
     return jsonify({"productos": products.get_all_products()})
 
