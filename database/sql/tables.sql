@@ -3,12 +3,12 @@ CREATE TABLE IF NOT EXISTS categorias(
     categoria TEXT
 );
 
-DELETE FROM categorias;
-INSERT INTO categorias(categoria) VALUES('MATES');
-INSERT INTO categorias(categoria) VALUES('LLAVEROS');
-INSERT INTO categorias(categoria) VALUES('IDENTIFICADORES');
-INSERT INTO categorias(categoria) VALUES('OTROS');
-INSERT INTO categorias(categoria) VALUES('COMPUTACION');
+--DELETE FROM categorias;
+--INSERT INTO categorias(categoria) VALUES('MATES');
+--INSERT INTO categorias(categoria) VALUES('LLAVEROS');
+--INSERT INTO categorias(categoria) VALUES('IDENTIFICADORES');
+--INSERT INTO categorias(categoria) VALUES('OTROS');
+--INSERT INTO categorias(categoria) VALUES('COMPUTACION');
 
 
 CREATE TABLE IF NOT EXISTS productos(
@@ -36,9 +36,9 @@ CREATE TABLE IF NOT EXISTS extras(
 
 
 
-DELETE FROM extras;
-INSERT INTO extras(descripcion,precio) VALUES('POLIMERO NOST3RD', 59);
-INSERT INTO extras(descripcion,precio) VALUES('BOMBILLA ALUMINIO CON LIMPIADOR', 50);
+--DELETE FROM extras;
+--INSERT INTO extras(descripcion,precio) VALUES('POLIMERO NOST3RD', 59);
+--INSERT INTO extras(descripcion,precio) VALUES('BOMBILLA ALUMINIO CON LIMPIADOR', 50);
 
 CREATE TABLE IF NOT EXISTS extra_producto(
     idProducto INTEGER NOT NULL,

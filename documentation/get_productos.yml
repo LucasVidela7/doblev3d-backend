@@ -1,5 +1,5 @@
-summary: "Obtener extras"
-description: "Obtener todos los extras previamente cargados"
+summary: "Obtener productos"
+description: "Obtener todos los productos previamente cargados"
 consumes:
 - "application/json"
 produces:

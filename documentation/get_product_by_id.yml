@@ -1,0 +1,10 @@
+summary: "Buscar producto por id"
+description: "Buscar producto por id"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+responses:
+  200:
+    schema:
+      example: { "extras": [ { "descripcion": "POLIMERO NOST3RD", "id": 99, "precio": 59.0 } ], "piezas": [ { "descripcion": "pieza4", "horas": 1, "id": 19, "idproducto": 12, "minutos": 40, "peso": 68 }, { "descripcion": "pieza2", "horas": 1, "id": 20, "idproducto": 12, "minutos": 40, "peso": 68 } ], "producto": { "descripcion": "chango", "estado": true, "fechacreacion": "Fri, 12 Nov 2021 00:00:00 GMT", "id": 12, "idcategoria": 1 } }

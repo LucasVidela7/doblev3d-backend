@@ -1,0 +1,20 @@
+summary: "Agregar producto"
+description: "Insertar nuevo producto"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+parameters:
+- in: "body"
+  name: "body"
+  description: "Accepts a input dictionary of orders"
+  required: "true"
+  schema:
+  properties:
+     order:
+       type: "object"
+  example: {"piezas": [{"descripcion": "pieza4","horas": 1,"minutos": 40,"peso": 68},{"descripcion": "pieza2","horas": 1,"minutos": 40,"peso": 68}],"extras": [99,100],"descripcion": "chango","estado": false,"idCategoria": 1}
+responses:
+  200:
+    schema:
+      example: { "extras": [ { "descripcion": "POLIMERO NOST3RD", "id": 99, "precio": 59.0 } ], "piezas": [ { "descripcion": "pieza4", "horas": 1, "id": 19, "idproducto": 12, "minutos": 40, "peso": 68 }, { "descripcion": "pieza2", "horas": 1, "id": 20, "idproducto": 12, "minutos": 40, "peso": 68 } ], "producto": { "descripcion": "chango", "estado": true, "fechacreacion": "Fri, 12 Nov 2021 00:00:00 GMT", "id": 12, "idcategoria": 1 } }
