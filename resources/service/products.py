@@ -21,7 +21,7 @@ def insert_product(request):
         conn.commit()
         id_product = cur.fetchone()[0]
         if id_product:
-            for pieza in request["piezas"]:
+            for pieza in request.get("piezas", []):
                 desc_piezas = pieza["descripcion"]
                 peso_piezas = int(pieza["peso"])
                 horas_piezas = int(pieza["horas"])
@@ -29,6 +29,11 @@ def insert_product(request):
                 sql = f"""INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto)
                         VALUES('{desc_piezas}','{peso_piezas}','{horas_piezas}','{minutos_piezas}','{id_product}');
                 """
+                cur.execute(sql)
+                conn.commit()
+            for id_extra in request.get("extras", []):
+                sql = f"""INSERT INTO extra_producto(idproducto, idextra)
+                        VALUES('{id_product}','{id_extra}'');"""
                 cur.execute(sql)
                 conn.commit()
             return id_product
@@ -61,7 +66,7 @@ def get_all_products():
     sql = f"SELECT * FROM productos"
 
     try:
-        cur = conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute(sql)
         products = cur.fetchall()
         return [dict(p) for p in products]
@@ -88,16 +93,25 @@ def update_product(id_product, request):
             cur.execute(sql)
             conn.commit()
 
-            for pieza in request["piezas"]:
+            for pieza in request.get("piezas", []):
                 desc_piezas = pieza["descripcion"]
                 peso_piezas = int(pieza["peso"])
                 horas_piezas = int(pieza["horas"])
                 minutos_piezas = int(pieza["minutos"])
-                data = (desc_piezas, peso_piezas, horas_piezas, minutos_piezas, id_product)
                 sql = f"""INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto)
                         VALUES('{desc_piezas}','{peso_piezas}','{horas_piezas}','{minutos_piezas}','{id_product}');
                 """
-                cur.execute(sql, data)
+                cur.execute(sql)
+                conn.commit()
+
+            sql = f"DELETE FROM extra_producto where idProducto={id_product}"
+            cur.execute(sql)
+            conn.commit()
+
+            for id_extra in request.get("extras", []):
+                sql = f"""INSERT INTO extra_producto(idproducto, idextra)
+                        VALUES('{id_product}','{id_extra}'');"""
+                cur.execute(sql)
                 conn.commit()
             return id_product
     except Error as e:

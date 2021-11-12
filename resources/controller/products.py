@@ -1,3 +1,4 @@
+from flasgger import swag_from
 from flask import request, jsonify, Blueprint
 from resources.service import products as products
 from resources.service import piezas as piezas
@@ -16,6 +17,7 @@ def add_products():
 
 
 @products_bp.route('/productos', methods=['GET'])
+@swag_from("..\..\documentation\get_productos.yml")
 def all_products():
     return jsonify({"productos": products.get_all_products()})
 

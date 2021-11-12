@@ -34,6 +34,12 @@ CREATE TABLE IF NOT EXISTS extras(
     precio FLOAT NOT NULL
 );
 
+
+
+DELETE FROM extras;
+INSERT INTO extras(descripcion,precio) VALUES('POLIMERO NOST3RD', 59);
+INSERT INTO extras(descripcion,precio) VALUES('BOMBILLA ALUMINIO CON LIMPIADOR', 50);
+
 CREATE TABLE IF NOT EXISTS extra_producto(
     idProducto INTEGER NOT NULL,
     idExtra INTEGER NOT NULL

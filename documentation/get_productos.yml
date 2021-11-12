@@ -1,0 +1,10 @@
+summary: "Obtener extras"
+description: "Obtener todos los extras previamente cargados"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+responses:
+  200:
+    schema:
+      example: { "productos": [ { "descripcion": "Producto", "estado": true, "fechacreacion": "Sat, 11 Dec 2021 00:00:00 GMT", "id": 1, "idcategoria": 1 }]}
