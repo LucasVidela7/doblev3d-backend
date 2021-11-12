@@ -14,10 +14,10 @@ INSERT INTO categorias(categoria) VALUES('COMPUTACION');
 CREATE TABLE IF NOT EXISTS productos(
     id INTEGER PRIMARY KEY,
     descripcion TEXT,
-    id_categoria INTEGER,
-    fecha_creacion DATE,
+    idCategoria INTEGER,
+    fechaCreacion DATE,
     estado BIT DEFAULT 1,
-    CONSTRAINT FK_categoria FOREIGN KEY (id_categoria) REFERENCES categorias(id)
+    CONSTRAINT FK_categoria FOREIGN KEY (idCategoria) REFERENCES categorias(id)
 );
 
 CREATE TABLE IF NOT EXISTS piezas(
@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS piezas(
     peso INTEGER NOT NULL,
     horas INTEGER NOT NULL,
     minutos INTEGER NOT NULL,
-    id_producto INTEGER NOT NULL,
-    CONSTRAINT FK_pieza_producto FOREIGN KEY (id_producto) REFERENCES productos(id)
+    idProducto INTEGER NOT NULL,
+    CONSTRAINT FK_pieza_producto FOREIGN KEY (idProducto) REFERENCES productos(id)
 );
 
 CREATE TABLE IF NOT EXISTS extras(
@@ -37,8 +37,8 @@ CREATE TABLE IF NOT EXISTS extras(
 );
 
 CREATE TABLE IF NOT EXISTS extra_producto(
-    id_producto INTEGER NOT NULL,
-    id_extra INTEGER NOT NULL,
-    CONSTRAINT FK_producto FOREIGN KEY (id_producto) REFERENCES productos(id)
-    CONSTRAINT FK_extra FOREIGN KEY (id_extra) REFERENCES extras(id)
+    idProducto INTEGER NOT NULL,
+    idExtra INTEGER NOT NULL,
+    CONSTRAINT FK_producto FOREIGN KEY (idProducto) REFERENCES productos(id)
+    CONSTRAINT FK_extra FOREIGN KEY (idExtra) REFERENCES extras(id)
 );

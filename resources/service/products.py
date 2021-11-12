@@ -11,7 +11,7 @@ def insert_product(request):
 
     data = (descripcion, id_categoria, fecha_creacion)
     conn = create_connection()
-    sql = """INSERT INTO productos(descripcion,id_categoria, fecha_creacion)
+    sql = """INSERT INTO productos(descripcion,idCategoria, fechaCreacion)
             VALUES(?,?,?);
     """
     try:
@@ -26,7 +26,7 @@ def insert_product(request):
                 horas_piezas = int(pieza["horas"])
                 minutos_piezas = int(pieza["minutos"])
                 data = (desc_piezas, peso_piezas, horas_piezas, minutos_piezas, id_product)
-                sql = """INSERT INTO piezas(descripcion, peso, horas, minutos, id_producto)
+                sql = """INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto)
                         VALUES(?,?,?,?,?);
                 """
                 cur.execute(sql, data)
@@ -80,15 +80,16 @@ def get_all_products():
 def update_product(id_product, request):
     descripcion = request['descripcion']
     id_categoria = request['idCategoria']
+    estado = request['estado']
 
     conn = create_connection()
-    sql = f"UPDATE productos SET descripcion='{descripcion}', id_categoria='{id_categoria}' where id={id_product}"
+    sql = f"UPDATE productos SET descripcion='{descripcion}', idCategoria='{id_categoria}', estado='{estado}' where id={id_product}"
     try:
         cur = conn.cursor()
         cur.execute(sql)
         conn.commit()
         if id_product:
-            sql = f"DELETE FROM piezas where id_producto={id_product}"
+            sql = f"DELETE FROM piezas where idProducto={id_product}"
             cur.execute(sql)
             conn.commit()
 
@@ -98,7 +99,7 @@ def update_product(id_product, request):
                 horas_piezas = int(pieza["horas"])
                 minutos_piezas = int(pieza["minutos"])
                 data = (desc_piezas, peso_piezas, horas_piezas, minutos_piezas, id_product)
-                sql = """INSERT INTO piezas(descripcion, peso, horas, minutos, id_producto)
+                sql = """INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto)
                         VALUES(?,?,?,?,?);
                 """
                 cur.execute(sql, data)

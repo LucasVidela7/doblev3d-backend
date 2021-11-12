@@ -5,7 +5,7 @@ from database.connection import create_connection
 
 def select_piezas_by_id_product(_id):
     conn = create_connection()
-    sql = f"SELECT * FROM piezas WHERE id_producto= {_id}"
+    sql = f"SELECT * FROM piezas WHERE idProducto= {_id}"
 
     try:
         conn.row_factory = sqlite3.Row
