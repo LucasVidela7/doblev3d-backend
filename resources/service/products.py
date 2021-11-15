@@ -10,7 +10,7 @@ from database.connection import create_connection
 def insert_product(request):
     descripcion = request['descripcion']
     id_categoria = request['idCategoria']
-    fecha_creacion = datetime.now().strftime('%x')  # 11/11/2021
+    fecha_creacion = datetime.now().strftime('%Y-%m-%d')  # 11/11/2021
 
     conn = create_connection()
     sql = f"""INSERT INTO productos(descripcion,idCategoria, fechaCreacion)
