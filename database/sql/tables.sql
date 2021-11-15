@@ -53,3 +53,18 @@ CREATE TABLE IF NOT EXISTS usuarios(
 
 --INSERT INTO usuarios (usuario, password) VALUES('fmartinez','pbkdf2:sha256:260000$b5ILhWjDCVRrpIIm$90afca4c99f2c17f34feb7ab48bca800a95ecad6ffc0c16c52b26abd32f04190');
 --INSERT INTO usuarios (usuario, password) VALUES('lvidela','pbkdf2:sha256:260000$b5ILhWjDCVRrpIIm$90afca4c99f2c17f34feb7ab48bca800a95ecad6ffc0c16c52b26abd32f04190');
+
+CREATE TABLE IF NOT EXISTS cotizacion(
+    key TEXT NOT NULL,
+    value FLOAT NOT NULL
+);
+
+DELETE FROM cotizacion;
+INSERT INTO cotizacion VALUES('costePlastico',1500);
+INSERT INTO cotizacion VALUES('costeEnergetico',3.04);
+INSERT INTO cotizacion VALUES('consumoMedio',0.9);
+INSERT INTO cotizacion VALUES('valorImpresora',33534);
+INSERT INTO cotizacion VALUES('tiempoDepresiacion',6);
+INSERT INTO cotizacion VALUES('diasActiva',260);
+INSERT INTO cotizacion VALUES('horasDia',8);
+INSERT INTO cotizacion VALUES('tasaFallos',10);

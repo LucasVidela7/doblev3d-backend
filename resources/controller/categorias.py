@@ -1,6 +1,6 @@
 from flask import jsonify, Blueprint
 from resources.service import categorias as categories
-from resources.service.users import token_required
+from resources.service.usuarios import token_required
 
 categorias_bp = Blueprint("routes-categories", __name__)
 

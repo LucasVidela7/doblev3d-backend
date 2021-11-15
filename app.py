@@ -6,9 +6,9 @@ from flask_cors import CORS
 from flasgger import Swagger
 from database.setup import create_tables
 from resources.controller.extras import extras_bp
-from resources.controller.products import products_bp
+from resources.controller.productos import products_bp
 from resources.controller.categorias import categorias_bp
-from resources.controller.auth_users import login_bp
+from resources.controller.auth_usuarios import login_bp
 from functools import wraps
 
 app = Flask(__name__)
