@@ -8,6 +8,8 @@ from database.setup import create_tables
 from resources.controller.extras import extras_bp
 from resources.controller.products import products_bp
 from resources.controller.categorias import categorias_bp
+from resources.controller.auth_users import login_bp
+from functools import wraps
 
 app = Flask(__name__)
 create_tables()
@@ -17,6 +19,9 @@ Swagger(app)
 app.register_blueprint(products_bp)
 app.register_blueprint(categorias_bp)
 app.register_blueprint(extras_bp)
+app.register_blueprint(login_bp)
+
+app.config['SECRET_KEY'] = '8ED81DD4F3589CF6A177DFD1B2D32'
 
 
 @app.before_request

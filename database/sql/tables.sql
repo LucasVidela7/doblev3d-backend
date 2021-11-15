@@ -44,3 +44,12 @@ CREATE TABLE IF NOT EXISTS extra_producto(
     idProducto INTEGER NOT NULL,
     idExtra INTEGER NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS usuarios(
+    id SERIAL PRIMARY KEY,
+    usuario TEXT NOT NULL,
+    password TEXT NOT NULL
+);
+
+INSERT INTO usuarios (usuario, password) VALUES('fmartinez','pbkdf2:sha256:260000$b5ILhWjDCVRrpIIm$90afca4c99f2c17f34feb7ab48bca800a95ecad6ffc0c16c52b26abd32f04190');
+INSERT INTO usuarios (usuario, password) VALUES('lvidela','pbkdf2:sha256:260000$b5ILhWjDCVRrpIIm$90afca4c99f2c17f34feb7ab48bca800a95ecad6ffc0c16c52b26abd32f04190');

@@ -1,5 +1,3 @@
-import os
-
 from flasgger import swag_from
 from flask import request, jsonify, Blueprint
 
