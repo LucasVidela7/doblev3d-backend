@@ -15,11 +15,7 @@ products_bp = Blueprint("routes-products", __name__)
 def add_products():
     id_product = products.insert_product(request.json)
     if id_product:
-        product_details = products.select_product_by_id(id_product)
-        list_piezas = piezas.select_piezas_by_id_product(id_product)
-        list_piezas_price, cot = cotizacion.get_price_piezas(list_piezas)
-        list_extras = extras.select_extras_by_id(id_product)
-        return jsonify({"producto": product_details, "piezas": list_piezas, "extras": list_extras, "cotizacion": cot})
+        return jsonify({"idproducto": id_product})
     return jsonify({"message": "internal server error"})
 
 

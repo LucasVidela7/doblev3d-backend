@@ -5,6 +5,7 @@ import psycopg2
 import psycopg2.extras
 
 from database.connection import create_connection
+from resources.service import categorias as categorias
 
 
 def insert_product(request):
@@ -68,8 +69,17 @@ def get_all_products():
     try:
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute(sql)
-        products = cur.fetchall()
-        return [dict(p) for p in products]
+        products = [dict(p) for p in cur.fetchall()]
+        list_cat = categorias.get_all_categories()
+        list_cat = dict(map(lambda x: (x["id"], x), list_cat))
+        for p in products:
+            p["fechacreacion"] = p["fechacreacion"].strftime('%Y-%m-%d')
+            try:
+                print(list_cat[p["idcategoria"]])
+                p["idcategoria"] = list_cat[p["idcategoria"]]["categoria"]
+            except:
+                continue
+        return products
     except Error as e:
         print(str(e))
     finally:

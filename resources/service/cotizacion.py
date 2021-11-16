@@ -34,8 +34,12 @@ def get_price(hours, minutes, weight):
 
 def get_price_piezas(piezas: list):
     all_prices = {}
+    total_horas, total_minutos, total_peso = 0, 0, 0
     for n, p in enumerate(piezas):
-        pl, el, am, tf = get_price(p["horas"], p["minutos"], p["peso"])
+        horas = p["horas"]
+        minutos = p["minutos"]
+        peso = p["peso"]
+        pl, el, am, tf = get_price(horas, minutos, peso)
         data = {
             "costeMaterial": {
                 "plastico": pl,
@@ -45,6 +49,10 @@ def get_price_piezas(piezas: list):
             "tazaFallos": tf
         }
         p["cotizacion"] = copy.deepcopy(data)
+
+        total_horas += horas
+        total_minutos += minutos
+        total_peso += peso
 
         if not n:
             all_prices = copy.deepcopy(data)
