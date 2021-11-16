@@ -27,7 +27,8 @@ def get_product_by_id(id_product):
         list_piezas = piezas.select_piezas_by_id_product(id_product)
         list_piezas_price, cot = cotizacion.get_price_piezas(list_piezas)
         list_extras = extras.select_extras_by_id(id_product)
-        return jsonify({"producto": product_details, "piezas": list_piezas, "extras": list_extras, "cotizacion": cot})
+        return jsonify({"producto": product_details, "piezas": list_piezas,
+                        "extras": list_extras, "cotizacionTotal": cot})
     return jsonify({"message": "internal server error"})
 
 
