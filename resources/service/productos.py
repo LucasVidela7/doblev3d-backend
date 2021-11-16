@@ -65,7 +65,7 @@ def select_product_by_id(_id):
 
 def get_all_products():
     conn = create_connection()
-    sql = f"SELECT * FROM productos ORDER BY id DESC"
+    sql = f"SELECT * FROM productos ORDER BY estado DESC, id"
 
     try:
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
