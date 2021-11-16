@@ -40,7 +40,7 @@ def get_price_piezas(piezas: list):
         data = {
             "plastico": pl,
             "electricidad": el,
-            "costoAmortizaion": am,
+            "costoAmortizacion": am,
             "tazaFallos": tf,
             "costoPieza": round(pl + el + am + tf, 2)
         }
@@ -56,7 +56,7 @@ def get_price_piezas(piezas: list):
         else:
             all_prices["plastico"] += pl
             all_prices["electricidad"] += el
-            all_prices["costoAmortizaion"] += am
+            all_prices["costoAmortizacion"] += am
             all_prices["tazaFallos"] += tf
             all_prices["costoElaboracion"] += pl + el + am + tf
 
