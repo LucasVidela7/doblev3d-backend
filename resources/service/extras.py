@@ -29,12 +29,15 @@ def select_extras_by_id(id_product):
         extras = list(cur.fetchall())
 
         list_extras = []
+        total_amount = 0
         for e in extras:
             new_cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
             sql = f"SELECT * FROM extras WHERE id= {e['idextra']}"
             new_cur.execute(sql)
-            list_extras.append(dict(new_cur.fetchone()))
-        return list_extras
+            ex = dict(new_cur.fetchone())
+            list_extras.append(ex)
+            total_amount += ex["precio"]
+        return list_extras, round(total_amount, 2)
     except Error as e:
         print(str(e))
     finally:

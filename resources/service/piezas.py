@@ -5,7 +5,7 @@ import psycopg2.extras
 
 def select_piezas_by_id_product(_id):
     conn = create_connection()
-    sql = f"SELECT * FROM piezas WHERE idProducto= {_id}"
+    sql = f"SELECT descripcion, horas, minutos, peso FROM piezas WHERE idProducto= {_id}"
 
     try:
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)

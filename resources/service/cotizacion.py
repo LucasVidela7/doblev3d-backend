@@ -47,7 +47,7 @@ def get_price_piezas(piezas: list):
             },
             "costoAmortizaion": am,
             "tazaFallos": tf,
-            "costoTotal": round(pl + el + am + tf)
+            "costoTotal": round(pl + el + am + tf, 2)
         }
         p["cotizacion"] = copy.deepcopy(data)
 

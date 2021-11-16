@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS productos(
     estado BOOL DEFAULT TRUE
 );
 
+DELETE * FROM productos WHERE descripcion='chango';
+
 CREATE TABLE IF NOT EXISTS piezas(
     id SERIAL PRIMARY KEY,
     descripcion TEXT NOT NULL,
