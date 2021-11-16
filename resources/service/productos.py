@@ -54,6 +54,7 @@ def select_product_by_id(_id):
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute(sql)
         product = dict(cur.fetchone())
+        product["fechacreacion"] = product["fechacreacion"].strftime('%Y-%m-%d')
         return product
     except Error as e:
         print(str(e))
@@ -64,7 +65,7 @@ def select_product_by_id(_id):
 
 def get_all_products():
     conn = create_connection()
-    sql = f"SELECT * FROM productos"
+    sql = f"SELECT * FROM productos ORDER BY id DESC"
 
     try:
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)

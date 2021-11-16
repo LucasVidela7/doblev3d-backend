@@ -47,7 +47,7 @@ def get_price_piezas(piezas: list):
             },
             "costoAmortizaion": am,
             "tazaFallos": tf,
-            "costoTotal": pl + el + am + tf
+            "costoTotal": round(pl + el + am + tf)
         }
         p["cotizacion"] = copy.deepcopy(data)
 
@@ -63,10 +63,10 @@ def get_price_piezas(piezas: list):
             all_prices["costeMaterial"]["electricidad"] += el
             all_prices["costoAmortizaion"] += am
             all_prices["tazaFallos"] += tf
-            all_prices["costoTotal"] += pl + el + am + tf
+            all_prices["costoTotal"] += round(pl + el + am + tf, 2)
 
-    all_prices["totalHoras"] = total_horas + (int(total_minutos/60))
-    all_prices["totalMinutos"] = int(total_minutos%60)
+    all_prices["totalHoras"] = total_horas + int(total_minutos / 60)
+    all_prices["totalMinutos"] = int(total_minutos % 60)
     all_prices["totalPeso"] = int(total_peso)
 
     return piezas, all_prices
