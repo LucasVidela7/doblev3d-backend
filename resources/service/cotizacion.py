@@ -38,13 +38,11 @@ def get_price_piezas(piezas: list):
         peso = p["peso"]
         pl, el, am, tf = get_price(horas, minutos, peso)
         data = {
-            "costeMaterial": {
-                "plastico": pl,
-                "electricidad": el
-            },
+            "plastico": pl,
+            "electricidad": el,
             "costoAmortizaion": am,
             "tazaFallos": tf,
-            "costoTotal": round(pl + el + am + tf, 2)
+            "costoPieza": round(pl + el + am + tf, 2)
         }
         p["cotizacion"] = copy.deepcopy(data)
 
@@ -54,17 +52,17 @@ def get_price_piezas(piezas: list):
 
         if not n:
             all_prices = copy.deepcopy(data)
-            all_prices["costoTotal"] = pl + el + am + tf
+            all_prices["costoElaboracion"] = pl + el + am + tf
         else:
-            all_prices["costeMaterial"]["plastico"] += pl
-            all_prices["costeMaterial"]["electricidad"] += el
+            all_prices["plastico"] += pl
+            all_prices["electricidad"] += el
             all_prices["costoAmortizaion"] += am
             all_prices["tazaFallos"] += tf
-            all_prices["costoTotal"] += pl + el + am + tf
+            all_prices["costoElaboracion"] += pl + el + am + tf
 
+    all_prices = {k: round(v, 2) for k, v in all_prices.items()}
     all_prices["totalHoras"] = total_horas + int(total_minutos / 60)
     all_prices["totalMinutos"] = int(total_minutos % 60)
     all_prices["totalPeso"] = int(total_peso)
-    all_prices["costoTotal"] = round(all_prices["costoTotal"], 2)
 
     return piezas, all_prices
