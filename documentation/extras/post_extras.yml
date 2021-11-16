@@ -1,20 +1,27 @@
 summary: "Agregar categoria"
 description: "Insertar nueva categoria"
 consumes:
-- "application/json"
+  - "application/json"
 produces:
-- "application/json"
+  - "application/json"
 parameters:
-- in: "body"
-  name: "body"
-  description: "Accepts a input dictionary of orders"
-  required: "true"
-  schema:
-  properties:
-     order:
-       type: "object"
-  example: {"descripcion":"nombre","precio":60.0}
+  - in: "body"
+    name: "body"
+    description: "Accepts a input dictionary of orders"
+    required: "true"
+    schema:
+    properties:
+      order:
+        type: "object"
+    example: {
+      "descripcion": "BOMBILLA ALUMINIO CON LIMPIADOR",
+      "precio": 51.0,
+      "categorias": [
+          576,
+          577
+      ]
+    }
 responses:
   200:
     schema:
-      example: {"idextra": 588}
+      example: { "idextra": 588 }

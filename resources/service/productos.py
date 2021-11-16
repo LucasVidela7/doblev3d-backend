@@ -38,6 +38,9 @@ def insert_product(request):
 def select_product_by_id(_id):
     sql = f"SELECT * FROM productos WHERE id= {_id}"
     product = db.select_first(sql)
+    list_cat = categorias.get_all_categories()
+    list_cat = dict(map(lambda x: (x["id"], x), list_cat))
+    product["idcategoria"] = list_cat[product["idcategoria"]]["categoria"]
     product["fechacreacion"] = product["fechacreacion"].strftime('%Y-%m-%d')
     return product
 
@@ -49,11 +52,7 @@ def get_all_products():
     list_cat = dict(map(lambda x: (x["id"], x), list_cat))
     for p in products:
         p["fechacreacion"] = p["fechacreacion"].strftime('%Y-%m-%d')
-        try:
-            print(list_cat[p["idcategoria"]])
-            p["idcategoria"] = list_cat[p["idcategoria"]]["categoria"]
-        except:
-            continue
+        p["idcategoria"] = list_cat[p["idcategoria"]]["categoria"]
     return products
 
 

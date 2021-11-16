@@ -1,0 +1,83 @@
+summary: "Buscar extra por id"
+description: "Buscar extra por id"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+responses:
+  200:
+    schema:
+      example: {
+        "categorias": [
+          {
+            "categoria": "ASASD",
+            "check": false,
+            "id": 586
+          },
+          {
+            "categoria": "ASASD",
+            "check": false,
+            "id": 588
+          },
+          {
+            "categoria": "ASASD",
+            "check": false,
+            "id": 587
+          },
+          {
+            "categoria": "ASASD",
+            "check": false,
+            "id": 583
+          },
+          {
+            "categoria": "ASASD",
+            "check": false,
+            "id": 584
+          },
+          {
+            "categoria": "ASASD",
+            "check": false,
+            "id": 585
+          },
+          {
+            "categoria": "COMPUTACION",
+            "check": false,
+            "id": 580
+          },
+          {
+            "categoria": "EDITA1R",
+            "check": false,
+            "id": 582
+          },
+          {
+            "categoria": "IDENTIFICADORES",
+            "check": false,
+            "id": 578
+          },
+          {
+            "categoria": "LLAVEROS",
+            "check": false,
+            "id": 577
+          },
+          {
+            "categoria": "MATES",
+            "check": false,
+            "id": 576
+          },
+          {
+            "categoria": "OTROS",
+            "check": false,
+            "id": 579
+          },
+          {
+            "categoria": "PERSONALIZADO",
+            "check": false,
+            "id": 581
+          }
+        ],
+        "extra": {
+          "descripcion": "BOMBILLA ALUMINIO CON LIMPIADOR",
+          "id": 138,
+          "precio": 51.0
+        }
+      }

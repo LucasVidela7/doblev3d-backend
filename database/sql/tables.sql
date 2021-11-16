@@ -32,6 +32,11 @@ CREATE TABLE IF NOT EXISTS extra_producto(
     idExtra INTEGER NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS extra_categorias(
+    idCategoria INTEGER NOT NULL,
+    idExtra INTEGER NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS usuarios(
     id SERIAL PRIMARY KEY,
     usuario TEXT NOT NULL,

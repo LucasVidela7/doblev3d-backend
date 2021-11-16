@@ -14,8 +14,12 @@ parameters:
       order:
         type: "object"
     example: {
-      "descripcion": "nombre",
-      "precio": 50.0
+      "descripcion": "BOMBILLA ALUMINIO CON LIMPIADOR",
+      "precio": 51.0,
+      "categorias": [
+          576,
+          578
+      ]
     }
 responses:
   200:
