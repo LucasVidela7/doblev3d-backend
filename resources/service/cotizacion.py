@@ -1,17 +1,14 @@
 import copy
 
-from database.connection import create_connection
+from database import utils as db
 
 
 def prices_db():
-    conn = create_connection()
-    cur = conn.cursor()
     sql = "select * from cotizacion;"
-    cur.execute(sql)
-    prices = cur.fetchall()
+    prices = db.select_multiple(sql)
     data = {}
     for p in prices:
-        data[p[0]] = p[1]
+        data[p['key']] = p['value']
     return data
 
 
