@@ -20,12 +20,14 @@ def select_extras_by_id(id_product):
 
 
 def add_extra(request):
-    descripcion = request["desripcion"].upper()
+    descripcion = request["descripcion"].upper()
     precio = request["precio"]
     sql = f"INSERT INTO extras(descripcion, precio) VALUES ('{descripcion}','{precio}') RETURNING id;"
     return db.insert_sql(sql, key='id')
 
 
 def update_extra(_id, request):
-    sql = f"UPDATE categorias SET categoria='{request['categoria'].upper()}' WHERE id='{_id}';"
+    descripcion = request["descripcion"].upper()
+    precio = request["precio"]
+    sql = f"UPDATE extras SET descripcion='{descripcion}', precio='{precio}' WHERE id='{_id}';"
     return db.update_sql(sql)

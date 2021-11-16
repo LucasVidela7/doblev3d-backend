@@ -11,7 +11,7 @@ products_bp = Blueprint("routes-products", __name__)
 
 
 @products_bp.route('/productos', methods=['POST'])
-@swag_from(get_doc_path("post_productos.yml"))
+@swag_from(get_doc_path("productos/post_productos.yml"))
 def add_products():
     id_product = products.insert_product(request.json)
     if id_product:
@@ -20,7 +20,7 @@ def add_products():
 
 
 @products_bp.route('/productos/<int:id_product>', methods=['GET'])
-@swag_from(get_doc_path("get_product_by_id.yml"))
+@swag_from(get_doc_path("productos/get_product_by_id.yml"))
 def get_product_by_id(id_product):
     if id_product:
         product_details = products.select_product_by_id(id_product)
@@ -33,13 +33,13 @@ def get_product_by_id(id_product):
 
 
 @products_bp.route('/productos', methods=['GET'])
-@swag_from(get_doc_path("get_productos.yml"))
+@swag_from(get_doc_path("productos/get_productos.yml"))
 def all_products():
     return jsonify({"productos": products.get_all_products()})
 
 
 @products_bp.route('/productos/<int:id_product>', methods=['PUT'])
-@swag_from(get_doc_path("put_product.yml"))
+@swag_from(get_doc_path("productos/put_product.yml"))
 def update_product(id_product):
     if id_product:
         products.update_product(id_product, request.json)

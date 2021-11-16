@@ -1,0 +1,25 @@
+summary: "Editar producto"
+description: "Editar producto producto"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+parameters:
+  - in: "body"
+    name: "body"
+    description: "Accepts a input dictionary of orders"
+    required: "true"
+    schema:
+    properties:
+      order:
+        type: "object"
+    example: {
+      "descripcion": "nombre",
+      "precio": 50.0
+    }
+responses:
+  200:
+    schema:
+      example: {
+        "mensaje": "editado"
+      }

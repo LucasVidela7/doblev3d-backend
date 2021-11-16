@@ -66,3 +66,4 @@ def get_price_piezas(piezas: list):
     all_prices["totalPeso"] = int(total_peso)
 
     return piezas, all_prices
+1
