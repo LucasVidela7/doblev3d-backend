@@ -12,7 +12,7 @@ categorias_bp = Blueprint("routes-categories", __name__)
 @swag_from(get_doc_path("categorias/get_categorias.yml"))
 # @token_required
 def all_categories():
-    return jsonify({"productos": categories.get_all_categories()}), 200
+    return jsonify({"categorias": categories.get_all_categories()}), 200
 
 
 @categorias_bp.route('/categorias', methods=['POST'])
