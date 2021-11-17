@@ -1,4 +1,3 @@
-import json
 import pprint
 
 from flask import Flask, request
@@ -9,7 +8,6 @@ from resources.controller.extras import extras_bp
 from resources.controller.productos import products_bp
 from resources.controller.categorias import categorias_bp
 from resources.controller.auth_usuarios import login_bp
-from functools import wraps
 
 app = Flask(__name__)
 create_tables()
@@ -26,7 +24,8 @@ app.config['SECRET_KEY'] = '8ED81DD4F3589CF6A177DFD1B2D32'
 
 @app.before_request
 def log_request_info():
-    app.logger.info('Headers: %s \n Method: %s\n Request: \n%s', request.headers, request.method,
+    app.logger.info('Headers: %s \n Method: %s\n Request: \n%s',
+                    request.headers, request.method,
                     pprint.pformat(request.json, indent=4))
 
 
