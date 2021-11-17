@@ -40,7 +40,7 @@ def select_product_by_id(_id):
     product = db.select_first(sql)
     list_cat = categorias.get_all_categories()
     list_cat = dict(map(lambda x: (x["id"], x), list_cat))
-    product["idcategoria"] = list_cat.get(product["idcategoria"], {}).get("categoria", "N/A")
+    product["categoria"] = list_cat.get(product["idcategoria"], {}).get("categoria", "N/A")
     product["fechacreacion"] = product["fechacreacion"].strftime('%Y-%m-%d')
     return product
 
