@@ -1,12 +1,5 @@
 from datetime import datetime
-from sqlite3 import Error
-
-import psycopg2
-import psycopg2.extras
-
-# from database.connection import create_connection
 from resources.service import categorias as categorias
-
 from database import utils as db
 
 

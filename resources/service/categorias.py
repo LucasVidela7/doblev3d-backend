@@ -25,3 +25,18 @@ def get_categories_by_extras(id_extra):
         cat["check"] = bool(exs_cats.get(cat["id"], False))
 
     return all_cats
+
+
+def delete_category(request):
+    from_id_categoria = request["fromIdCategoria"]
+    to_id_categoria = request["toIdCategoria"]
+
+    sql = f"UPDATE productos SET idcategoria='{to_id_categoria}' WHERE idcategoria='{from_id_categoria}'"
+    db.update_sql(sql)
+
+    sql = f"DELETE FROM extra_categorias WHERE idcategoria='{from_id_categoria}'"
+    db.delete_sql(sql)
+
+    sql = f"DELETE FROM categorias WHERE id='{from_id_categoria}'"
+    db.delete_sql(sql)
+    return

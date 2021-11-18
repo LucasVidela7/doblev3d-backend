@@ -29,6 +29,13 @@ def get_extra(id_extra):
     return jsonify({"categorias": categories_by_extra, "extra": ex})
 
 
+@swag_from(get_doc_path("extras/delete_extras.yml"))
+@extras_bp.route('/extras/<int:id_extra>', methods=['DELETE'])
+def delete_extra(id_extra):
+    extras.delete_extra(id_extra)
+    return jsonify({"mensaje": "borrado"})
+
+
 @swag_from(get_doc_path("extras/post_extras.yml"))
 @extras_bp.route('/extras', methods=['POST'])
 def add_extra():

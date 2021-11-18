@@ -29,3 +29,11 @@ def add_category():
 def update_category(id_categoria):
     categories.update_category(id_categoria, request.json)
     return jsonify({"message": "Editado!"}), 200
+
+
+@categorias_bp.route('/categorias', methods=['DELETE'])
+@swag_from(get_doc_path("categorias/delete_categorias.yml"))
+# @token_required
+def delete_category():
+    categories.delete_category(request.json)
+    return jsonify({"mensaje": "categoria borrada"}), 200

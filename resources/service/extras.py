@@ -63,3 +63,12 @@ def select_extra_by_id_categoria(id_categoria):
 
     return response
 
+
+def delete_extra(id_extra):
+    sql = f"DELETE FROM extra_categorias where idExtra='{id_extra}';"
+    db.delete_sql(sql)
+    sql = f"DELETE FROM extra_producto where idExtra='{id_extra}';"
+    db.delete_sql(sql)
+    sql = f"DELETE FROM extras where id='{id_extra}';"
+    db.delete_sql(sql)
+    return

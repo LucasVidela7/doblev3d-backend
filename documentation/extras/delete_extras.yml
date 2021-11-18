@@ -1,0 +1,10 @@
+summary: "Borrar extra"
+description: "Borrar extra"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+responses:
+  200:
+    schema:
+      example: { "mensaje": "borrado"}
