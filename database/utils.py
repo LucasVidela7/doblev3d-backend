@@ -43,6 +43,8 @@ def select_multiple(sql):
 
 def select_first(sql):
     cur, conn = execute_sql(sql)
-    query = dict(cur.fetchone())
+    query = {}
+    if cur.rowcount:
+        query = dict(cur.fetchone())
     conn.close()
     return query

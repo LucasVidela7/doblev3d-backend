@@ -6,7 +6,7 @@ from database import utils as db
 def insert_product(request):
     descripcion = request['descripcion']
     id_categoria = request['idCategoria']
-    fecha_creacion = datetime.now().strftime('%Y-%m-%d')  # 11/11/2021
+    fecha_creacion = datetime.now().strftime('%Y-%m-%d')  # 2021-11-18
 
     sql = f"""INSERT INTO productos(descripcion,idCategoria, fechaCreacion)
             VALUES('{descripcion}','{id_categoria}','{fecha_creacion}') RETURNING id;"""

@@ -1,4 +1,5 @@
 import copy
+from datetime import datetime
 
 from database import utils as db
 
@@ -66,4 +67,46 @@ def get_price_piezas(piezas: list):
     all_prices["totalPeso"] = int(total_peso)
 
     return piezas, all_prices
-1
+
+
+def insert_precio_unitario(id_producto, request):
+    fecha = datetime.now().strftime('%Y-%m-%d')  # 2021-11-18
+    precio_unitario = request["precioUnitario"]
+    costo_total = request["costoTotal"]
+    ganancia = round(precio_unitario - costo_total, 2)
+
+    sql = f"INSERT INTO precio_unitario(idproducto, precioUnitario, ganancia, costoTotal, fechaActualizacion)" \
+          f" VALUES('{id_producto}','{precio_unitario}','{ganancia}','{costo_total}','{fecha}');"
+    db.insert_sql(sql)
+    return
+
+
+def get_precio_unitario(id_producto):
+    sql = f"SELECT preciounitario, ganancia, costototal, fechaactualizacion " \
+          f"FROM precio_unitario WHERE idproducto='{id_producto}' ORDER BY id DESC;"
+    precio_unitario = db.select_first(sql)
+
+    if not precio_unitario:
+        precio_unitario["preciosugerido"] = None
+        precio_unitario["preciounitario"] = 0
+        precio_unitario["costototal"] = 0
+        precio_unitario["ganancia"] = 0
+        return precio_unitario
+
+    precio_unitario["preciosugerido"] = None
+    precio_unitario["fechaactualizacion"] = precio_unitario["fechaactualizacion"].strftime('%Y-%m-%d')
+    return precio_unitario
+
+
+def check_precio_unitario(precio_unitario, costo_total):
+    if costo_total > precio_unitario["costototal"] > 0:
+        porcentaje = precio_unitario["preciounitario"] / precio_unitario["costototal"]
+        precio_unitario["preciosugerido"] = round(costo_total * porcentaje, 2)
+        precio_unitario["ganancia"] = round(precio_unitario["preciounitario"] - costo_total, 2)
+
+    if not precio_unitario["preciounitario"] and not precio_unitario["ganancia"]:
+        precio_unitario["preciounitario"] = costo_total
+        precio_unitario["ganancia"] = 0
+
+    precio_unitario["costototal"] = costo_total
+    return precio_unitario
