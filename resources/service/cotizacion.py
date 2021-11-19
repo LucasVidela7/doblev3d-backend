@@ -100,7 +100,7 @@ def get_precio_unitario(id_producto):
 
 def check_precio_unitario(precio_unitario, costo_total):
     if costo_total > precio_unitario["costototal"] > 0:
-        porcentaje = precio_unitario["preciounitario"] / precio_unitario["costototal"]
+        porcentaje = costo_total / precio_unitario["costototal"]
         precio_unitario["preciosugerido"] = round(costo_total * porcentaje, 2)
         precio_unitario["ganancia"] = round(precio_unitario["preciounitario"] - costo_total, 2)
 
