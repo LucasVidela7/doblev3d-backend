@@ -2,7 +2,8 @@ from database import utils as db
 
 
 def get_all_categories():
-    sql = f"SELECT * FROM categorias ORDER BY categoria ASC;"
+    sql = f"SELECT *, (SELECT count(p.idcategoria) FROM productos p WHERE p.idcategoria = categorias.id) AS productos" \
+          f" FROM categorias ORDER BY categoria ASC;"
     return db.select_multiple(sql)
 
 
