@@ -71,8 +71,8 @@ def get_price_piezas(piezas: list):
 
 def insert_precio_unitario(id_producto, request):
     fecha = datetime.now().strftime('%Y-%m-%d')  # 2021-11-18
-    precio_unitario = request["precioUnitario"]
-    costo_total = request["costoTotal"]
+    precio_unitario = float(request["precioUnitario"])
+    costo_total = float(request["costoTotal"])
     ganancia = round(precio_unitario - costo_total, 2)
 
     sql = f"INSERT INTO precio_unitario(idproducto, precioUnitario, ganancia, costoTotal, fechaActualizacion)" \
@@ -110,3 +110,16 @@ def check_precio_unitario(precio_unitario, costo_total):
 
     precio_unitario["costototal"] = costo_total
     return precio_unitario
+
+
+def get_precio_unitario_by_product_id(id_producto):
+    sql = f"SELECT * FROM precio_unitario WHERE idproducto='{id_producto}' ORDER BY id DESC;"
+    precio_unitario = db.select_first(sql).get("preciounitario", 0)
+    return precio_unitario
+
+
+def get_precio_unitario_vencido(id_producto):
+    return False
+
+def get_ventas_by_product_id(id_producto):
+    return 0

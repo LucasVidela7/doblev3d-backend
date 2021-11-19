@@ -1,5 +1,6 @@
 from datetime import datetime
 from resources.service import categorias as categorias
+from resources.service import cotizacion as cotizacion
 from database import utils as db
 
 
@@ -46,6 +47,9 @@ def get_all_products():
     for p in products:
         p["fechacreacion"] = p["fechacreacion"].strftime('%Y-%m-%d')
         p["idcategoria"] = list_cat.get(p["idcategoria"], {}).get("categoria", "N/A")
+        p["precioUnitario"] = cotizacion.get_precio_unitario_by_product_id(p["id"])
+        p["precioUnitarioVencido"] = cotizacion.get_precio_unitario_vencido(p["id"])
+        p["ventas"] = cotizacion.get_ventas_by_product_id(p["id"])
     return products
 
 

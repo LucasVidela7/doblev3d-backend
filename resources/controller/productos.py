@@ -24,8 +24,7 @@ def add_products():
 def get_product_by_id(id_product):
     if id_product:
         product_details = products.select_product_by_id(id_product)
-        list_piezas = piezas.select_piezas_by_id_product(id_product)
-        list_piezas_price, cot = cotizacion.get_price_piezas(list_piezas)
+        list_piezas, cot = cotizacion.get_price_piezas(piezas.select_piezas_by_id_product(id_product))
         list_extras, extra_amount = extras.select_extras_by_id_product(id_product)
         costo_total = round(cot["costoElaboracion"] + extra_amount, 2)
         precio_unit = cotizacion.get_precio_unitario(id_product)
@@ -40,7 +39,7 @@ def get_product_by_id(id_product):
             "precio": precio_unit
         }
         return jsonify(response)
-    return jsonify({"message": "internal server error"})
+    return jsonify({"message": "internal server error"}), 500
 
 
 @products_bp.route('/productos', methods=['GET'])
@@ -64,6 +63,6 @@ def update_product(id_product):
 # @swag_from(get_doc_path("productos/put_product.yml"))
 def insert_product_price(id_product):
     if id_product:
-        cotizacion.insert_precio_unitario(id_product,request.json)
+        cotizacion.insert_precio_unitario(id_product, request.json)
         return jsonify({"mensaje": "Precio agregado"})
     return jsonify({"message": "internal server error"})
