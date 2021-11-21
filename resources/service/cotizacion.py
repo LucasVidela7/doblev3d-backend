@@ -109,6 +109,7 @@ def check_precio_unitario(precio_unitario, costo_total):
         precio_unitario["ganancia"] = 0
 
     precio_unitario["costototal"] = costo_total
+    precio_unitario = {k: round(v, 2) for k, v in precio_unitario.items()}
     return precio_unitario
 
 
@@ -120,6 +121,7 @@ def get_precio_unitario_by_product_id(id_producto):
 
 def get_precio_unitario_vencido(id_producto):
     return False
+
 
 def get_ventas_by_product_id(id_producto):
     return 0
