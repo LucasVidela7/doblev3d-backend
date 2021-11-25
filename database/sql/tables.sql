@@ -56,3 +56,58 @@ CREATE TABLE IF NOT EXISTS cotizacion(
     key TEXT NOT NULL,
     value FLOAT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS ventas(
+    id SERIAL PRIMARY KEY,
+    cliente TEXT NOT NULL,
+    contacto TEXT,
+    fechaCreacion DATE,
+    idestado INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ventas_productos(
+    id SERIAL PRIMARY KEY,
+    idventa INTEGER NOT NULL,
+    idproducto INTEGER NOT NULL,
+    costototal FLOAT,
+    ganancia FLOAT,
+    descuento INTEGER DEFAULT 0,
+    montototal FLOAT,
+    adddata TEXT,
+    observaciones TEXT,
+    idestado INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ventas_productos_piezas(
+    id SERIAL PRIMARY KEY,
+    iddetalle INTEGER NOT NULL,
+    idpieza INTEGER NOT NULL,
+    idestado INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS pagos(
+    id SERIAL PRIMARY KEY,
+    monto FLOAT NOT NULL,
+    idventa INTEGER NOT NULL,
+    fechaPago DATE,
+    medioPago INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS medios_pago(
+    id SERIAL PRIMARY KEY,
+    descripcion TEXT
+);
+
+CREATE TABLE IF NOT EXISTS estados(
+    id SERIAL PRIMARY KEY,
+    estado TEXT,
+    ventas BIT,
+    productos BIT,
+    piezas BIT,
+    saltear BIT
+);
+
+
+
+
+
