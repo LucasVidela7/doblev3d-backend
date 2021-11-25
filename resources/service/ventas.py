@@ -33,8 +33,9 @@ def insertar_venta(request):
                 id_detalle = db.insert_sql(sql, key='id')
 
                 sql = f"""INSERT INTO ventas_productos_piezas (iddetalle, idpieza, idestado)
-                SELECT  '{id_detalle}', id, (SELECT id FROM estados ORDER BY id ASC LIMIT 1 OFFSET 0) 
-                FROM piezas WHERE idProducto = '{id_producto}'"""
+                (SELECT  '{id_detalle}', id, (SELECT id FROM estados ORDER BY id ASC LIMIT 1 OFFSET 0) 
+                FROM piezas WHERE idProducto = '{id_producto}')"""
+                print(sql)
                 db.insert_sql(sql)
 
         return id_venta
@@ -42,18 +43,25 @@ def insertar_venta(request):
 
 def select_venta_by_id(_id):
     # Obtener venta
-    sql = f"SELECT * FROM ventas WHERE id= {_id}"
+    sql = f"SELECT v.*, e.estado FROM ventas AS v " \
+          f"INNER JOIN estados AS e ON v.idestado = e.id " \
+          f"WHERE v.id= {_id};"
     venta = db.select_first(sql)
     venta["fechacreacion"] = venta["fechacreacion"].strftime('%Y-%m-%d')
 
     # Obtener productos
-    sql = f"SELECT * FROM ventas_productos WHERE idventa= {_id}"
+    sql = f"SELECT vp.*, p.descripcion FROM ventas_productos AS vp " \
+          f"INNER JOIN productos AS p ON vp.idproducto=p.id " \
+          f"WHERE idventa= {_id};"
     productos = db.select_multiple(sql)
 
     for p in productos:
         # Obtener piezas
-        sql = f"SELECT vpp.idpieza, vpp.idestado, e.estado FROM ventas_productos_piezas AS vpp " \
-              f"INNER JOIN estados AS e ON vpp.idestado = e.id ;"
+        sql = f"SELECT vpp.idpieza, vpp.idestado, e.estado, p.descripcion " \
+              f"FROM ventas_productos_piezas AS vpp " \
+              f"INNER JOIN estados AS e ON vpp.idestado = e.id " \
+              f"INNER JOIN piezas AS p ON vpp.idpieza=p.id " \
+              f"WHERE vpp.iddetalle='{p['id']}';"
         p["piezas"] = db.select_multiple(sql)
         p.pop("idventa", None)
 
