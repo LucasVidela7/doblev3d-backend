@@ -19,7 +19,7 @@ def add_venta():
 # @swag_from(get_doc_path("productos/post_productos.yml"))
 def all_ventas():
     list_ventas = ventas.get_all_ventas()
-    return jsonify({"idVenta": list_ventas})
+    return jsonify({"ventas": list_ventas})
 
 
 @ventas_bp.route('/ventas/<int:id_product>', methods=['GET'])
