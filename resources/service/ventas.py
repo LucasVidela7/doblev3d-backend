@@ -1,6 +1,7 @@
 from datetime import datetime
 from resources.service import categorias as categorias
 from resources.service import cotizacion as cotizacion
+from resources.service import estados as estados
 from database import utils as db
 
 
@@ -43,11 +44,11 @@ def insertar_venta(request):
 
 def select_venta_by_id(_id):
     # Obtener venta
-    sql = f"SELECT v.*, e.estado FROM ventas AS v " \
-          f"INNER JOIN estados AS e ON v.idestado = e.id " \
-          f"WHERE v.id= {_id};"
+    sql = f"SELECT v.* FROM ventas AS v WHERE v.id= {_id};"
     venta = db.select_first(sql)
     venta["fechacreacion"] = venta["fechacreacion"].strftime('%Y-%m-%d')
+    venta["estado"] = estados.order_estados(estados.get_estados_ventas(), venta["idestado"])
+    venta.pop("idestado", None)
 
     # Obtener productos
     sql = f"SELECT vp.*, p.descripcion FROM ventas_productos AS vp " \
@@ -57,23 +58,29 @@ def select_venta_by_id(_id):
 
     for p in productos:
         # Obtener piezas
-        sql = f"SELECT vpp.idpieza, vpp.idestado, e.estado, p.descripcion " \
+        p["estado"] = estados.order_estados(estados.get_estados_productos(), p["idestado"])
+        p.pop("idestado", None)
+        sql = f"SELECT vpp.idpieza, vpp.idestado, p.descripcion " \
               f"FROM ventas_productos_piezas AS vpp " \
-              f"INNER JOIN estados AS e ON vpp.idestado = e.id " \
               f"INNER JOIN piezas AS p ON vpp.idpieza=p.id " \
               f"WHERE vpp.iddetalle='{p['id']}';"
         p["piezas"] = db.select_multiple(sql)
         p.pop("idventa", None)
+        for pi in p["piezas"]:
+            pi["estado"] = estados.order_estados(estados.get_estados_piezas(), pi["idestado"])
+            pi.pop("idestado", None)
 
     venta["productos"] = productos
     return venta
 
 
 def get_all_ventas():
-    sql = f"SELECT v.*, e.estado, (SELECT count(vp.id) FROM ventas_productos vp WHERE vp.idventa = v.id) AS productos " \
-          f"FROM ventas AS v " \
-          f"INNER JOIN estados AS e ON v.idestado = e.id;"
+    sql = f"SELECT v.*, (SELECT count(vp.id) FROM ventas_productos vp WHERE vp.idventa = v.id) AS productos " \
+          f"FROM ventas AS v;"
     ventas = db.select_multiple(sql)
     for v in ventas:
         v["fechacreacion"] = v["fechacreacion"].strftime('%Y-%m-%d')
+        v["estado"] = estados.order_estados(estados.get_estados_ventas(), v["idestado"])
+        v.pop("idestado", None)
+
     return ventas

@@ -28,7 +28,7 @@ INSERT INTO estados (estado, ventas, productos,piezas,saltear) VALUES('PENDIENTE
 INSERT INTO estados (estado, ventas, productos,piezas,saltear) VALUES('EN PROCESO' ,'1','0','0','0');
 INSERT INTO estados (estado, ventas, productos,piezas,saltear) VALUES('DISEÑAR'    ,'0','1','0','1');
 INSERT INTO estados (estado, ventas, productos,piezas,saltear) VALUES('DISEÑANDO'  ,'0','1','0','0');
-INSERT INTO estados (estado, ventas, productos,piezas,saltear) VALUES('IMPRIMIR'   ,'0','1','1','0');
+INSERT INTO estados (estado, ventas, productos,piezas,saltear) VALUES('IMPRIMIR'   ,'0','1','0','0');
 INSERT INTO estados (estado, ventas, productos,piezas,saltear) VALUES('IMPRIMIENDO','0','1','1','0');
 INSERT INTO estados (estado, ventas, productos,piezas,saltear) VALUES('PINTAR'     ,'0','1','0','1');
 INSERT INTO estados (estado, ventas, productos,piezas,saltear) VALUES('PINTANDO'   ,'0','1','0','0');
