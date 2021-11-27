@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS ventas_productos(
     costototal FLOAT,
     ganancia FLOAT,
     descuento INTEGER DEFAULT 0,
-    montototal FLOAT,
+    preciounidad FLOAT,
     adddata TEXT,
     observaciones TEXT,
     idestado INTEGER NOT NULL

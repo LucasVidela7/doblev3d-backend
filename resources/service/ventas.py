@@ -1,5 +1,5 @@
 from datetime import datetime
-from resources.service import categorias as categorias
+from resources.service import extras as extras
 from resources.service import cotizacion as cotizacion
 from resources.service import estados as estados
 from database import utils as db
@@ -21,14 +21,24 @@ def insertar_venta(request):
             id_producto = p["id"]
 
             for x in range(int(p["cantidad"])):
-                costo_total = float(p["costoTotal"])
+                sql = f"select peso, horas, minutos from piezas where idproducto='{id_producto}';"
+                list_piezas = db.select_multiple(sql)
+
+                # Costo total
+                costo_total = 0
+                for lp in list_piezas:
+                    costo_total += cotizacion.get_costo_total(lp["horas"], lp["minutos"], lp["peso"])
+
+                costo_total += extras.select_extras_by_id_product(id_producto)[1]
+
+                # Precio unitario
                 descuento = int(p.get("descuento", 0))
-                monto_total = float(p["precioUnitario"])
+                monto_total = float(p["precioUnidad"])
                 ganancia = round(monto_total - costo_total, 2)
                 observaciones = str(p.get("observaciones", ""))
                 sql = f"INSERT INTO ventas_productos (idventa, idproducto, costototal, ganancia, descuento, " \
-                      f"montototal, observaciones, adddata, idestado) " \
-                      f"VALUES('{id_venta}','{id_producto}','{costo_total}','{ganancia}',{descuento}," \
+                      f"preciounidad, observaciones, adddata, idestado) " \
+                      f"VALUES('{id_venta}','{id_producto}','{round(costo_total, 2)}','{ganancia}',{descuento}," \
                       f"{monto_total},'{observaciones}','',(SELECT id FROM estados ORDER BY id ASC LIMIT 1 OFFSET 0)) " \
                       f"RETURNING id;"
                 id_detalle = db.insert_sql(sql, key='id')
@@ -81,7 +91,7 @@ def get_all_ventas():
     ventas = db.select_multiple(sql)
     for v in ventas:
         v["fechacreacion"] = v["fechacreacion"].strftime('%Y-%m-%d')
-        v["precioTotal"] = 0.0
-        v["senia"] = 0.0
+        v["precioTotal"] = 0.0  # TODO
+        v["senia"] = 0.0  # TODO
 
     return ventas

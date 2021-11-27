@@ -30,6 +30,11 @@ def get_price(hours, minutes, weight):
     return plastico, electricidad, amortizacion, taza_fallos
 
 
+def get_costo_total(hours, minutes, weight):
+    p, e, a, tf = get_price(hours, minutes, weight)
+    return round(p + e + a + tf, 2)
+
+
 def get_price_piezas(piezas: list):
     all_prices = {}
     total_horas, total_minutos, total_peso = 0, 0, 0
