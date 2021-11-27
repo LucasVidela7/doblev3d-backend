@@ -75,12 +75,10 @@ def select_venta_by_id(_id):
 
 
 def get_all_ventas():
-    sql = f"SELECT v.*, (SELECT count(vp.id) FROM ventas_productos vp WHERE vp.idventa = v.id) AS productos " \
-          f"FROM ventas AS v;"
+    sql = f"SELECT v.*, e.estado, (SELECT count(vp.id) FROM ventas_productos vp WHERE vp.idventa = v.id) AS productos " \
+          f"FROM ventas AS v " \
+          f"INNER JOIN estados AS e ON v.idestado = e.id;"
     ventas = db.select_multiple(sql)
     for v in ventas:
         v["fechacreacion"] = v["fechacreacion"].strftime('%Y-%m-%d')
-        v["estado"] = estados.order_estados(estados.get_estados_ventas(), v["idestado"])
-        v.pop("idestado", None)
-
     return ventas
