@@ -22,8 +22,8 @@ def insertar_venta(request):
 
             for x in range(int(p["cantidad"])):
                 costo_total = float(p["costoTotal"])
-                descuento = int(p["descuento"])
-                monto_total = float(p["precioTotal"])
+                descuento = int(p.get("descuento", 0))
+                monto_total = float(p["precioUnitario"])
                 ganancia = round(monto_total - costo_total, 2)
                 observaciones = str(p.get("observaciones", ""))
                 sql = f"INSERT INTO ventas_productos (idventa, idproducto, costototal, ganancia, descuento, " \
