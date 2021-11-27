@@ -81,4 +81,7 @@ def get_all_ventas():
     ventas = db.select_multiple(sql)
     for v in ventas:
         v["fechacreacion"] = v["fechacreacion"].strftime('%Y-%m-%d')
+        v["precioTotal"] = 0.0
+        v["senia"] = 0.0
+
     return ventas
