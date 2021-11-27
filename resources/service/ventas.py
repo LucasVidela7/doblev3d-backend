@@ -86,7 +86,7 @@ def select_venta_by_id(_id):
 
 def get_all_ventas():
     sql = f"SELECT v.*, e.estado, " \
-          f"(SELECT count(vp.id) FROM ventas_productos vp WHERE vp.idventa = v.id) AS productos " \
+          f"(SELECT count(vp.id) FROM ventas_productos vp WHERE vp.idventa = v.id) AS productos, " \
           f"(SELECT sum(vp.preciounidad) FROM ventas_productos vp WHERE vp.idventa = v.id) AS precioTotal " \
           f"FROM ventas AS v " \
           f"INNER JOIN estados AS e ON v.idestado = e.id;"
