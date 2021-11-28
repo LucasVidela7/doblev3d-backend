@@ -2,17 +2,17 @@ from database import utils as db
 
 
 def get_estados_ventas():
-    sql = f"select id, estado, saltear from estados where ventas = '1';"
+    sql = f"select id, estado, saltear, icono from estados where ventas = '1';"
     return db.select_multiple(sql)
 
 
 def get_estados_productos():
-    sql = f"select id, estado, saltear from estados where productos = '1';"
+    sql = f"select id, estado, saltear, icono from estados where productos = '1';"
     return db.select_multiple(sql)
 
 
 def get_estados_piezas():
-    sql = f"select id, estado, saltear from estados where piezas = '1';"
+    sql = f"select id, estado, saltear, icono from estados where piezas = '1';"
     return db.select_multiple(sql)
 
 
