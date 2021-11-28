@@ -21,25 +21,20 @@ def insertar_venta(request):
             id_producto = p["id"]
 
             for x in range(int(p["cantidad"])):
-                sql = f"select peso, horas, minutos from piezas where idproducto='{id_producto}';"
-                list_piezas = db.select_multiple(sql)
-
                 # Costo total
-                costo_total = 0
-                for lp in list_piezas:
-                    costo_total += cotizacion.get_costo_total(lp["horas"], lp["minutos"], lp["peso"])
-
+                costo_total = cotizacion.get_costo_total(id_producto)
                 costo_total += extras.select_extras_by_id_product(id_producto)[1]
 
                 # Precio unitario
                 descuento = int(p.get("descuento", 0))
-                monto_total = float(p["precioUnidad"])
-                ganancia = round(monto_total - costo_total, 2)
+                precio_unidad = float(p["precioUnidad"])
+                ganancia = round(precio_unidad - costo_total, 2)
                 observaciones = str(p.get("observaciones", ""))
                 sql = f"INSERT INTO ventas_productos (idventa, idproducto, costototal, ganancia, descuento, " \
                       f"preciounidad, observaciones, adddata, idestado) " \
                       f"VALUES('{id_venta}','{id_producto}','{round(costo_total, 2)}','{ganancia}',{descuento}," \
-                      f"{monto_total},'{observaciones}','',(SELECT id FROM estados ORDER BY id ASC LIMIT 1 OFFSET 0)) " \
+                      f"{precio_unidad},'{observaciones}',''," \
+                      f"(SELECT id FROM estados ORDER BY id ASC LIMIT 1 OFFSET 0)) " \
                       f"RETURNING id;"
                 id_detalle = db.insert_sql(sql, key='id')
 

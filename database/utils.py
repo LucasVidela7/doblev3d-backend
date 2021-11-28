@@ -7,6 +7,7 @@ def execute_sql(sql):
     conn = create_connection()
     try:
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        print(sql)
         cur.execute(sql)
         conn.commit()
         return cur, conn

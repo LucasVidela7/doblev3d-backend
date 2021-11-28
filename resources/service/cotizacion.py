@@ -30,11 +30,6 @@ def get_price(hours, minutes, weight):
     return plastico, electricidad, amortizacion, taza_fallos
 
 
-def get_costo_total(hours, minutes, weight):
-    p, e, a, tf = get_price(hours, minutes, weight)
-    return round(p + e + a + tf, 2)
-
-
 def get_price_piezas(piezas: list):
     all_prices = {}
     total_horas, total_minutos, total_peso = 0, 0, 0
@@ -129,3 +124,11 @@ def get_precio_unitario_vencido(id_producto):
 
 def get_ventas_by_product_id(id_producto):
     return 0
+
+
+def get_costo_total(id_producto):
+    sql = f"select sum(horas) as horas,sum(minutos) as minutos, sum(peso) as peso " \
+          f"from piezas where idproducto = {id_producto};"
+    total_piezas = db.select_first(sql)
+    p, e, a, tf = get_price(total_piezas["horas"], total_piezas["minutos"], total_piezas["peso"])
+    return round(p + e + a + tf, 2)

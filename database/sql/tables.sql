@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS pagos(
     monto FLOAT NOT NULL,
     idventa INTEGER NOT NULL,
     fechaPago DATE,
-    medioPago INTEGER
+    idMedioPago INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS medios_pago(
@@ -104,7 +104,8 @@ CREATE TABLE IF NOT EXISTS estados(
     ventas BIT,
     productos BIT,
     piezas BIT,
-    saltear BIT
+    saltear BIT,
+    icono TEXT
 );
 
 
