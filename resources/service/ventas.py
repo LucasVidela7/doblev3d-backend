@@ -49,7 +49,8 @@ def insertar_venta(request):
 
 def select_venta_by_id(_id):
     # Obtener venta
-    sql = f"SELECT v.* FROM ventas AS v WHERE v.id= {_id};"
+    sql = f"SELECT v.*,  (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia " \
+          f"FROM ventas AS v WHERE v.id= {_id};"
     venta = db.select_first(sql)
     venta["fechacreacion"] = venta["fechacreacion"].strftime('%Y-%m-%d')
     venta["estado"] = estados.order_estados(estados.get_estados_ventas(), venta["idestado"])
