@@ -27,7 +27,7 @@ def insertar_venta(request):
 
                 # Precio unitario
                 descuento = int(p.get("descuento", 0))
-                precio_unidad = round(cotizacion.get_precio_unitario(id_producto) * (100 - descuento) / 100, 2)
+                precio_unidad = round(cotizacion.get_precio_unitario(id_producto)['preciounitario'] * (100 - descuento) / 100, 2)
                 ganancia = round(precio_unidad - costo_total, 2)
                 observaciones = str(p.get("observaciones", ""))
                 sql = f"INSERT INTO ventas_productos (idventa, idproducto, costototal, ganancia, descuento, " \
