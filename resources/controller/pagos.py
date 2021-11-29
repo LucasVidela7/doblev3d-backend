@@ -21,7 +21,7 @@ def all_pagos():
     return jsonify({"pagos": pagos.get_all_pagos()})
 
 
-@pagos_bp.route('/mediosDePagos', methods=['GET'])
+@pagos_bp.route('/mediosDePago', methods=['GET'])
 # @swag_from(get_doc_path("productos/post_productos.yml"))
 def all_medios_de_pagos():
     return jsonify({"mediosDePago": pagos.get_all_medios_pago()})
