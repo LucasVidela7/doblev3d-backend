@@ -13,7 +13,7 @@ def insertar_venta(request):
 
     sql = f"""INSERT INTO ventas(cliente,fechaCreacion, contacto, idestado)
             VALUES('{cliente}','{fecha_creacion}','{contacto}',
-            (SELECT id FROM estados ORDER BY id ASC LIMIT 1 OFFSET 0)) 
+            (SELECT id FROM estados where ventas='1' ORDER BY id ASC LIMIT 1 OFFSET 0)) 
             RETURNING id;"""
     id_venta = db.insert_sql(sql, key='id')
     if id_venta:
@@ -34,12 +34,12 @@ def insertar_venta(request):
                       f"preciounidad, observaciones, adddata, idestado) " \
                       f"VALUES('{id_venta}','{id_producto}','{round(costo_total, 2)}','{ganancia}',{descuento}," \
                       f"{precio_unidad},'{observaciones}',''," \
-                      f"(SELECT id FROM estados ORDER BY id ASC LIMIT 1 OFFSET 0)) " \
+                      f"(SELECT id FROM estados where productos='1' ORDER BY id ASC LIMIT 1 OFFSET 0)) " \
                       f"RETURNING id;"
                 id_detalle = db.insert_sql(sql, key='id')
 
-                sql = f"""INSERT INTO ventas_productos_piezas (iddetalle, idpieza, idestado)
-                (SELECT  '{id_detalle}', id, (SELECT id FROM estados ORDER BY id ASC LIMIT 1 OFFSET 0) 
+                sql = f"""INSERT INTO ventas_productos_piezas (idproductoventa, idpieza, idestado)
+                (SELECT  '{id_detalle}', id, (SELECT id FROM estados where piezas='1' ORDER BY id ASC LIMIT 1 OFFSET 0) 
                 FROM piezas WHERE idProducto = '{id_producto}')"""
                 print(sql)
                 db.insert_sql(sql)
@@ -49,7 +49,7 @@ def insertar_venta(request):
 
 def select_venta_by_id(_id):
     # Obtener venta
-    sql = f"SELECT v.*,  (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia " \
+    sql = f"SELECT v.*, (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia " \
           f"FROM ventas AS v WHERE v.id= {_id};"
     venta = db.select_first(sql)
     venta["fechacreacion"] = venta["fechacreacion"].strftime('%Y-%m-%d')
@@ -66,10 +66,10 @@ def select_venta_by_id(_id):
         # Obtener piezas
         p["estado"] = estados.order_estados(estados.get_estados_productos(), p["idestado"])
         p.pop("idestado", None)
-        sql = f"SELECT vpp.idpieza, vpp.idestado, p.descripcion " \
+        sql = f"SELECT vpp.id as idpieza, vpp.idestado, p.descripcion " \
               f"FROM ventas_productos_piezas AS vpp " \
               f"INNER JOIN piezas AS p ON vpp.idpieza=p.id " \
-              f"WHERE vpp.iddetalle='{p['id']}';"
+              f"WHERE vpp.idproductoventa='{p['id']}';"
         p["piezas"] = db.select_multiple(sql)
         p.pop("idventa", None)
         for pi in p["piezas"]:

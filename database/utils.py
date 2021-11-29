@@ -18,13 +18,15 @@ def execute_sql(sql):
 def insert_sql(sql, key=None):
     cur, conn = execute_sql(sql)
     if key:
-        return  dict(cur.fetchone())[key]
+        return dict(cur.fetchone())[key]
     conn.close()
     return
 
 
-def update_sql(sql):
+def update_sql(sql, key=None):
     cur, conn = execute_sql(sql)
+    if key:
+        return dict(cur.fetchone())[key]
     conn.close()
     return
 

@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS cotizacion(
     value FLOAT NOT NULL
 );
 
+--DROP TABLE ventas;
 CREATE TABLE IF NOT EXISTS ventas(
     id SERIAL PRIMARY KEY,
     cliente TEXT NOT NULL,
@@ -65,6 +66,7 @@ CREATE TABLE IF NOT EXISTS ventas(
     idestado INTEGER NOT NULL
 );
 
+--DROP TABLE ventas_productos;
 CREATE TABLE IF NOT EXISTS ventas_productos(
     id SERIAL PRIMARY KEY,
     idventa INTEGER NOT NULL,
@@ -78,9 +80,10 @@ CREATE TABLE IF NOT EXISTS ventas_productos(
     idestado INTEGER NOT NULL
 );
 
+--DROP TABLE ventas_productos_piezas;
 CREATE TABLE IF NOT EXISTS ventas_productos_piezas(
     id SERIAL PRIMARY KEY,
-    iddetalle INTEGER NOT NULL,
+    idproductoventa INTEGER NOT NULL,
     idpieza INTEGER NOT NULL,
     idestado INTEGER NOT NULL
 );
@@ -98,6 +101,7 @@ CREATE TABLE IF NOT EXISTS medios_pago(
     descripcion TEXT
 );
 
+DROP TABLE estados;
 CREATE TABLE IF NOT EXISTS estados(
     id SERIAL PRIMARY KEY,
     estado TEXT,
@@ -107,6 +111,16 @@ CREATE TABLE IF NOT EXISTS estados(
     saltear BIT,
     icono TEXT
 );
+
+INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('PENDIENTE'  ,'1','1','0','0', 'bx-time-five');
+INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('EN PROCESO' ,'1','0','0','0', 'bx-time-five' );
+INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('IMPRIMIR'   ,'0','0','1','0', 'bxs-printer');
+INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('IMPRIMIENDO','0','1','1','0', 'bx-printer');
+INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('PINTAR'     ,'0','1','1','1', 'bx-time-five' );
+INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('PINTANDO'   ,'0','1','1','0', 'bx-time-five' );
+INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('LISTO'      ,'1','1','1','0', 'bx-time-five' );
+INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('ENTREGADO'  ,'1','0','0','0', 'bx-time-five' );
+INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('CANCELADO'  ,'1','1','0','0', 'bx-time-five' );
 
 
 

@@ -9,6 +9,7 @@ from resources.controller.productos import products_bp
 from resources.controller.categorias import categorias_bp
 from resources.controller.auth_usuarios import login_bp
 from resources.controller.ventas import ventas_bp
+from resources.controller.estados import estados_bp
 
 app = Flask(__name__)
 create_tables()
@@ -16,6 +17,7 @@ CORS(app)
 Swagger(app)
 
 app.register_blueprint(ventas_bp)
+app.register_blueprint(estados_bp)
 app.register_blueprint(products_bp)
 app.register_blueprint(categorias_bp)
 app.register_blueprint(extras_bp)
