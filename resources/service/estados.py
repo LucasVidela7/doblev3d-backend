@@ -79,7 +79,7 @@ def cambiar_estado_pieza(request):
         id_venta = db.update_sql(sql, key='idventa')
 
         # Verificar estado venta
-        sql = f"select max(idestado) as estados_productos from ventas_productos " \
+        sql = f"select min(idestado) as estados_productos from ventas_productos " \
               f"where idventa='{id_venta}';"
         nuevo_estado_venta = db.select_first(sql)["estados_productos"]
         if nuevo_estado_venta not in estados_ventas:
