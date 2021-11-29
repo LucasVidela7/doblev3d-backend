@@ -91,5 +91,8 @@ def cambiar_estado_pieza(request):
         # Cambiar estado venta
         sql = f"update ventas set idestado='{nuevo_estado_venta}'  where id='{id_venta}';"
         db.update_sql(sql)
-        return jsonify(order_estados(get_estados_piezas(), nuevo_estado)), 200
+        response = {"pieza": order_estados(get_estados_piezas(), nuevo_estado),
+                    "producto": order_estados(get_estados_productos(), nuevo_estado_producto)["actual"],
+                    "venta": order_estados(get_estados_ventas(), nuevo_estado_venta)["actual"]}
+        return jsonify(response), 200
     return jsonify({"error": "No existe ese estado para la pieza"}), 500
