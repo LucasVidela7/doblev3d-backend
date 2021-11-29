@@ -3,12 +3,12 @@ from database import utils as db
 
 
 def insertar_pago(request):
-    monto = request["monto"]
-    id_venta = request["idVenta"]
-    id_medio_pago = request["idMedioPago"]
+    monto = float(request["monto"])
+    id_venta = int(request["idVenta"])
+    id_medio_pago = int(request["idMedioPago"])
     fecha_pago = datetime.now().strftime('%Y-%m-%d')  # 2021-11-18
 
-    sql = f"INSERT INTO pagos (monto, idventa, fechapago,idmediopago) VALUES " \
+    sql = f"INSERT INTO pagos (monto, idventa, fechaPago,idMedioPago) VALUES " \
           f"('{monto}','{id_venta}','{fecha_pago}','{id_medio_pago}') RETURNING id;"
     id_pago = db.insert_sql(sql, key='id')
     return id_pago
