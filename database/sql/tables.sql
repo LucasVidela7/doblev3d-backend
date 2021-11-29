@@ -88,6 +88,7 @@ CREATE TABLE IF NOT EXISTS ventas_productos_piezas(
     idestado INTEGER NOT NULL
 );
 
+--DROP TABLE pagos;
 CREATE TABLE IF NOT EXISTS pagos(
     id SERIAL PRIMARY KEY,
     monto FLOAT NOT NULL,

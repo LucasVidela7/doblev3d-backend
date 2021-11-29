@@ -9,5 +9,4 @@ estados_bp = Blueprint("routes-estados", __name__)
 @estados_bp.route('/estado/pieza', methods=['POST'])
 # @swag_from(get_doc_path("productos/post_productos.yml"))
 def update_estado():
-    estado = estados.cambiar_estado_pieza(request.json)
-    return jsonify({"estado": estado})
+    return estados.cambiar_estado_pieza(request.json)

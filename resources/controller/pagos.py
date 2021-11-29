@@ -11,7 +11,7 @@ pagos_bp = Blueprint("routes-pagos", __name__)
 def add_pago():
     id_pago = pagos.insertar_pago(request.json)
     if id_pago:
-        return jsonify({"idVenta": id_pago})
+        return jsonify({"idPago": id_pago})
     return jsonify({"message": "internal server error"}), 500
 
 

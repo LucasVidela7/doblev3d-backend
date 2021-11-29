@@ -1,3 +1,5 @@
+from flask import jsonify
+
 from database import utils as db
 
 
@@ -24,11 +26,14 @@ def order_estados(dictionary, actual_id_estado):
             estados["actual"] = d
             estados["actual"].pop("saltear")
             estados["siguientes"] = []
-            estados["siguientes"].append(dictionary[n + 1])
-            if dictionary[n + 1]["saltear"] == '1':
-                estados["siguientes"].append(dictionary[n + 3])
-                estados["siguientes"][0].pop("saltear")
-                estados["siguientes"][1].pop("saltear")
+            try:
+                estados["siguientes"].append(dictionary[n + 1])
+                if dictionary[n + 1]["saltear"] == '1':
+                    estados["siguientes"].append(dictionary[n + 3])
+                    estados["siguientes"][0].pop("saltear")
+                    estados["siguientes"][1].pop("saltear")
+            except:
+                estados["siguientes"] = []
 
             estados["anterior"] = {}
             if (n - 1) >= 0:
@@ -86,3 +91,5 @@ def cambiar_estado_pieza(request):
         # Cambiar estado venta
         sql = f"update ventas set idestado='{nuevo_estado_venta}'  where id='{id_venta}';"
         db.update_sql(sql)
+        return jsonify(order_estados(get_estados_piezas(), nuevo_estado)), 200
+    return jsonify({"error": "No existe ese estado para la pieza"}), 500

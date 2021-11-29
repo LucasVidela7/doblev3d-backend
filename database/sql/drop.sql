@@ -5,6 +5,7 @@ DROP table extras;
 DROP table piezas;
 DROP table precio_unitario;
 DROP table productos;
+
 DROP table ventas;
 DROP table ventas_productos;
 DROP table ventas_productos_piezas;
