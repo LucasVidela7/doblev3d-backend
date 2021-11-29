@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS cotizacion(
     value FLOAT NOT NULL
 );
 
---DROP TABLE ventas;
+DROP TABLE ventas;
 CREATE TABLE IF NOT EXISTS ventas(
     id SERIAL PRIMARY KEY,
     cliente TEXT NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS ventas(
     idestado INTEGER NOT NULL
 );
 
---DROP TABLE ventas_productos;
+DROP TABLE ventas_productos;
 CREATE TABLE IF NOT EXISTS ventas_productos(
     id SERIAL PRIMARY KEY,
     idventa INTEGER NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS ventas_productos(
     idestado INTEGER NOT NULL
 );
 
---DROP TABLE ventas_productos_piezas;
+DROP TABLE ventas_productos_piezas;
 CREATE TABLE IF NOT EXISTS ventas_productos_piezas(
     id SERIAL PRIMARY KEY,
     idproductoventa INTEGER NOT NULL,
@@ -96,10 +96,14 @@ CREATE TABLE IF NOT EXISTS pagos(
     idMedioPago INTEGER
 );
 
+DROP TABLE medios_pago;
 CREATE TABLE IF NOT EXISTS medios_pago(
     id SERIAL PRIMARY KEY,
     descripcion TEXT
 );
+INSERT INTO medios_pago (descripcion) VALUES('MERCADO PAGO');
+INSERT INTO medios_pago (descripcion) VALUES('EFECTIVO');
+INSERT INTO medios_pago (descripcion) VALUES('BANCO SANTANDER');
 
 DROP TABLE estados;
 CREATE TABLE IF NOT EXISTS estados(
