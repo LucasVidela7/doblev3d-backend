@@ -43,9 +43,9 @@ def select_product_by_id(_id):
 
 def get_all_products():
 
-    sql = f"SELECT *, cats.categoria AS categoria FROM productos AS p " \
+    sql = f"SELECT p.*, cats.categoria AS categoria FROM productos AS p " \
           f"INNER JOIN categorias as cats ON cats.id = p.idcategoria " \
-          f"ORDER BY estado DESC, id DESC;"
+          f"ORDER BY p.estado DESC, p.id DESC;"
     # sql = f"SELECT * FROM productos ORDER BY estado DESC, id DESC;"
     products = [dict(p) for p in db.select_multiple(sql)]
     list_cat = categorias.get_all_categories()
