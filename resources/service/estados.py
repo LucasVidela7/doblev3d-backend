@@ -66,7 +66,7 @@ def cambiar_estado_pieza(request):
         id_producto_venta = db.update_sql(sql, key='idproductoventa')
 
         # Verificar el estado del producto
-        sql = f"select AVG(idestado) as estados_piezas from ventas_productos_piezas " \
+        sql = f"select min(idestado) as estados_piezas from ventas_productos_piezas " \
               f"where idproductoventa='{id_producto_venta}';"
         nuevo_estado_producto = round(db.select_first(sql)["estados_piezas"])
         if nuevo_estado_producto not in estados_productos:
