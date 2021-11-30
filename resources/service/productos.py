@@ -43,7 +43,7 @@ def select_product_by_id(_id):
 
 def get_all_products():
 
-    sql = f"SELECT p.*, cats.categoria AS categoria, " \
+    sql = f"SELECT p.*, cats.categoria AS idcategoria, " \
           f"(SELECT count(id) FROM ventas_productos WHERE idproducto=p.id " \
           f"and idestado<>(SELECT id FROM estados where productos='1' ORDER BY id DESC LIMIT 1 OFFSET 0)) AS ventas " \
           f"FROM productos AS p " \
