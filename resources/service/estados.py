@@ -71,7 +71,7 @@ def cambiar_estado_pieza(request):
         nuevo_estado_producto = round(db.select_first(sql)["estados_piezas"])
         if nuevo_estado_producto not in estados_productos:
             for n, ep in enumerate(estados_productos):
-                if ep > nuevo_estado_producto and n > 0:
+                if ep < nuevo_estado_producto and n > 0:
                     nuevo_estado_producto = ep
                     break
 
