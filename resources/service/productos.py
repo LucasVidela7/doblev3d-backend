@@ -39,18 +39,16 @@ def select_product_by_id(_id):
 
 
 def get_all_products():
-
     sql = f"SELECT p.*, cats.categoria AS idcategoria, " \
           f"(SELECT count(id) FROM ventas_productos WHERE idproducto=p.id " \
           f"and idestado<>(SELECT id FROM estados where productos='1' ORDER BY id DESC LIMIT 1 OFFSET 0)) AS ventas, " \
-          f"(SELECT precioUnitario FROM precio_unitario WHERE idproducto=p.id ORDER BY id DESC) as precioUnitario2 " \
+          f"(SELECT precioUnitario FROM precio_unitario WHERE idproducto=p.id ORDER BY id DESC LIMIT 1 OFFSET 0) as precioUnitario " \
           f"FROM productos AS p " \
           f"INNER JOIN categorias as cats ON cats.id = p.idcategoria " \
           f"ORDER BY p.estado DESC, p.id DESC;"
     products = [dict(p) for p in db.select_multiple(sql)]
     for p in products:
         p["fechacreacion"] = p["fechacreacion"].strftime('%Y-%m-%d')
-        p["precioUnitario"] = cotizacion.get_precio_unitario_by_product_id(p["id"])
         p["precioUnitarioVencido"] = cotizacion.get_precio_unitario_vencido(p["id"])
     return products
 
