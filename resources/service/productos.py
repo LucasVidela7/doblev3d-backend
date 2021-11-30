@@ -60,8 +60,8 @@ def update_product(id_product, request):
 
     sql = f"UPDATE productos SET descripcion='{descripcion}', idCategoria='{id_categoria}', estado='{estado}' where id={id_product}"
     db.update_sql(sql)
-    sql = f"DELETE FROM piezas where idProducto={id_product}"
-    db.delete_sql(sql)
+    sql = f"UPDATE piezas SET idProducto = '0' where idProducto={id_product}"
+    db.update_sql(sql)
 
     for pieza in request.get("piezas", []):
         desc_piezas = pieza["descripcion"]

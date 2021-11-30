@@ -66,7 +66,7 @@ def select_venta_by_id(_id):
         # Obtener piezas
         p["estado"] = estados.order_estados(estados.get_estados_productos(), p["idestado"])
         p.pop("idestado", None)
-        sql = f"SELECT vpp.id as idpieza, vpp.idestado, p.descripcion " \
+        sql = f"SELECT vpp.id as idpieza, vpp.idestado, p.descripcion, p.horas, p.minutos " \
               f"FROM ventas_productos_piezas AS vpp " \
               f"INNER JOIN piezas AS p ON vpp.idpieza=p.id " \
               f"WHERE vpp.idproductoventa='{p['id']}';"
