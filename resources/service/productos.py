@@ -50,6 +50,7 @@ def get_all_products():
     for p in products:
         p["fechacreacion"] = p["fechacreacion"].strftime('%Y-%m-%d')
         p["precioUnitarioVencido"] = cotizacion.get_precio_unitario_vencido(p["id"])
+        p["precioUnitario"] = p["preciounitario"]
     return products
 
 
