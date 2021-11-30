@@ -68,7 +68,7 @@ def cambiar_estado_pieza(request):
         # Verificar el estado del producto
         sql = f"select AVG(idestado) as estados_piezas from ventas_productos_piezas " \
               f"where idproductoventa='{id_producto_venta}';"
-        nuevo_estado_producto = math.ceil(db.select_first(sql)["estados_piezas"])
+        nuevo_estado_producto = int(db.select_first(sql)["estados_piezas"])
         if nuevo_estado_producto not in estados_productos:
             for n, ep in enumerate(estados_productos):
                 if ep > nuevo_estado_producto and n > 0:
@@ -83,7 +83,7 @@ def cambiar_estado_pieza(request):
         # Verificar estado venta
         sql = f"select AVG(idestado) as estados_productos from ventas_productos " \
               f"where idventa='{id_venta}';"
-        nuevo_estado_venta = math.ceil(db.select_first(sql)["estados_productos"])
+        nuevo_estado_venta = int(db.select_first(sql)["estados_productos"])
         if nuevo_estado_venta not in estados_ventas:
             for n, ev in enumerate(estados_ventas):
                 if ev < nuevo_estado_venta and n > 0:

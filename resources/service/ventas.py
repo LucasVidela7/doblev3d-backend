@@ -88,7 +88,7 @@ def get_all_ventas():
           f" (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia " \
           f" FROM ventas AS v " \
           f" INNER JOIN estados AS e ON v.idestado = e.id " \
-          f" ORDER BY v.idestado DESC;"
+          f" ORDER BY v.idestado DESC, senia DESC, productos DESC;"
     ventas = db.select_multiple(sql)
     for v in ventas:
         v["fechacreacion"] = v["fechacreacion"].strftime('%Y-%m-%d')
