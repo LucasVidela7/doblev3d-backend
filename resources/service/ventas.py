@@ -26,7 +26,7 @@ def insertar_venta(request):
                 costo_total += extras.select_extras_by_id_product(id_producto)[1]
 
                 # Precio unitario
-                descuento = int(p.get("descuento", 0).replace('', '0'))
+                descuento = int(p.get("descuento", '0').replace('', '0'))
                 precio_unidad = round(
                     cotizacion.get_precio_unitario(id_producto)['preciounitario'] * (100 - descuento) / 100, 2)
                 ganancia = round(precio_unidad - costo_total, 2)
