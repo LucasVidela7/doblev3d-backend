@@ -30,17 +30,23 @@ def insert_product(request):
 
 
 def select_product_by_id(_id):
-    sql = f"SELECT * FROM productos WHERE id= {_id}"
+    sql = f"SELECT *, cats.categoria AS categoria FROM productos AS p " \
+          f"INNER JOIN categorias as cats ON cats.id = p.idcategoria " \
+          f"WHERE p.id= {_id}"
     product = db.select_first(sql)
-    list_cat = categorias.get_all_categories()
-    list_cat = dict(map(lambda x: (x["id"], x), list_cat))
-    product["categoria"] = list_cat.get(product["idcategoria"], {}).get("categoria", "N/A")
+    # list_cat = categorias.get_all_categories()
+    # list_cat = dict(map(lambda x: (x["id"], x), list_cat))
+    # product["categoria"] = list_cat.get(product["idcategoria"], {}).get("categoria", "N/A")
     product["fechacreacion"] = product["fechacreacion"].strftime('%Y-%m-%d')
     return product
 
 
 def get_all_products():
-    sql = f"SELECT * FROM productos ORDER BY estado DESC, id DESC"
+
+    sql = f"SELECT *, cats.categoria AS categoria FROM productos AS p " \
+          f"INNER JOIN categorias as cats ON cats.id = p.idcategoria " \
+          f"ORDER BY estado DESC, id DESC;"
+    # sql = f"SELECT * FROM productos ORDER BY estado DESC, id DESC;"
     products = [dict(p) for p in db.select_multiple(sql)]
     list_cat = categorias.get_all_categories()
     list_cat = dict(map(lambda x: (x["id"], x), list_cat))
