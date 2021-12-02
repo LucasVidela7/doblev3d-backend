@@ -73,6 +73,7 @@ def select_venta_by_id(_id):
               f"WHERE vpp.idproductoventa='{p['id']}';"
         p["piezas"] = db.select_multiple(sql)
         p.pop("idventa", None)
+        p.pop("idproducto", None)
         for pi in p["piezas"]:
             pi["estado"] = estados.order_estados(estados.get_estados_piezas(), pi["idestado"])
             pi.pop("idestado", None)
