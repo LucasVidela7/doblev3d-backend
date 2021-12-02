@@ -71,7 +71,7 @@ def get_price_piezas(piezas: list):
 
 def insert_precio_unitario(id_producto, request):
     fecha = datetime.now().strftime('%Y-%m-%d')  # 2021-11-18
-    precio_unitario = float(request["precioUnitario"])
+    precio_unitario = float(request["preciounitario"])
     costo_total = float(request["costoTotal"])
     ganancia = round(precio_unitario - costo_total, 2)
 
