@@ -98,3 +98,31 @@ def cambiar_estado_pieza(request):
                     "venta": order_estados(get_estados_ventas(), nuevo_estado_venta)["actual"]}
         return jsonify(response), 200
     return jsonify({"error": "No existe ese estado para la pieza"}), 500
+
+
+def cancelar_venta(id_venta):
+    # Cambiar estado venta
+    sql = f"update ventas set idestado=(SELECT id FROM estados ORDER BY id DESC LIMIT 1) " \
+          f"where id='{id_venta}';"
+    db.update_sql(sql)
+
+    # Cambiar estado productos
+    sql = f"update ventas_productos set idestado=(SELECT id FROM estados ORDER BY id DESC LIMIT 1) " \
+          f"where idventa='{id_venta}';"
+    db.update_sql(sql)
+
+    sql = f"update ventas_productos_piezas set idestado=(SELECT id FROM estados ORDER BY id DESC LIMIT 1) " \
+          f"where idproductoventa IN (select id from ventas_productos where idventa='{id_venta}');"
+    db.update_sql(sql)
+
+
+def cancelar_producto(id_producto):
+
+    # Cambiar estado productos
+    sql = f"update ventas_productos set idestado=(SELECT id FROM estados ORDER BY id DESC LIMIT 1) " \
+          f"where id='{id_producto}';"
+    db.update_sql(sql)
+
+    sql = f"update ventas_productos_piezas set idestado=(SELECT id FROM estados ORDER BY id DESC LIMIT 1) " \
+          f"where idproductoventa IN (select id from ventas_productos where id='{id_producto}');"
+    db.update_sql(sql)

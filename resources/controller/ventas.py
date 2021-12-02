@@ -3,6 +3,7 @@ from flask import request, jsonify, Blueprint
 from documentation.route import get_doc_path
 from resources.service import ventas as ventas
 from resources.service import pagos as pagos
+from resources.service import estados as estados
 
 ventas_bp = Blueprint("routes-ventas", __name__)
 
@@ -28,6 +29,20 @@ def all_ventas():
 def select_venta(id_venta):
     venta = ventas.select_venta_by_id(id_venta)
     return jsonify(venta)
+
+
+@ventas_bp.route('/ventas/<int:id_venta>', methods=['DELETE'])
+# @swag_from(get_doc_path("productos/post_productos.yml"))
+def cancelar_venta(id_venta):
+    estados.cancelar_venta(id_venta)
+    return jsonify({"mensaje": "venta cancelada"})
+
+
+@ventas_bp.route('/ventas/producto/<int:id_venta>', methods=['DELETE'])
+# @swag_from(get_doc_path("productos/post_productos.yml"))
+def cancelar_producto(id_producto):
+    estados.cancelar_producto(id_producto)
+    return jsonify({"mensaje": "producto cancelado"})
 
 
 @ventas_bp.route('/ventas/<int:id_venta>/pagos', methods=['GET'])

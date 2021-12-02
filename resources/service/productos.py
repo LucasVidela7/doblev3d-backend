@@ -1,5 +1,4 @@
 from datetime import datetime
-from resources.service import categorias as categorias
 from resources.service import cotizacion as cotizacion
 from database import utils as db
 
