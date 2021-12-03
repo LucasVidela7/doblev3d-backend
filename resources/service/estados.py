@@ -132,7 +132,7 @@ def cancelar_producto(id_producto):
           f"where idproductoventa IN (select id from ventas_productos where id='{id_producto}');"
     db.update_sql(sql)
 
-    sql = f"select avg(idestado) as estado from ventas where id='{id_venta}';"
+    sql = f"select avg(idestado) as estado from ventas_productos where id='{id_venta}';"
     print(int(db.select_first(sql)["estado"]))
     print(int(estado_cancelar))
     if int(estado_cancelar) == int(db.select_first(sql)["estado"]):
