@@ -36,3 +36,8 @@ def get_all_pagos_by_id_venta(id_venta):
 def get_all_medios_pago():
     sql = f"select * from medios_pago;"
     return db.select_multiple(sql)
+
+
+def borrar_pago(id_pago):
+    sql = f"delete from pagos where id='{id_pago}';"
+    return db.delete_sql(sql)

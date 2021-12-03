@@ -21,6 +21,13 @@ def all_pagos():
     return jsonify({"pagos": pagos.get_all_pagos()})
 
 
+@pagos_bp.route('/pagos/<int:id_pago>', methods=['DELETE'])
+# @swag_from(get_doc_path("productos/post_productos.yml"))
+def delete_pago(id_pago):
+    pagos.borrar_pago(id_pago)
+    return jsonify({"pagos": "Pago borrado"})
+
+
 @pagos_bp.route('/mediosDePago', methods=['GET'])
 # @swag_from(get_doc_path("productos/post_productos.yml"))
 def all_medios_de_pagos():
