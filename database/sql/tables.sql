@@ -125,7 +125,7 @@ INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('PIN
 INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('PINTANDO'   ,'0','1','1','0', 'bx-time-five' );
 INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('LISTO'      ,'1','1','1','0', 'bx-time-five' );
 INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('ENTREGADO'  ,'1','0','0','0', 'bx-time-five' );
-INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('CANCELADO'  ,'1','1','0','0', 'bx-time-five' );
+INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('CANCELADO'  ,'1','1','1','0', 'bx-time-five' );
 
 
 
