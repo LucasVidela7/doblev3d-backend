@@ -121,12 +121,18 @@ def cancelar_venta(id_venta):
 
 
 def cancelar_producto(id_producto):
+    sql = "SELECT id FROM estados ORDER BY id DESC LIMIT 1;"
+    estado_cancelar = db.select_first(sql)["id"]
 
-    # Cambiar estado productos
-    sql = f"update ventas_productos set idestado=(SELECT id FROM estados ORDER BY id DESC LIMIT 1) " \
-          f"where id='{id_producto}';"
-    db.update_sql(sql)
+    sql = f"update ventas_productos set idestado='{estado_cancelar}' " \
+          f"where id='{id_producto}' RETURNIND idventa;"
+    id_venta = db.update_sql(sql, key='idventa')
 
-    sql = f"update ventas_productos_piezas set idestado=(SELECT id FROM estados ORDER BY id DESC LIMIT 1) " \
+    sql = f"update ventas_productos_piezas set idestado='{estado_cancelar}' " \
           f"where idproductoventa IN (select id from ventas_productos where id='{id_producto}');"
     db.update_sql(sql)
+
+    sql = f"select avg(idestado) as estado from ventas where id='{id_venta}';"
+    if int(estado_cancelar) == int(db.select_first(sql)["estado"]):
+        sql = f"update ventas set idestado='{estado_cancelar}'"
+        db.update_sql(sql)
