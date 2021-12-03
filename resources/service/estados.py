@@ -125,7 +125,7 @@ def cancelar_producto(id_producto):
     estado_cancelar = db.select_first(sql)["id"]
 
     sql = f"update ventas_productos set idestado='{estado_cancelar}' " \
-          f"where id='{id_producto}' RETURNIND idventa;"
+          f"where id='{id_producto}' RETURNING idventa;"
     id_venta = db.update_sql(sql, key='idventa')
 
     sql = f"update ventas_productos_piezas set idestado='{estado_cancelar}' " \
