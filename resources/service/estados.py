@@ -31,7 +31,7 @@ def order_estados(dictionary, actual_id_estado):
             estados["anterior"] = {}
 
             if actual_id_estado == dictionary[-1]["id"]:
-                pass
+                continue
 
             try:
                 estados["siguientes"].append(dictionary[n + 1])
