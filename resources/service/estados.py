@@ -20,6 +20,11 @@ def get_estados_piezas():
     return db.select_multiple(sql)
 
 
+def get_id_estado_cancelado():
+    sql = "SELECT id FROM estados ORDER BY id DESC LIMIT 1;"
+    return db.select_first(sql)["id"]
+
+
 def order_estados(dictionary, actual_id_estado):
     # dictionary = dict(map(lambda x: (x["id"], x), dictionary))
     estados = {}
@@ -105,24 +110,24 @@ def cambiar_estado_pieza(request):
 
 
 def cancelar_venta(id_venta):
+    id_estado_cancelar = get_id_estado_cancelado()
     # Cambiar estado venta
-    sql = f"update ventas set idestado=(SELECT id FROM estados ORDER BY id DESC LIMIT 1) " \
+    sql = f"update ventas set idestado='{id_estado_cancelar}' " \
           f"where id='{id_venta}';"
     db.update_sql(sql)
 
     # Cambiar estado productos
-    sql = f"update ventas_productos set idestado=(SELECT id FROM estados ORDER BY id DESC LIMIT 1) " \
+    sql = f"update ventas_productos set idestado='{id_estado_cancelar}' " \
           f"where idventa='{id_venta}';"
     db.update_sql(sql)
 
-    sql = f"update ventas_productos_piezas set idestado=(SELECT id FROM estados ORDER BY id DESC LIMIT 1) " \
+    sql = f"update ventas_productos_piezas set idestado='{id_estado_cancelar}' " \
           f"where idproductoventa IN (select id from ventas_productos where idventa='{id_venta}');"
     db.update_sql(sql)
 
 
 def cancelar_producto(id_producto):
-    sql = "SELECT id FROM estados ORDER BY id DESC LIMIT 1;"
-    estado_cancelar = db.select_first(sql)["id"]
+    estado_cancelar = get_id_estado_cancelado()
 
     sql = f"update ventas_productos set idestado='{estado_cancelar}' " \
           f"where id='{id_producto}' RETURNING idventa;"
