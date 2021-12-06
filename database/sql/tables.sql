@@ -121,9 +121,9 @@ INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('PEN
 INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('EN PROCESO' ,'1','0','0','0', '' );
 INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('IMPRIMIR'   ,'0','1','1','0', 'bx-printer');
 INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('IMPRIMIENDO','0','1','1','0', 'bxs-printer');
-INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('PINTAR'     ,'0','1','1','1', 'bx-palette );
-INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('PINTANDO'   ,'0','1','1','0', 'bxs-brush' );
-INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('LISTO'      ,'1','1','1','0', 'bx-check-square );
+INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('PINTAR'     ,'0','1','1','1', 'bx-palette');
+INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('PINTANDO'   ,'0','1','1','0', 'bxs-brush');
+INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('LISTO'      ,'1','1','1','0', 'bx-check-square');
 INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('ENTREGADO'  ,'1','0','0','0', '' );
 INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('CANCELADO'  ,'1','1','1','0', '' );
 
