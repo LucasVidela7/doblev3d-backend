@@ -35,10 +35,10 @@ def order_estados(dictionary, actual_id_estado):
             estados["siguientes"] = []
             estados["anterior"] = {}
 
-            if actual_id_estado == dictionary[-1]["id"]:
-                continue
-
             try:
+                if actual_id_estado == dictionary[-1]["id"] or dictionary[n + 1]["id"] == dictionary[-1]["id"]:
+                    continue
+
                 estados["siguientes"].append(dictionary[n + 1])
                 if dictionary[n + 1]["saltear"] == '1':
                     estados["siguientes"].append(dictionary[n + 3])
@@ -138,8 +138,14 @@ def cancelar_producto(id_producto):
     db.update_sql(sql)
 
     sql = f"select avg(idestado) as estado from ventas_productos where idventa='{id_venta}';"
-    print(int(db.select_first(sql)["estado"]))
-    print(int(estado_cancelar))
     if int(estado_cancelar) == int(db.select_first(sql)["estado"]):
         sql = f"update ventas set idestado='{estado_cancelar}' where id='{id_venta}'"
         db.update_sql(sql)
+
+
+def entregar_venta(id_venta):
+    sql = f"select id from estados where ventas='1' ORDER BY id DESC LIMIT 1 OFFSET 1"
+    estado_entregado = db.select_first(sql)["id"]
+
+    sql = f"update ventas set idestado='{estado_entregado}' where id='{id_venta}';"
+    db.update_sql(sql)

@@ -49,3 +49,10 @@ def cancelar_producto(id_producto):
 # @swag_from(get_doc_path("productos/post_productos.yml"))
 def select_pagos_venta(id_venta):
     return jsonify(pagos.get_all_pagos_by_id_venta(id_venta))
+
+
+@ventas_bp.route('/ventas/<int:id_venta>/entregado', methods=['PUT'])
+# @swag_from(get_doc_path("productos/post_productos.yml"))
+def entregar_venta(id_venta):
+    estados.entregar_venta(id_venta)
+    return jsonify({"mensaje": "producto cancelado"})
