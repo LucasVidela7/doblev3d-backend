@@ -70,7 +70,7 @@ def insert_product_price(id_product):
 
 @products_bp.route('/productos/<int:id_product>/importarPiezas', methods=['PUT'])
 # @swag_from(get_doc_path("productos/put_product.yml"))
-def insert_product_price(id_product):
+def importar_piezas(id_product):
     if id_product:
         products.importar_piezas(id_product, request.json)
         return jsonify({"mensaje": "Piezas importadas"})
