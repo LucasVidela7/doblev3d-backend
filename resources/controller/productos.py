@@ -68,10 +68,9 @@ def insert_product_price(id_product):
     return jsonify({"message": "internal server error"})
 
 
-@products_bp.route('/productos/<int:id_product>/importarPiezas', methods=['POST'])
+@products_bp.route('/productos/<int:id_product>/piezas', methods=['GET'])
 # @swag_from(get_doc_path("productos/put_product.yml"))
-def importar_piezas(id_product):
+def productos_piezas(id_product):
     if id_product:
-        products.importar_piezas(id_product, request.json)
-        return jsonify({"mensaje": "Piezas importadas"})
+        return jsonify({"piezas": piezas.select_piezas_by_id_product(id_product)})
     return jsonify({"message": "internal server error"})
