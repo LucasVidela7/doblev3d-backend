@@ -66,3 +66,12 @@ def insert_product_price(id_product):
         cotizacion.insert_precio_unitario(id_product, request.json)
         return jsonify({"mensaje": "Precio agregado"})
     return jsonify({"message": "internal server error"})
+
+
+@products_bp.route('/productos/<int:id_product>/importarPiezas', methods=['PUT'])
+# @swag_from(get_doc_path("productos/put_product.yml"))
+def insert_product_price(id_product):
+    if id_product:
+        products.importar_piezas(id_product, request.json)
+        return jsonify({"mensaje": "Piezas importadas"})
+    return jsonify({"message": "internal server error"})

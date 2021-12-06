@@ -42,7 +42,6 @@ def insertar_venta(request):
                 sql = f"""INSERT INTO ventas_productos_piezas (idproductoventa, idpieza, idestado)
                 (SELECT  '{id_detalle}', id, (SELECT id FROM estados where piezas='1' ORDER BY id ASC LIMIT 1 OFFSET 0) 
                 FROM piezas WHERE idProducto = '{id_producto}')"""
-                print(sql)
                 db.insert_sql(sql)
 
         return id_venta

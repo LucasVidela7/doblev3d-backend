@@ -78,3 +78,11 @@ def update_product(id_product, request):
                 VALUES('{id_product}','{id_extra}');"""
         db.insert_sql(sql)
     return id_product
+
+
+def importar_piezas(id_producto, request):
+    id_producto_importar = request["idProductoImportar"]
+    sql = f"""INSERT INTO piezas (descripcion, peso, horas, minutos, idProducto)
+                    (SELECT  descripcion, peso, horas, minutos, '{id_producto}'
+                    FROM piezas WHERE idProducto = '{id_producto_importar}');"""
+    db.insert_sql(sql)
