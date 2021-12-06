@@ -72,5 +72,6 @@ def insert_product_price(id_product):
 # @swag_from(get_doc_path("productos/put_product.yml"))
 def productos_piezas(id_product):
     if id_product:
-        return jsonify({"piezas": piezas.select_piezas_by_id_product(id_product)})
+        return jsonify({"piezas": piezas.select_piezas_by_id_product(id_product)
+                        "producto": products.select_product_by_id(id_product)})
     return jsonify({"message": "internal server error"})
