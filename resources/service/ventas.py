@@ -72,6 +72,7 @@ def select_venta_by_id(_id):
     for p in productos:
         # Obtener piezas
         p["estado"] = estados.order_estados(estados_productos, p["idestado"])
+        p.pop("idestado", None)
         sql = f"SELECT vpp.id as idpieza, vpp.idestado, p.descripcion, p.horas, p.minutos " \
               f"FROM ventas_productos_piezas AS vpp " \
               f"INNER JOIN piezas AS p ON vpp.idpieza=p.id " \
@@ -79,7 +80,6 @@ def select_venta_by_id(_id):
         p["piezas"] = db.select_multiple(sql)
         p.pop("idventa", None)
         p.pop("idproducto", None)
-        p.pop("idestado", None)
         for pi in p["piezas"]:
             pi["estado"] = estados.order_estados(estados_piezas, pi["idestado"])
             pi.pop("idestado", None)
