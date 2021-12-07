@@ -62,8 +62,9 @@ def select_venta_by_id(_id):
     venta.pop("idestado", None)
 
     # Obtener productos
-    sql = f"SELECT vp.*, p.descripcion FROM ventas_productos AS vp " \
+    sql = f"SELECT vp.*, CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion FROM ventas_productos AS vp " \
           f"INNER JOIN productos AS p ON vp.idproducto=p.id " \
+          f"INNER JOIN categorias AS cats ON cats.id=p.idcategoria " \
           f"WHERE idventa= {_id} " \
           f"ORDER BY vp.id DESC;"
     productos = db.select_multiple(sql)
