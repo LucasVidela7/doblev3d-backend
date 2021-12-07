@@ -1,3 +1,4 @@
+import copy
 from datetime import datetime
 from resources.service import extras as extras
 from resources.service import cotizacion as cotizacion
@@ -71,7 +72,7 @@ def select_venta_by_id(_id):
 
     for p in productos:
         # Obtener piezas
-        p["estado"] = estados.order_estados(estados_productos, p["idestado"])
+        p["estado"] = estados.order_estados(copy.deepcopy(estados_productos), p["idestado"])
         p.pop("idestado", None)
         sql = f"SELECT vpp.id as idpieza, vpp.idestado, p.descripcion, p.horas, p.minutos " \
               f"FROM ventas_productos_piezas AS vpp " \
@@ -81,7 +82,7 @@ def select_venta_by_id(_id):
         p.pop("idventa", None)
         p.pop("idproducto", None)
         for pi in p["piezas"]:
-            pi["estado"] = estados.order_estados(estados_piezas, pi["idestado"])
+            pi["estado"] = estados.order_estados(copy.deepcopy(estados_piezas), pi["idestado"])
             pi.pop("idestado", None)
 
     venta["productos"] = productos
