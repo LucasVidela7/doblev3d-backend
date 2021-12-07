@@ -16,7 +16,7 @@ def insertar_gastos(request):
 
 
 def get_gastos():
-    sql = f"SELECT * from pagos where fechapago >  CURRENT_DATE - INTERVAL '30 days';"
+    sql = f"SELECT * from gastos where fechapago >  CURRENT_DATE - INTERVAL '30 days';"
     return db.select_multiple(sql)
 
 
