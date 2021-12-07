@@ -64,7 +64,8 @@ def select_venta_by_id(_id):
     # Obtener productos
     sql = f"SELECT vp.*, p.descripcion FROM ventas_productos AS vp " \
           f"INNER JOIN productos AS p ON vp.idproducto=p.id " \
-          f"WHERE idventa= {_id};"
+          f"WHERE idventa= {_id} " \
+          f"ORDER BY vp.id DESC;"
     productos = db.select_multiple(sql)
 
     estados_productos = estados.get_estados_productos()
