@@ -12,3 +12,4 @@ DROP table ventas_productos_piezas;
 DROP table pagos;
 DROP table medios_pago;
 DROP table estados;
+DROP table gastos;
