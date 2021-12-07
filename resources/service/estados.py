@@ -78,7 +78,7 @@ def cambiar_estado_pieza(request):
         sql = f"select min(idestado) as estados_piezas from ventas_productos_piezas " \
               f"where idproductoventa='{id_producto_venta}';"
         nuevo_estado_producto = round(db.select_first(sql)["estados_piezas"])
-
+        print(nuevo_estado_producto)
         if abs(nuevo_estado_producto - nuevo_estado) == 1:
             nuevo_estado_producto = nuevo_estado
         elif nuevo_estado_producto not in estados_productos:
