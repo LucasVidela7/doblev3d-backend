@@ -68,20 +68,24 @@ def select_venta_by_id(_id):
           f"ORDER BY vp.id DESC;"
     productos = db.select_multiple(sql)
 
+    # Performance
     estados_productos = estados.get_estados_productos()
     estados_piezas = estados.get_estados_piezas()
+    ids_products = list(str(x["id"]) for x in productos)
+    sql = f"SELECT vpp.id as idpieza, vpp.idproductoventa, vpp.idestado, p.descripcion, p.horas, p.minutos " \
+          f"FROM ventas_productos_piezas AS vpp " \
+          f"INNER JOIN piezas AS p ON vpp.idpieza=p.id " \
+          f"WHERE vpp.idproductoventa in ({','.join(ids_products)});"
+    piezas = db.select_multiple(sql)
 
     for p in productos:
         # Obtener piezas
         p["estado"] = estados.order_estados(copy.deepcopy(estados_productos), p["idestado"])
         p.pop("idestado", None)
-        sql = f"SELECT vpp.id as idpieza, vpp.idestado, p.descripcion, p.horas, p.minutos " \
-              f"FROM ventas_productos_piezas AS vpp " \
-              f"INNER JOIN piezas AS p ON vpp.idpieza=p.id " \
-              f"WHERE vpp.idproductoventa='{p['id']}';"
-        p["piezas"] = db.select_multiple(sql)
         p.pop("idventa", None)
         p.pop("idproducto", None)
+
+        p["piezas"] = [pi for pi in piezas if pi["idproductoventa"] == p["id"]]
         for pi in p["piezas"]:
             pi["estado"] = estados.order_estados(copy.deepcopy(estados_piezas), pi["idestado"])
             pi.pop("idestado", None)
