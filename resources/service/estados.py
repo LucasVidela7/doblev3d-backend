@@ -25,6 +25,11 @@ def get_id_estado_cancelado():
     return db.select_first(sql)["id"]
 
 
+def get_id_estado_listo():
+    sql = "SELECT id FROM estados where piezas='1' ORDER BY id DESC LIMIT 1 OFFSET 1;"
+    return db.select_first(sql)["id"]
+
+
 def order_estados(dictionary, actual_id_estado):
     # dictionary = dict(map(lambda x: (x["id"], x), dictionary))
     estados = {}
