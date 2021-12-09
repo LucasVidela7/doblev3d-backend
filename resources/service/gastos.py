@@ -10,8 +10,9 @@ def insertar_gastos(request):
     for g in gastos:
         monto = float(g["monto"])
         descripcion = g["descripcion"]
-        sql = f"INSERT INTO gastos(monto,descripcion, fechaGasto) " \
-              f"VALUES('{monto}','{descripcion}','{fecha_gasto}');"
+        tipo = g["tipo"]
+        sql = f"INSERT INTO gastos(monto,descripcion, fechaGasto, tipo) " \
+              f"VALUES('{monto}','{descripcion}','{fecha_gasto}', '{tipo}');"
         db.insert_sql(sql)
 
 

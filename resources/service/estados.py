@@ -156,3 +156,13 @@ def entregar_venta(id_venta):
 
     sql = f"update ventas set idestado='{estado_entregado}' where id='{id_venta}';"
     db.update_sql(sql)
+
+    # Cambiar estado productos
+    sql = f"update ventas_productos set idestado='{get_id_estado_listo()}' " \
+          f"where idventa='{id_venta}' and idestado <> '{get_id_estado_cancelado()}';"
+    db.update_sql(sql)
+
+    sql = f"update ventas_productos_piezas set idestado='{get_id_estado_listo()}' " \
+          f"where idproductoventa IN (select id from ventas_productos where idventa='{id_venta}') " \
+          f"and idestado <> '{get_id_estado_cancelado()}';"
+    db.update_sql(sql)

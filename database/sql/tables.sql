@@ -101,7 +101,8 @@ CREATE TABLE IF NOT EXISTS gastos(
     id SERIAL PRIMARY KEY,
     monto FLOAT NOT NULL,
     descripcion TEXT,
-    fechaGasto DATE
+    fechaGasto DATE,
+    tipo TEXT
 );
 
 DROP TABLE medios_pago;
