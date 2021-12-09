@@ -15,8 +15,9 @@ def insertar_pago(request):
 
 
 def get_all_pagos():
-    sql = f"select p.*, mp.descripcion FROM pagos as p " \
-          f"INNER JOIN medios_pago AS mp ON mp.id = p.idMedioPago;"
+    sql = f"select p.*, mp.descripcion, v.cliente FROM pagos as p " \
+          f"INNER JOIN medios_pago AS mp ON mp.id = p.idMedioPago " \
+          f"INNER JOIN ventas AS v ON v.id = p.idventa; "
     pagos = db.select_multiple(sql)
     for p in pagos:
         p["fechapago"] = p["fechapago"].strftime('%Y-%m-%d')
