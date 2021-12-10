@@ -6,13 +6,21 @@ from database import utils as db
 def insertar_gastos(request):
     fecha_gasto = datetime.now().strftime('%Y-%m-%d')
 
+    list_total_gastos = []
     for g in request:
         monto = float(g["monto"])
         descripcion = g["descripcion"]
         tipo = g["tipo"]
-        sql = f"INSERT INTO gastos(monto,descripcion, fechaGasto, tipo) " \
-              f"VALUES('{monto}','{descripcion}','{fecha_gasto}', '{tipo}');"
-        db.insert_sql(sql)
+        list_gastos = [monto, descripcion, fecha_gasto, tipo]
+        list_total_gastos.append(list_gastos)
+
+    values = ""
+    for l in list_total_gastos:
+        values += f"({','.join(str(c) for c in l)}),"
+    values = values[:-1]
+    sql = f"INSERT INTO gastos(monto,descripcion, fechaGasto, tipo) " \
+          f"VALUES{values};"
+    db.insert_sql(sql)
 
 
 def get_gastos():
