@@ -10,7 +10,7 @@ gastos_bp = Blueprint("routes-gastos", __name__)
 # @swag_from(get_doc_path("productos/post_productos.yml"))
 def add_gastos():
     gastos.insertar_gastos(request.json)
-    return jsonify({"mensaje": "Gastos insertados"})
+    return jsonify({"gastos": gastos.get_gastos()})
 
 
 @gastos_bp.route('/gastos', methods=['GET'])
