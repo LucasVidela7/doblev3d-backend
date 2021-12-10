@@ -9,10 +9,8 @@ gastos_bp = Blueprint("routes-gastos", __name__)
 @gastos_bp.route('/gastos', methods=['POST'])
 # @swag_from(get_doc_path("productos/post_productos.yml"))
 def add_gastos():
-    id_gasto = gastos.insertar_gastos(request.json)
-    if id_gasto:
-        return jsonify({"mensaje": "Gastos insertados"})
-    return jsonify({"message": "internal server error"}), 500
+    gastos.insertar_gastos(request.json)
+    return jsonify({"mensaje": "Gastos insertados"})
 
 
 @gastos_bp.route('/gastos', methods=['GET'])
