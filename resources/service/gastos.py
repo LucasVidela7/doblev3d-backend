@@ -16,11 +16,11 @@ def insertar_gastos(request):
 
     values = ""
     for l in list_total_gastos:
-        values += f"({','.join(str(c) for c in l)}),"
-    values = values[:-1]
-    sql = f"INSERT INTO gastos(monto,descripcion, fechaGasto, tipo) " \
-          f"VALUES{values};"
-    db.insert_sql(sql)
+        values += '(' + ",".join(f"'{c}'" for c in l) + ','
+        values = values[:-1]
+        sql = f"INSERT INTO gastos(monto,descripcion, fechaGasto, tipo) " \
+              f"VALUES{values};"
+        db.insert_sql(sql)
 
 
 def get_gastos():
