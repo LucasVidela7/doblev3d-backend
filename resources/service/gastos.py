@@ -4,10 +4,9 @@ from database import utils as db
 
 
 def insertar_gastos(request):
-    gastos = request["gastos"]
     fecha_gasto = datetime.now().strftime('%Y-%m-%d')
 
-    for g in gastos:
+    for g in request:
         monto = float(g["monto"])
         descripcion = g["descripcion"]
         tipo = g["tipo"]
