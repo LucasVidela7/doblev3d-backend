@@ -23,8 +23,13 @@ def insertar_gastos(request):
     db.insert_sql(sql)
 
 
-def get_gastos():
-    sql = f"SELECT * from gastos where fechaGasto >  CURRENT_DATE - INTERVAL '30 days';"
+def get_gastos(mes=None, anio=None):
+    if mes is None or anio is None:
+        mes = datetime.now().month
+        anio = datetime.now().year
+
+    sql = f"SELECT * from gastos " \
+          f"WHERE EXTRACT(month FROM 'fechagasto') = {mes} AND EXTRACT(year FROM 'fechagasto') = {anio};"
     return db.select_multiple(sql)
 
 

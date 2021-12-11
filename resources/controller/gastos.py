@@ -16,7 +16,9 @@ def add_gastos():
 @gastos_bp.route('/gastos', methods=['GET'])
 # @swag_from(get_doc_path("productos/post_productos.yml"))
 def all_gastos():
-    return jsonify({"gastos": gastos.get_gastos()})
+    mes = request.args.get('mes')
+    anio = request.args.get('anio')
+    return jsonify({"gastos": gastos.get_gastos(mes=mes, anio=anio)})
 
 
 @gastos_bp.route('/gastos/<int:id_gasto>', methods=['DELETE'])
