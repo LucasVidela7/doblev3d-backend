@@ -29,7 +29,8 @@ def get_gastos(mes=None, anio=None):
         anio = datetime.now().year
 
     sql = f"SELECT * from gastos " \
-          f"WHERE EXTRACT(month FROM fechagasto) = {mes} AND EXTRACT(year FROM fechagasto) = {anio};"
+          f"WHERE EXTRACT(month FROM fechagasto) = {mes} AND EXTRACT(year FROM fechagasto) = {anio} " \
+          f"ORDER BY id ASC;"
     gastos = db.select_multiple(sql)
     for g in gastos:
         g["fechagasto"] = g["fechagasto"].strftime('%Y-%m-%d')
