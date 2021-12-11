@@ -30,7 +30,10 @@ def get_gastos(mes=None, anio=None):
 
     sql = f"SELECT * from gastos " \
           f"WHERE EXTRACT(month FROM 'fechagasto') = {mes} AND EXTRACT(year FROM 'fechagasto') = {anio};"
-    return db.select_multiple(sql)
+    gastos = db.select_multiple(sql)
+    for g in gastos:
+        g["fechagasto"] = g["fechagasto"].strftime('%Y-%m-%d')
+    return gastos
 
 
 def borrar_gasto(id_gasto):
