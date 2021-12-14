@@ -115,7 +115,7 @@ def get_all_ventas():
     ventas = db.select_multiple(sql)
     for v in ventas:
         v["fechacreacion"] = v["fechacreacion"].strftime('%Y-%m-%d')
-        if v["estado"] == "ENTREGADO" and (v["senia"] == v["preciototal"]):
-            del v
+        if v["estado"] == "ENTREGADO" and v["senia"] == v["preciototal"]:
+            ventas.remove(v)
 
     return ventas
