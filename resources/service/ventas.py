@@ -119,7 +119,8 @@ def get_all_ventas():
     aux_ventas = []
     for v in ventas:
         if v["estado"] != "ENTREGADO":
-            if v["senia"] < v["preciototal"]:
-                aux_ventas.append(v)
+            aux_ventas.append(v)
+        elif v["senia"] < v["preciototal"]:
+            aux_ventas.append(v)
 
     return aux_ventas
