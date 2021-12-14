@@ -1,3 +1,4 @@
+import locale
 from datetime import datetime
 from database import utils as db
 from resources.service import estados as estados
@@ -7,6 +8,10 @@ def get_balance():
     sql = f"SELECT date_trunc('month', fechapago) AS mes, COALESCE(sum(monto),0) as ingreso " \
           f"FROM pagos GROUP BY mes order by mes desc;"
     meses = db.select_multiple(sql)
+
+    for m in meses:
+        locale.setlocale(locale.LC_ALL, 'es_ES.UTF-8')
+        m["mes"] = m["mes"].strftime('%B %Y')
 
     ingreso_total = sum([float(m["ingreso"]) for m in meses])
     estado_cancelado = estados.get_id_estado_cancelado()
