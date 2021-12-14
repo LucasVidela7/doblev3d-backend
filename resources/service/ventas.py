@@ -113,9 +113,9 @@ def get_all_ventas():
           f" and (SELECT count(vp.id) FROM ventas_productos vp WHERE  vp.idventa = v.id and vp.idestado<>'{estado_cancelado}') > 0" \
           f" ORDER BY v.idestado DESC, senia DESC, productos DESC;"
     ventas = db.select_multiple(sql)
-    for n, v in enumerate(ventas):
-        v["fechacreacion"] = v["fechacreacion"].strftime('%Y-%m-%d')
+    for v in ventas:
         if v["estado"] == "ENTREGADO" and v["senia"] == v["preciototal"]:
-            ventas.pop(n, None)
+            ventas.remove(v)
+        v["fechacreacion"] = v["fechacreacion"].strftime('%Y-%m-%d')
 
     return ventas
