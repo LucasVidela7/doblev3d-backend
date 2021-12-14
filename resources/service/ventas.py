@@ -101,6 +101,7 @@ def select_venta_by_id(_id):
 
 
 def get_all_ventas():
+    estado_cancelado = estados.get_id_estado_cancelado()
     sql = f"SELECT v.*, e.estado, " \
           f" (SELECT count(vp.id) FROM ventas_productos vp WHERE " \
           f"vp.idventa = v.id and vp.idestado<>'{estados.get_id_estado_cancelado()}') AS productos, " \
@@ -108,11 +109,13 @@ def get_all_ventas():
           f" (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia " \
           f" FROM ventas AS v " \
           f" INNER JOIN estados AS e ON v.idestado = e.id " \
-          f" WHERE idestado < (SELECT id FROM estados ORDER BY id DESC LIMIT 1 OFFSET 1) " \
-          f" and (SELECT count(vp.id) FROM ventas_productos vp WHERE  vp.idventa = v.id and vp.idestado<>'{estados.get_id_estado_cancelado()}') > 0" \
+          f" WHERE idestado <>  '{estado_cancelado}'" \
+          f" and (SELECT count(vp.id) FROM ventas_productos vp WHERE  vp.idventa = v.id and vp.idestado<>'{estado_cancelado}') > 0" \
           f" ORDER BY v.idestado DESC, senia DESC, productos DESC;"
     ventas = db.select_multiple(sql)
     for v in ventas:
         v["fechacreacion"] = v["fechacreacion"].strftime('%Y-%m-%d')
+        if v["estado"] == "ENTREGADO" and (v["senia"] == v["preciototal"]):
+            del v
 
     return ventas
