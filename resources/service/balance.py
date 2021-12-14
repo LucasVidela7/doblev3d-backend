@@ -6,29 +6,34 @@ from resources.service.ventas import get_all_ventas
 
 
 def get_balance():
-    sql = f"SELECT date_trunc('month', fechapago) AS mes, COALESCE(sum(monto),0) as ingreso " \
+    # Ingresos
+    sql = f"SELECT date_trunc('month', fechapago) AS mes, COALESCE(sum(monto),0) as ingresos " \
           f"FROM pagos GROUP BY mes order by mes desc;"
-    meses = db.select_multiple(sql)
+    meses_ingresos = db.select_multiple(sql)
 
-    for m in meses:
+    for m in meses_ingresos:
         m["mes"] = m["mes"].strftime('%m-%Y')
 
-    ingreso_total = sum([float(m["ingreso"]) for m in meses])
-    estado_cancelado = estados.get_id_estado_cancelado()
+    ingreso_total = sum([float(m["ingresos"]) for m in meses_ingresos])
 
-    # sql = f"SELECT COALESCE(sum(preciounidad),0) as total FROM ventas_productos where idestado <> {estado_cancelado};"
-    # precio_unitario_total = float(db.select_first(sql)["total"])
+    # Otros
     ventas = get_all_ventas()
     falta_cobrar = sum([float(v["preciototal"] - v["senia"]) for v in ventas])
 
-    sql = f"SELECT COALESCE(sum(monto),0) as total FROM gastos;"
-    gastos_total = float(db.select_first(sql)["total"])
+    # Gastos
+    sql = f"SELECT date_trunc('month', fechagasto) AS mes, COALESCE(sum(monto),0) as gastos " \
+          f"FROM gastos GROUP BY mes order by mes desc;"
+    meses_gastos = db.select_multiple(sql)
+    for m in meses_gastos:
+        m["mes"] = m["mes"].strftime('%m-%Y')
+    gastos_total = sum([float(m["gastos"]) for m in meses_gastos])
 
     response = {}
     response["ingresoTotal"] = round(ingreso_total, 2)
     response["gastosTotal"] = round(gastos_total, 2)
     response["faltaCobrar"] = round(falta_cobrar, 2)
     response["enCaja"] = round(ingreso_total - gastos_total, 2)
-    response["meses"] = meses
+    response["meses"] = {"ingresos": meses_ingresos}
+    response["meses"] = {"gastos": meses_gastos}
 
     return response
