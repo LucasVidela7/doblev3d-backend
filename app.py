@@ -13,6 +13,7 @@ from resources.controller.estados import estados_bp
 from resources.controller.pagos import pagos_bp
 from resources.controller.gastos import gastos_bp
 from resources.controller.configuracion import config_bp
+from resources.controller.balance import balance_bp
 
 app = Flask(__name__)
 create_tables()
@@ -20,6 +21,7 @@ CORS(app)
 Swagger(app)
 
 app.register_blueprint(ventas_bp)
+app.register_blueprint(balance_bp)
 app.register_blueprint(config_bp)
 app.register_blueprint(gastos_bp)
 app.register_blueprint(pagos_bp)
