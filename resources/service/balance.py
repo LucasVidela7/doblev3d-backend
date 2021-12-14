@@ -10,8 +10,7 @@ def get_balance():
     meses = db.select_multiple(sql)
 
     for m in meses:
-        locale.setlocale(locale.LC_ALL, 'es_ES.UTF-8')
-        m["mes"] = m["mes"].strftime('%B %Y')
+        m["mes"] = m["mes"].strftime('%m-%Y')
 
     ingreso_total = sum([float(m["ingreso"]) for m in meses])
     estado_cancelado = estados.get_id_estado_cancelado()
