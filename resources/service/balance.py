@@ -14,7 +14,7 @@ def get_balance():
             ) as t
             group by mes
             order by mes desc;"""
-    meses = db.select_multiple(sql)[:12]
+    meses = db.select_multiple(sql)
 
     ingreso_total = 0
     gastos_total = 0
@@ -33,6 +33,6 @@ def get_balance():
     response["gastosTotal"] = round(gastos_total, 2)
     response["faltaCobrar"] = round(falta_cobrar, 2)
     response["enCaja"] = round(ingreso_total - gastos_total, 2)
-    response["meses"] = meses
+    response["meses"] = meses[:12]
 
     return response
