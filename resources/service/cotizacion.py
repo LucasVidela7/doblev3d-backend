@@ -127,7 +127,7 @@ def get_ventas_by_product_id(id_producto):
 
 
 def get_costo_total(id_producto):
-    sql = f"select sum(horas) as horas,sum(minutos) as minutos, sum(peso) as peso " \
+    sql = f"select COALESCE(sum(horas),0) as horas,COALESCE(sum(minutos),0) as minutos, COALESCE(sum(peso),0) as peso " \
           f"from piezas where idproducto = {id_producto};"
     total_piezas = db.select_first(sql)
     p, e, a, tf = get_price(total_piezas["horas"], total_piezas["minutos"], total_piezas["peso"])
