@@ -5,15 +5,16 @@ from resources.service.ventas import get_all_ventas
 def get_balance():
     # Ingresos
     sql = f"""SELECT date_trunc('month', fecha) AS mes, sum(ingresos) ingresos, sum(gastos) gastos
-            FROM (
+                FROM (
                 SELECT fecha, ingresos, gastos
-                    FROM
-                        (SELECT fechapago as fecha, monto ingresos, 0 gastos FROM pagos) as p
-                    UNION
-                        (SELECT fechagasto, 0 ingresos, monto gastos FROM gastos)
-            ) as t
+                FROM
+                 (SELECT date_trunc('month', fechapago) AS fecha, sum(monto) as ingresos, 0 gastos from pagos group by fecha) as p
+                UNION
+                (SELECT date_trunc('month', fechagasto) AS fecha, 0 ingresos, sum(monto) as gastos from gastos group by fecha)
+                ) as t
             group by mes
-            order by mes desc;"""
+            order by mes desc;
+    """
     meses = db.select_multiple(sql)
 
     ingreso_total = 0
