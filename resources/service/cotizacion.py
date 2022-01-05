@@ -76,8 +76,11 @@ def insert_precio_unitario(id_producto, request):
     ganancia = round(precio_unitario - costo_total, 2)
 
     sql = f"INSERT INTO precio_unitario(idproducto, precioUnitario, ganancia, costoTotal, fechaActualizacion)" \
-          f" VALUES('{id_producto}','{precio_unitario}','{ganancia}','{costo_total}','{fecha}');"
-    db.insert_sql(sql)
+          f" VALUES('{id_producto}','{precio_unitario}','{ganancia}','{costo_total}','{fecha}') RETURNING id;"
+    id = db.insert_sql(sql, key="id")["id"]
+    if id:
+        sql = f"DELETE FROM precio_unitario WHERE idproducto='{id_producto}' and id<>'{id}';"
+        db.delete_sql(sql)
     return
 
 
