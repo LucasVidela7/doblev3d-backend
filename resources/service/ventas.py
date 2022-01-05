@@ -60,6 +60,19 @@ def select_venta_by_id(_id):
     venta["fechacreacion"] = venta["fechacreacion"].strftime('%Y-%m-%d')
     venta["estado"] = estados.order_estados(estados.get_estados_ventas(), venta["idestado"])
     venta.pop("idestado", None)
+    venta["productos"] = []
+    venta["resumen"] = []
+
+    if venta["estado"]["actual"]["estado"] in ("ENTREGADO", "CANCELADO"):
+        sql = f"""
+                SELECT count(vp.idproducto) as cantidad, CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion 
+                FROM ventas_productos AS vp 
+                INNER JOIN productos AS p ON vp.idproducto=p.id 
+                INNER JOIN categorias AS cats ON cats.id=p.idcategoria 
+                WHERE idventa= '{_id}'
+                GROUP BY descripcion, cats.categoria;
+                """
+        venta["resumen"] = db.select_multiple(sql)
 
     # Obtener productos
     sql = f"SELECT vp.*, CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion FROM ventas_productos AS vp " \
@@ -94,7 +107,8 @@ def select_venta_by_id(_id):
             sum_piezas += 1 if pi["idestado"] == estado_listo else 0
             pi.pop("idestado", None)
 
-        p["descripcion"] += f" ({sum_piezas}/{len(p['piezas'])})"
+        if sum_piezas != len(p['piezas']):
+            p["descripcion"] += f" ({sum_piezas}/{len(p['piezas'])})"
 
     venta["productos"] = productos
     return venta
