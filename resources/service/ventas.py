@@ -73,6 +73,7 @@ def select_venta_by_id(_id):
                 GROUP BY descripcion, cats.categoria;
                 """
         venta["resumen"] = db.select_multiple(sql)
+        return venta
 
     # Obtener productos
     sql = f"SELECT vp.*, CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion FROM ventas_productos AS vp " \
