@@ -63,6 +63,14 @@ def select_venta_by_id(_id):
     venta["productos"] = []
     venta["resumen"] = []
 
+    # Obtener productos
+    sql = f"SELECT vp.*, CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion FROM ventas_productos AS vp " \
+          f"INNER JOIN productos AS p ON vp.idproducto=p.id " \
+          f"INNER JOIN categorias AS cats ON cats.id=p.idcategoria " \
+          f"WHERE idventa= {_id} " \
+          f"ORDER BY vp.id DESC;"
+    productos = db.select_multiple(sql)
+
     if venta["estado"]["actual"]["estado"] in ("ENTREGADO", "CANCELADO"):
         sql = f"""
                 SELECT count(vp.idproducto) as cantidad, CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion 
@@ -74,14 +82,6 @@ def select_venta_by_id(_id):
                 """
         venta["resumen"] = db.select_multiple(sql)
         return venta
-
-    # Obtener productos
-    sql = f"SELECT vp.*, CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion FROM ventas_productos AS vp " \
-          f"INNER JOIN productos AS p ON vp.idproducto=p.id " \
-          f"INNER JOIN categorias AS cats ON cats.id=p.idcategoria " \
-          f"WHERE idventa= {_id} " \
-          f"ORDER BY vp.id DESC;"
-    productos = db.select_multiple(sql)
 
     # Performance
     estados_productos = estados.get_estados_productos()
