@@ -69,7 +69,8 @@ def update_product(id_product, request):
     if piezas:
         sql = "INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto) VALUES "
         sql += f",".join(
-            [f"('{p['descripcion']}', '{int(p['peso'])}', '{int(p['horas'])}', '{int(p['minutos'])}')" for p in piezas])
+            [f"('{p['descripcion']}', '{int(p['peso'])}', '{int(p['horas'])}', '{int(p['minutos'])}', '{id_product}')"
+             for p in piezas])
         sql += ";"
         db.insert_sql(sql)
 
