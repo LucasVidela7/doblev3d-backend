@@ -21,10 +21,11 @@ def insert_product(request):
                     VALUES('{desc_piezas}','{peso_piezas}','{horas_piezas}','{minutos_piezas}','{id_product}');
             """
             db.insert_sql(sql)
-        for id_extra in request.get("extras", []):
-            sql = f"""INSERT INTO extra_producto(idproducto, idextra)
-                    VALUES('{id_product}','{id_extra}');"""
-            db.insert_sql(sql)
+        if request.get("extras", []):
+            sql = "INSERT INTO extra_producto(idproducto, idextra) VALUES "
+            sql += f",".join([f"('{id_product}', '{id_extra}')" for id_extra in request.get("extras", [])])
+            sql += ";"
+        db.insert_sql(sql)
         return id_product
 
 
