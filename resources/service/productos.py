@@ -58,26 +58,29 @@ def update_product(id_product, request):
     id_categoria = request['idCategoria']
     estado = request['estado']
 
-    sql = f"UPDATE productos SET descripcion='{descripcion}', idCategoria='{id_categoria}', estado='{estado}' where id={id_product}"
+    sql = f"UPDATE productos SET descripcion='{descripcion}', idCategoria='{id_categoria}', estado='{estado}' " \
+          f"where id={id_product}"
     db.update_sql(sql)
+
     sql = f"UPDATE piezas SET idProducto = '0' where idProducto={id_product}"
     db.update_sql(sql)
 
-    for pieza in request.get("piezas", []):
-        desc_piezas = pieza["descripcion"]
-        peso_piezas = int(pieza["peso"])
-        horas_piezas = int(pieza["horas"])
-        minutos_piezas = int(pieza["minutos"])
-        sql = f"""INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto)
-                VALUES('{desc_piezas}','{peso_piezas}','{horas_piezas}','{minutos_piezas}','{id_product}');"""
-        db.insert_sql(sql)
+    piezas = request.get("piezas", [])
+    if piezas:
+        sql = "INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto) VALUES "
+        sql += f",".join(
+            [f"('{p['descripcion']}', '{int(p['peso'])}', '{int(p['horas'])}', '{int(p['minutos'])}')" for p in piezas])
+        sql += ";"
+
     sql = f"DELETE FROM extra_producto where idProducto={id_product}"
     db.delete_sql(sql)
 
-    for id_extra in request.get("extras", []):
-        sql = f"""INSERT INTO extra_producto(idproducto, idextra)
-                VALUES('{id_product}','{id_extra}');"""
-        db.insert_sql(sql)
+    extras = request.get("extras", [])
+    if extras:
+        sql = "INSERT INTO extra_producto(idproducto, idextra) VALUES "
+        sql += f",".join([f"('{id_product}', '{id_extra}')" for id_extra in extras])
+        sql += ";"
+    db.insert_sql(sql)
     return id_product
 
 
