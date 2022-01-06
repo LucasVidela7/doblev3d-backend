@@ -71,6 +71,7 @@ def update_product(id_product, request):
         sql += f",".join(
             [f"('{p['descripcion']}', '{int(p['peso'])}', '{int(p['horas'])}', '{int(p['minutos'])}')" for p in piezas])
         sql += ";"
+        db.insert_sql(sql)
 
     sql = f"DELETE FROM extra_producto where idProducto={id_product}"
     db.delete_sql(sql)
@@ -80,7 +81,7 @@ def update_product(id_product, request):
         sql = "INSERT INTO extra_producto(idproducto, idextra) VALUES "
         sql += f",".join([f"('{id_product}', '{id_extra}')" for id_extra in extras])
         sql += ";"
-    db.insert_sql(sql)
+        db.insert_sql(sql)
     return id_product
 
 
