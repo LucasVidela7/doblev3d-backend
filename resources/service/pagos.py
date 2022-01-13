@@ -22,7 +22,7 @@ def get_all_pagos(mes=None, anio=None):
     sql = f"select p.*, mp.descripcion, v.cliente FROM pagos as p " \
           f"INNER JOIN medios_pago AS mp ON mp.id = p.idMedioPago " \
           f"INNER JOIN ventas AS v ON v.id = p.idventa " \
-          f"WHERE EXTRACT(month FROM fechagasto) = {mes} AND EXTRACT(year FROM fechagasto) = {anio} " \
+          f"WHERE EXTRACT(month FROM fechapago) = {mes} AND EXTRACT(year FROM fechapago) = {anio} " \
           f"ORDER BY id ASC;"
     pagos = db.select_multiple(sql)
     for p in pagos:
