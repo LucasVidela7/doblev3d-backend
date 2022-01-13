@@ -54,7 +54,8 @@ def insertar_venta(request):
 
 def select_venta_by_id(_id):
     # Obtener venta
-    sql = f"SELECT v.*, (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia " \
+    sql = f"SELECT v.*, (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia, " \
+          f"(SELECT COALESCE(SUM(vp.preciounidad),0) FROM ventas_productos vp WHERE vp.idventa = v.id) AS preciototal " \
           f"FROM ventas AS v WHERE v.id= {_id};"
     venta = db.select_first(sql)
     venta["fechacreacion"] = venta["fechacreacion"].strftime('%Y-%m-%d')

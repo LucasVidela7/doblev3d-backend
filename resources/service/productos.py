@@ -12,20 +12,22 @@ def insert_product(request):
             VALUES('{descripcion}','{id_categoria}','{fecha_creacion}') RETURNING id;"""
     id_product = db.insert_sql(sql, key='id')
     if id_product:
-        for pieza in request.get("piezas", []):
-            desc_piezas = pieza["descripcion"]
-            peso_piezas = int(pieza["peso"])
-            horas_piezas = int(pieza["horas"])
-            minutos_piezas = int(pieza["minutos"])
-            sql = f"""INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto)
-                    VALUES('{desc_piezas}','{peso_piezas}','{horas_piezas}','{minutos_piezas}','{id_product}');
-            """
-            db.insert_sql(sql)
-        if request.get("extras", []):
-            sql = "INSERT INTO extra_producto(idproducto, idextra) VALUES "
-            sql += f",".join([f"('{id_product}', '{id_extra}')" for id_extra in request.get("extras", [])])
+
+        piezas = request.get("piezas", [])
+        if piezas:
+            sql = "INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto) VALUES "
+            sql += f",".join(
+                [f"('{p['descripcion']}', '{int(p['peso'])}', '{int(p['horas'])}', '{int(p['minutos'])}', '{id_product}')"
+                 for p in piezas])
             sql += ";"
-        db.insert_sql(sql)
+            db.insert_sql(sql)
+
+        extras = request.get("extras", [])
+        if extras:
+            sql = "INSERT INTO extra_producto(idproducto, idextra) VALUES "
+            sql += f",".join([f"('{id_product}', '{id_extra}')" for id_extra in extras])
+            sql += ";"
+            db.insert_sql(sql)
         return id_product
 
 
