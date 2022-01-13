@@ -7,16 +7,14 @@ def get_all_extras():
 
 
 def select_extras_by_id_product(id_product):
-    sql = f"SELECT * FROM extra_producto WHERE idproducto= {id_product}"
-    extras = list(db.select_multiple(sql))
-    list_extras = []
-    total_amount = 0
-    for e in extras:
-        sql = f"SELECT * FROM extras WHERE id= {e['idextra']}"
-        ex = db.select_first(sql)
-        list_extras.append(ex)
-        total_amount += ex["precio"]
-    return list_extras, round(total_amount, 2)
+    sql = f"""
+            SELECT ex.* FROM extra_producto as ep
+            INNER JOIN extras as ex ON ex.id = ep.idextra
+            WHERE idproducto= {id_product}
+            """
+    extras = db.select_multiple(sql)
+    total_amount = sum([ex["precio"] for ex in extras])
+    return extras, round(total_amount, 2)
 
 
 def add_extra(request):
@@ -26,6 +24,7 @@ def add_extra(request):
     sql = f"INSERT INTO extras(descripcion, precio) VALUES ('{descripcion}','{precio}') RETURNING id;"
     id_extra = db.insert_sql(sql, key='id')
     for c in categorias:
+        # TODO : Revisar mejora: insertar en una sola consulta
         sql = f"INSERT INTO extra_categorias(idcategoria,idextra) VALUES ('{c}','{id_extra}')"
         db.insert_sql(sql)
 
@@ -42,6 +41,7 @@ def update_extra(_id, request):
     sql = f"DELETE FROM extra_categorias WHERE idextra='{_id}';"
     db.delete_sql(sql)
     for c in categorias:
+        # TODO : Revisar mejora: insertar en una sola consulta
         sql = f"INSERT INTO extra_categorias(idcategoria,idextra) VALUES ('{c}','{_id}')"
         db.insert_sql(sql)
 
