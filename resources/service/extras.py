@@ -25,7 +25,7 @@ def add_extra(request):
     id_extra = db.insert_sql(sql, key='id')
 
     # Add extras to product id
-    sql = "INSERT INTO extra_producto(idproducto, idextra) VALUES "
+    sql = "INSERT INTO extra_categorias(idcategoria, idextra) VALUES "
     sql += f",".join([f"('{c}', '{id_extra}')" for c in categorias])
     sql += ";"
     db.insert_sql(sql)
@@ -45,7 +45,7 @@ def update_extra(_id, request):
     db.delete_sql(sql)
 
     # Add extras to product id
-    sql = "INSERT INTO extra_producto(idproducto, idextra) VALUES "
+    sql = "INSERT INTO extra_categorias(idcategoria, idextra) VALUES "
     sql += f",".join([f"('{c}', '{_id}')" for c in categorias])
     sql += ";"
     db.insert_sql(sql)
