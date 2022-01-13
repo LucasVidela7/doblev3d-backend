@@ -18,7 +18,9 @@ def add_pago():
 @pagos_bp.route('/pagos', methods=['GET'])
 # @swag_from(get_doc_path("productos/post_productos.yml"))
 def all_pagos():
-    return jsonify({"pagos": pagos.get_all_pagos()})
+    mes = request.args.get('mes')
+    anio = request.args.get('anio')
+    return jsonify({"pagos": pagos.get_all_pagos(mes=mes, anio=anio)})
 
 
 @pagos_bp.route('/pagos/<int:id_pago>', methods=['DELETE'])

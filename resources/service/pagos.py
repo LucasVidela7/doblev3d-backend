@@ -14,10 +14,16 @@ def insertar_pago(request):
     return id_pago
 
 
-def get_all_pagos():
+def get_all_pagos(mes=None, anio=None):
+    if mes is None or anio is None:
+        mes = datetime.now().month
+        anio = datetime.now().year
+
     sql = f"select p.*, mp.descripcion, v.cliente FROM pagos as p " \
           f"INNER JOIN medios_pago AS mp ON mp.id = p.idMedioPago " \
-          f"INNER JOIN ventas AS v ON v.id = p.idventa; "
+          f"INNER JOIN ventas AS v ON v.id = p.idventa " \
+          f"WHERE EXTRACT(month FROM fechagasto) = {mes} AND EXTRACT(year FROM fechagasto) = {anio} " \
+          f"ORDER BY id ASC;"
     pagos = db.select_multiple(sql)
     for p in pagos:
         p["fechapago"] = p["fechapago"].strftime('%Y-%m-%d')
