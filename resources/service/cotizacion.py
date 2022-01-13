@@ -125,10 +125,6 @@ def get_precio_unitario_vencido(id_producto):
     return False
 
 
-def get_ventas_by_product_id(id_producto):
-    return 0
-
-
 def get_costo_total(id_producto):
     sql = f"select COALESCE(sum(horas),0) as horas,COALESCE(sum(minutos),0) as minutos, COALESCE(sum(peso),0) as peso " \
           f"from piezas where idproducto = {id_producto};"

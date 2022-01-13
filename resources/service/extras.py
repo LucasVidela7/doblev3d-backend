@@ -23,10 +23,12 @@ def add_extra(request):
     categorias = request["categorias"]
     sql = f"INSERT INTO extras(descripcion, precio) VALUES ('{descripcion}','{precio}') RETURNING id;"
     id_extra = db.insert_sql(sql, key='id')
-    for c in categorias:
-        # TODO : Revisar mejora: insertar en una sola consulta
-        sql = f"INSERT INTO extra_categorias(idcategoria,idextra) VALUES ('{c}','{id_extra}')"
-        db.insert_sql(sql)
+
+    # Add extras to product id
+    sql = "INSERT INTO extra_producto(idproducto, idextra) VALUES "
+    sql += f",".join([f"('{c}', '{id_extra}')" for c in categorias])
+    sql += ";"
+    db.insert_sql(sql)
 
     return id_extra
 
@@ -35,15 +37,18 @@ def update_extra(_id, request):
     descripcion = request["descripcion"].upper()
     precio = request["precio"]
     categorias = request["categorias"]
+
     sql = f"UPDATE extras SET descripcion='{descripcion}', precio='{precio}' WHERE id='{_id}';"
     db.update_sql(sql)
 
     sql = f"DELETE FROM extra_categorias WHERE idextra='{_id}';"
     db.delete_sql(sql)
-    for c in categorias:
-        # TODO : Revisar mejora: insertar en una sola consulta
-        sql = f"INSERT INTO extra_categorias(idcategoria,idextra) VALUES ('{c}','{_id}')"
-        db.insert_sql(sql)
+
+    # Add extras to product id
+    sql = "INSERT INTO extra_producto(idproducto, idextra) VALUES "
+    sql += f",".join([f"('{c}', '{_id}')" for c in categorias])
+    sql += ";"
+    db.insert_sql(sql)
 
     return
 
