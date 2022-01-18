@@ -13,6 +13,14 @@ def prices_db():
     return data
 
 
+def update_prices(request):
+    sql = ""
+    for k, v in request.items():
+        sql += f"update cotizacion set value='{v}' where key='{k}';"
+
+    db.update_sql(sql)
+
+
 def get_price(hours, minutes, weight):
     price_config = prices_db()
     coste_plastico = price_config["costePlastico"] / 1000
