@@ -10,6 +10,6 @@ def get_configuracion_cotizacion():
 
 
 @config_bp.route('/configuracion/cotizacion', methods=['PUT'])
-def edit_configuracion_cotizacion(request):
+def edit_configuracion_cotizacion():
     cotizacion.update_prices(request.json)
     return jsonify({"mensaje": "Editado"})
