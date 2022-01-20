@@ -107,6 +107,8 @@ def get_precio_unitario(id_producto):
         precio_unitario["ganancia"] = 0
         return precio_unitario
     else:
+        print(precio_unitario["ganancia"])
+        print(costo_total * 2)
         if precio_unitario["ganancia"] < (costo_total * 2):
             precio_unitario["preciosugerido"] = round(costo_total * 2, 2)
 
