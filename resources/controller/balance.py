@@ -5,7 +5,7 @@ from resources.service import balance as balance
 
 balance_bp = Blueprint("routes-balance", __name__)
 
+
 @balance_bp.route('/balance', methods=['GET'])
-# @swag_from(get_doc_path("productos/post_productos.yml"))
 def get_balance():
     return jsonify({"balance": balance.get_balance()})

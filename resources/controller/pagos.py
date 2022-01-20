@@ -7,7 +7,6 @@ pagos_bp = Blueprint("routes-pagos", __name__)
 
 
 @pagos_bp.route('/pagos', methods=['POST'])
-# @swag_from(get_doc_path("productos/post_productos.yml"))
 def add_pago():
     id_pago = pagos.insertar_pago(request.json)
     if id_pago:
@@ -16,7 +15,6 @@ def add_pago():
 
 
 @pagos_bp.route('/pagos', methods=['GET'])
-# @swag_from(get_doc_path("productos/post_productos.yml"))
 def all_pagos():
     mes = request.args.get('mes')
     anio = request.args.get('anio')
@@ -24,13 +22,11 @@ def all_pagos():
 
 
 @pagos_bp.route('/pagos/<int:id_pago>', methods=['DELETE'])
-# @swag_from(get_doc_path("productos/post_productos.yml"))
 def delete_pago(id_pago):
     pagos.borrar_pago(id_pago)
     return jsonify({"pagos": "Pago borrado"})
 
 
 @pagos_bp.route('/mediosDePago', methods=['GET'])
-# @swag_from(get_doc_path("productos/post_productos.yml"))
 def all_medios_de_pagos():
     return jsonify({"mediosDePago": pagos.get_all_medios_pago()})

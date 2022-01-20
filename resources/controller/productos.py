@@ -11,7 +11,6 @@ products_bp = Blueprint("routes-products", __name__)
 
 
 @products_bp.route('/productos', methods=['POST'])
-@swag_from(get_doc_path("productos/post_productos.yml"))
 def add_products():
     id_product = products.insert_product(request.json)
     if id_product:
@@ -20,7 +19,6 @@ def add_products():
 
 
 @products_bp.route('/productos/<int:id_product>', methods=['GET'])
-@swag_from(get_doc_path("productos/get_product_by_id.yml"))
 def get_product_by_id(id_product):
     if id_product:
         product_details = products.select_product_by_id(id_product)
@@ -43,13 +41,11 @@ def get_product_by_id(id_product):
 
 
 @products_bp.route('/productos', methods=['GET'])
-@swag_from(get_doc_path("productos/get_productos.yml"))
 def all_products():
     return jsonify({"productos": products.get_all_products()})
 
 
 @products_bp.route('/productos/<int:id_product>', methods=['PUT'])
-@swag_from(get_doc_path("productos/put_product.yml"))
 def update_product(id_product):
     if id_product:
         products.update_product(id_product, request.json)
@@ -60,7 +56,6 @@ def update_product(id_product):
 
 
 @products_bp.route('/productos/<int:id_product>/precio', methods=['POST'])
-# @swag_from(get_doc_path("productos/put_product.yml"))
 def insert_product_price(id_product):
     if id_product:
         cotizacion.insert_precio_unitario(id_product, request.json)
@@ -69,7 +64,6 @@ def insert_product_price(id_product):
 
 
 @products_bp.route('/productos/<int:id_product>/piezas', methods=['GET'])
-# @swag_from(get_doc_path("productos/put_product.yml"))
 def productos_piezas(id_product):
     if id_product:
         return jsonify({"piezas": piezas.select_piezas_by_id_product(id_product),
