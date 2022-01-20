@@ -41,8 +41,7 @@ def cancelar_venta(id_venta):
 @ventas_bp.route('/ventas/producto/<int:id_producto>', methods=['DELETE'])
 # @swag_from(get_doc_path("productos/post_productos.yml"))
 def cancelar_producto(id_producto):
-    estados.cancelar_producto(id_producto)
-    return jsonify({"mensaje": "producto cancelado"})
+    return estados.cancelar_producto(id_producto)
 
 
 @ventas_bp.route('/ventas/<int:id_venta>/pagos', methods=['GET'])

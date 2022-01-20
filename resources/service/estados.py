@@ -123,7 +123,7 @@ def cancelar_venta(id_venta):
 
 def cancelar_producto(id_producto):
     estado_cancelar = get_id_estado_cancelado()
-
+    # TODO mejorar consultas
     sql = f"update ventas_productos set idestado='{estado_cancelar}' " \
           f"where id='{id_producto}' RETURNING idventa;"
     id_venta = db.update_sql(sql, key='idventa')
@@ -131,6 +131,9 @@ def cancelar_producto(id_producto):
     sql = f"select avg(idestado) as estado from ventas_productos where idventa='{id_venta}';"
     if int(estado_cancelar) == int(db.select_first(sql)["estado"]):
         cancelar_venta(id_venta)
+        return jsonify({"mensaje": "No quedan productos"}), 404
+
+    return jsonify({"mensaje": "Quedan productos"}), 200
 
 
 def entregar_venta(id_venta):
