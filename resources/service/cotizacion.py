@@ -116,8 +116,7 @@ def get_precio_unitario(id_producto):
         if ganancia < costo_material:
             diferencia = costo_material - ganancia
             precio_unitario["preciosugerido"] = round(precio_u + diferencia, 2)
-
-    precio_unitario["fechaactualizacion"] = precio_unitario["fechaactualizacion"].strftime('%Y-%m-%d')
+        precio_unitario["fechaactualizacion"] = precio_unitario["fechaactualizacion"].strftime('%Y-%m-%d')
     return precio_unitario
 
 
