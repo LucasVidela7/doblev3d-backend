@@ -114,25 +114,10 @@ def cambiar_estado_pieza(request):
     return jsonify({"error": "No existe ese estado para la pieza"}), 500
 
 
-def refresh_database():
-    sql = """
-    delete from ventas_productos_piezas 
-    where idproductoventa in (select id from ventas_productos where idventa in (select id from ventas where idestado in (8,9)));
-    delete from piezas where idproducto = 0 and id NOT IN (select idpieza from ventas_productos_piezas);
-    """
-    db.delete_sql(sql)
-
-
 def cancelar_venta(id_venta):
-    id_estado_cancelar = get_id_estado_cancelado()
-    # Cambiar estado venta
-    sql = f"update ventas set idestado='{id_estado_cancelar}' " \
-          f"where id='{id_venta}';"
-    db.update_sql(sql)
-
     # Cambiar estado productos
-    sql = f"update ventas_productos set idestado='{id_estado_cancelar}' " \
-          f"where idventa='{id_venta}';"
+    sql = f"delete from ventas where id='{id_venta}';" \
+          f"delete from ventas_productos where idventa='{id_venta}';"
     db.update_sql(sql)
 
 
@@ -145,8 +130,7 @@ def cancelar_producto(id_producto):
 
     sql = f"select avg(idestado) as estado from ventas_productos where idventa='{id_venta}';"
     if int(estado_cancelar) == int(db.select_first(sql)["estado"]):
-        sql = f"update ventas set idestado='{estado_cancelar}' where id='{id_venta}'"
-        db.update_sql(sql)
+        cancelar_venta(id_venta)
 
 
 def entregar_venta(id_venta):
