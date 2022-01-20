@@ -98,7 +98,7 @@ def get_precio_unitario(id_producto):
     precio_unitario = db.select_first(sql)
 
     costo_total = get_costo_total(id_producto)
-    print(f"costo total {costo_total}")
+    precio_unitario["preciosugerido"] = None
 
     if not precio_unitario:
         precio_unitario["preciosugerido"] = None
@@ -107,12 +107,10 @@ def get_precio_unitario(id_producto):
         precio_unitario["ganancia"] = 0
         return precio_unitario
     else:
-        print(precio_unitario["ganancia"])
-        print(costo_total * 2)
-        if precio_unitario["ganancia"] < (costo_total * 2):
+        precio_unitario["ganancia"] = round(precio_unitario["preciounitario"] - costo_total, 2)
+        if float(precio_unitario["ganancia"]) < float(costo_total * 2):
             precio_unitario["preciosugerido"] = round(costo_total * 2, 2)
 
-    precio_unitario["preciosugerido"] = None
     precio_unitario["fechaactualizacion"] = precio_unitario["fechaactualizacion"].strftime('%Y-%m-%d')
     return precio_unitario
 
