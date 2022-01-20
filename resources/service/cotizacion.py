@@ -98,7 +98,7 @@ def get_precio_unitario(id_producto):
           f"FROM precio_unitario WHERE idproducto='{id_producto}' ORDER BY id DESC;"
     precio_unitario = db.select_first(sql)
 
-    costo_material = get_costo_total(id_producto)
+    costo_material = get_costo_total(id_producto) * 1.5
     _, extra_total = select_extras_by_id_product(id_producto)
     costo_total = costo_material + extra_total
     precio_unitario["preciosugerido"] = None
