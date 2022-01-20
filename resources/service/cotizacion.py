@@ -142,7 +142,11 @@ def get_precio_unitario_by_product_id(id_producto):
 
 
 def get_precio_unitario_vencido(id_producto):
-    return False
+    pu = get_precio_unitario(id_producto)
+    if pu["preciosugerido"] is None:
+        return False
+    else:
+        return True
 
 
 def get_costo_total(id_producto):
