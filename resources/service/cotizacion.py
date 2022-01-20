@@ -98,6 +98,7 @@ def get_precio_unitario(id_producto):
     precio_unitario = db.select_first(sql)
 
     costo_total = get_costo_total(id_producto)
+    print(f"costo total {costo_total}")
 
     if not precio_unitario:
         precio_unitario["preciosugerido"] = None
