@@ -2,6 +2,7 @@ import copy
 from datetime import datetime
 
 from database import utils as db
+from resources.service.extras import select_extras_by_id_product
 
 
 def prices_db():
@@ -97,7 +98,9 @@ def get_precio_unitario(id_producto):
           f"FROM precio_unitario WHERE idproducto='{id_producto}' ORDER BY id DESC;"
     precio_unitario = db.select_first(sql)
 
-    costo_total = get_costo_total(id_producto)
+    costo_material = get_costo_total(id_producto)
+    _, extra_total = select_extras_by_id_product(id_producto)
+    costo_total = float(costo_material + extra_total, 2)
     precio_unitario["preciosugerido"] = None
 
     if not precio_unitario:
@@ -108,8 +111,8 @@ def get_precio_unitario(id_producto):
         return precio_unitario
     else:
         precio_unitario["ganancia"] = round(precio_unitario["preciounitario"] - costo_total, 2)
-        if float(precio_unitario["ganancia"]) < float(costo_total * 2):
-            precio_unitario["preciosugerido"] = round(costo_total * 2, 2)
+        if float(precio_unitario["ganancia"]) < float(costo_material * 2):
+            precio_unitario["preciosugerido"] = round(costo_material * 2, 2)
 
     precio_unitario["fechaactualizacion"] = precio_unitario["fechaactualizacion"].strftime('%Y-%m-%d')
     return precio_unitario
