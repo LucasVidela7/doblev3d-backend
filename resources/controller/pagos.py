@@ -1,6 +1,5 @@
 from flasgger import swag_from
 from flask import request, jsonify, Blueprint
-from documentation.route import get_doc_path
 from resources.service import pagos as pagos
 
 pagos_bp = Blueprint("routes-pagos", __name__)

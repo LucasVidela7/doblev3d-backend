@@ -1,5 +1,4 @@
 from flask import jsonify, Blueprint, request
-from documentation.route import get_doc_path
 from resources.service import extras as extras
 from resources.service import categorias as categorias
 from flasgger.utils import swag_from

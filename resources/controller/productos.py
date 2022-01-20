@@ -1,7 +1,6 @@
 from flasgger import swag_from
 from flask import request, jsonify, Blueprint
 
-from documentation.route import get_doc_path
 from resources.service import productos as products
 from resources.service import piezas as piezas
 from resources.service import extras as extras

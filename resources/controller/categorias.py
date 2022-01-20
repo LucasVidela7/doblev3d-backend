@@ -1,7 +1,6 @@
 from flasgger import swag_from
 from flask import jsonify, Blueprint, request
 
-from documentation.route import get_doc_path
 from resources.service import categorias as categories
 from resources.service.usuarios import token_required
 

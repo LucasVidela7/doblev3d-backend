@@ -1,6 +1,5 @@
 from flasgger import swag_from
 from flask import request, jsonify, Blueprint
-from documentation.route import get_doc_path
 from resources.service import estados as estados
 
 estados_bp = Blueprint("routes-estados", __name__)

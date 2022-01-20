@@ -1,6 +1,5 @@
 from flasgger import swag_from
 from flask import request, jsonify, Blueprint
-from documentation.route import get_doc_path
 from resources.service import balance as balance
 
 balance_bp = Blueprint("routes-balance", __name__)

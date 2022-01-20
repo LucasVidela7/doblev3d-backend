@@ -1,6 +1,5 @@
 from flasgger import swag_from
 from flask import request, jsonify, Blueprint
-from documentation.route import get_doc_path
 from resources.service import gastos as gastos
 
 gastos_bp = Blueprint("routes-gastos", __name__)

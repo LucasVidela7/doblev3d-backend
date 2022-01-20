@@ -1,6 +1,5 @@
 from flasgger import swag_from
 from flask import request, jsonify, Blueprint
-from documentation.route import get_doc_path
 from resources.service import ventas as ventas
 from resources.service import pagos as pagos
 from resources.service import estados as estados
