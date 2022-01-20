@@ -80,14 +80,6 @@ CREATE TABLE IF NOT EXISTS ventas_productos(
     idestado INTEGER NOT NULL
 );
 
---DROP TABLE ventas_productos_piezas;
-CREATE TABLE IF NOT EXISTS ventas_productos_piezas(
-    id SERIAL PRIMARY KEY,
-    idproductoventa INTEGER NOT NULL,
-    idpieza INTEGER NOT NULL,
-    idestado INTEGER NOT NULL
-);
-
 --DROP TABLE pagos;
 CREATE TABLE IF NOT EXISTS pagos(
     id SERIAL PRIMARY KEY,

@@ -1,5 +1,3 @@
-import math
-
 from flask import jsonify
 
 from database import utils as db
@@ -137,11 +135,6 @@ def cancelar_venta(id_venta):
           f"where idventa='{id_venta}';"
     db.update_sql(sql)
 
-    sql = f"update ventas_productos_piezas set idestado='{id_estado_cancelar}' " \
-          f"where idproductoventa IN (select id from ventas_productos where idventa='{id_venta}');"
-    db.update_sql(sql)
-    refresh_database()
-
 
 def cancelar_producto(id_producto):
     estado_cancelar = get_id_estado_cancelado()
@@ -149,10 +142,6 @@ def cancelar_producto(id_producto):
     sql = f"update ventas_productos set idestado='{estado_cancelar}' " \
           f"where id='{id_producto}' RETURNING idventa;"
     id_venta = db.update_sql(sql, key='idventa')
-
-    sql = f"update ventas_productos_piezas set idestado='{estado_cancelar}' " \
-          f"where idproductoventa IN (select id from ventas_productos where id='{id_producto}');"
-    db.update_sql(sql)
 
     sql = f"select avg(idestado) as estado from ventas_productos where idventa='{id_venta}';"
     if int(estado_cancelar) == int(db.select_first(sql)["estado"]):
@@ -171,9 +160,3 @@ def entregar_venta(id_venta):
     sql = f"update ventas_productos set idestado='{get_id_estado_listo()}' " \
           f"where idventa='{id_venta}' and idestado <> '{get_id_estado_cancelado()}';"
     db.update_sql(sql)
-
-    sql = f"update ventas_productos_piezas set idestado='{get_id_estado_listo()}' " \
-          f"where idproductoventa IN (select id from ventas_productos where idventa='{id_venta}') " \
-          f"and idestado <> '{get_id_estado_cancelado()}';"
-    db.update_sql(sql)
-    refresh_database()
