@@ -1,5 +1,8 @@
 import copy
 from datetime import datetime
+
+from flask import jsonify
+
 from resources.service import extras as extras
 from resources.service import cotizacion as cotizacion
 from resources.service import estados as estados
@@ -53,6 +56,10 @@ def select_venta_by_id(_id):
           f"(SELECT COALESCE(SUM(vp.preciounidad),0) FROM ventas_productos vp WHERE vp.idventa = v.id) AS preciototal " \
           f"FROM ventas AS v WHERE v.id= {_id};"
     venta = db.select_first(sql)
+
+    if not venta:
+        return jsonify({"mensaje": "Venta no existe"}), 404
+
     venta["fechacreacion"] = venta["fechacreacion"].strftime('%Y-%m-%d')
     venta["estado"] = estados.order_estados(estados.get_estados_ventas(), venta["idestado"])
     venta.pop("idestado", None)
@@ -77,7 +84,7 @@ def select_venta_by_id(_id):
                 GROUP BY descripcion, cats.categoria;
                 """
         venta["resumen"] = db.select_multiple(sql)
-        return venta
+        return jsonify(venta), 200
 
     # Performance
     estados_productos = estados.get_estados_productos()
@@ -95,7 +102,7 @@ def select_venta_by_id(_id):
         p.pop("idproducto", None)
 
     venta["productos"] = productos
-    return venta
+    return jsonify(venta), 200
 
 
 def get_all_ventas():

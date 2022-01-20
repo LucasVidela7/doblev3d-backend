@@ -131,9 +131,8 @@ def cancelar_producto(id_producto):
     sql = f"select avg(idestado) as estado from ventas_productos where idventa='{id_venta}';"
     if int(estado_cancelar) == int(db.select_first(sql)["estado"]):
         cancelar_venta(id_venta)
-        return jsonify({"mensaje": "No quedan productos"}), 404
 
-    return jsonify({"mensaje": "Quedan productos"}), 200
+    return jsonify({"mensaje": "Cancelado con exito"}), 200
 
 
 def entregar_venta(id_venta):

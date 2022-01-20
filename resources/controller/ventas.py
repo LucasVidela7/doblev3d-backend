@@ -27,8 +27,7 @@ def all_ventas():
 @ventas_bp.route('/ventas/<int:id_venta>', methods=['GET'])
 # @swag_from(get_doc_path("productos/post_productos.yml"))
 def select_venta(id_venta):
-    venta = ventas.select_venta_by_id(id_venta)
-    return jsonify(venta)
+    return ventas.select_venta_by_id(id_venta)
 
 
 @ventas_bp.route('/ventas/<int:id_venta>', methods=['DELETE'])
