@@ -97,12 +97,17 @@ def get_precio_unitario(id_producto):
           f"FROM precio_unitario WHERE idproducto='{id_producto}' ORDER BY id DESC;"
     precio_unitario = db.select_first(sql)
 
+    costo_total = get_costo_total(id_producto)
+
     if not precio_unitario:
         precio_unitario["preciosugerido"] = None
         precio_unitario["preciounitario"] = 0
-        precio_unitario["costototal"] = 0
+        precio_unitario["costototal"] = costo_total
         precio_unitario["ganancia"] = 0
         return precio_unitario
+    else:
+        if precio_unitario["ganancia"] < (costo_total * 2):
+            precio_unitario["preciosugerido"] = round(costo_total * 2, 2)
 
     precio_unitario["preciosugerido"] = None
     precio_unitario["fechaactualizacion"] = precio_unitario["fechaactualizacion"].strftime('%Y-%m-%d')

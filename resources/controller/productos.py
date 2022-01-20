@@ -23,9 +23,7 @@ def get_product_by_id(id_product):
         product_details = products.select_product_by_id(id_product)
         list_piezas, cot = cotizacion.get_price_piezas(piezas.select_piezas_by_id_product(id_product))
         list_extras, extra_amount = extras.select_extras_by_id_product(id_product)
-        costo_total = round(cotizacion.get_costo_total(id_product) + extra_amount, 2)
         precio_unit = cotizacion.get_precio_unitario(id_product)
-        precio_unit = cotizacion.check_precio_unitario(precio_unit, costo_total)
 
         response = {
             "producto": product_details,
