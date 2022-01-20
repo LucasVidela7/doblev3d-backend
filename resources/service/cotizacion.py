@@ -110,7 +110,7 @@ def get_precio_unitario(id_producto):
         precio_unitario["ganancia"] = 0
         return precio_unitario
     else:
-        precio_u = precio_unitario["preciounitario"]
+        precio_u = precio_unitario.get("preciounitario", 0)
         ganancia = precio_u - costo_total
         precio_unitario["ganancia"] = round(ganancia, 2)
         if ganancia < costo_material:
