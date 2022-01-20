@@ -100,11 +100,11 @@ def select_venta_by_id(_id):
     for p in productos:
         # Obtener piezas
         # p["estado"] = estados.order_estados(copy.deepcopy(estados_productos), p["idestado"])
+
+        p["piezas"] = [pi for pi in piezas if pi["idproducto"] == p["idproducto"]]
         p.pop("idestado", None)
         p.pop("idventa", None)
         p.pop("idproducto", None)
-
-        p["piezas"] = [pi for pi in piezas if pi["idproducto"] == p["idproducto"]]
         # sum_piezas = 0
         # for pi in p["piezas"]:
         #     pi["estado"] = estados.order_estados(copy.deepcopy(estados_piezas), pi["idestado"])
