@@ -13,7 +13,7 @@ products_bp = Blueprint("routes-products", __name__)
 def add_products():
     id_product = products.insert_product(request.json)
     if id_product:
-        return jsonify({"idproducto": id_product})
+        return jsonify({"idproducto": id_product}), 201
     return jsonify({"message": "internal server error"})
 
 

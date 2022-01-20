@@ -11,14 +11,15 @@ def insert_product(request):
     sql = f"""INSERT INTO productos(descripcion,idCategoria, fechaCreacion)
             VALUES('{descripcion}','{id_categoria}','{fecha_creacion}') RETURNING id;"""
     id_product = db.insert_sql(sql, key='id')
-    if id_product:
 
+    if id_product:
         piezas = request.get("piezas", [])
         if piezas:
             sql = "INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto) VALUES "
             sql += f",".join(
-                [f"('{p['descripcion']}', '{int(p['peso'])}', '{int(p['horas'])}', '{int(p['minutos'])}', '{id_product}')"
-                 for p in piezas])
+                [
+                    f"('{p['descripcion']}', '{int(p['peso'])}', '{int(p['horas'])}', '{int(p['minutos'])}', '{id_product}')"
+                    for p in piezas])
             sql += ";"
             db.insert_sql(sql)
 
@@ -47,7 +48,7 @@ def get_all_products():
           f" (SELECT precioUnitario FROM precio_unitario WHERE idproducto=p.id ORDER BY id DESC LIMIT 1 OFFSET 0) as precioUnitario " \
           f"FROM productos AS p " \
           f"INNER JOIN categorias as cats ON cats.id = p.idcategoria " \
-          f"ORDER BY p.estado DESC, p.id DESC;"
+          f"ORDER BY p.estado DESC, precioUnitario DESC, ventas DESC;"
     products = [dict(p) for p in db.select_multiple(sql)]
     for p in products:
         p["fechacreacion"] = p["fechacreacion"].strftime('%Y-%m-%d')
@@ -64,8 +65,8 @@ def update_product(id_product, request):
           f"where id={id_product}"
     db.update_sql(sql)
 
-    sql = f"UPDATE piezas SET idProducto = '0' where idProducto={id_product}"
-    db.update_sql(sql)
+    sql = f"delete from piezas where idProducto={id_product}"
+    db.delete_sql(sql)
 
     piezas = request.get("piezas", [])
     if piezas:
@@ -86,11 +87,3 @@ def update_product(id_product, request):
         sql += ";"
         db.insert_sql(sql)
     return id_product
-
-
-def importar_piezas(id_producto, request):
-    id_producto_importar = request["idProductoImportar"]
-    sql = f"""INSERT INTO piezas (descripcion, peso, horas, minutos, idProducto)
-                    (SELECT  descripcion, peso, horas, minutos, '{id_producto}'
-                    FROM piezas WHERE idProducto = '{id_producto_importar}');"""
-    db.insert_sql(sql)
