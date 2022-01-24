@@ -97,7 +97,7 @@ def cancelar_venta(id_venta):
 def cancelar_producto(id_producto):
     estado_cancelar = get_id_estado_cancelado()
     # TODO mejorar consultas
-    sql = f"update ventas_productos set idestado='{estado_cancelar}' " \
+    sql = f"update ventas_productos set idestado='{estado_cancelar}', preciounidad='0' " \
           f"where id='{id_producto}' RETURNING idventa;"
     id_venta = db.update_sql(sql, key='idventa')
 
