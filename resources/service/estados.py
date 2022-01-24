@@ -31,7 +31,7 @@ def order_estados(dictionary, actual_id_estado):
             estados["actual"] = d
             estados["actual"].pop("saltear")
             estados["siguientes"] = []
-            estados["anterior"] = {}
+            estados["anterior"] = []
 
             if (n - 1) >= 0:
                 estados["anterior"] = dictionary[n - 1]
