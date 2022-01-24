@@ -1,28 +1,35 @@
+from functools import lru_cache
+
 from flask import jsonify
 
 from database import utils as db
 
 
+@lru_cache(maxsize=None)
 def get_estados_ventas():
     sql = f"select id, estado, saltear, icono from estados where ventas = '1';"
     return db.select_multiple(sql)
 
 
+@lru_cache(maxsize=None)
 def get_estados_productos():
     sql = f"select id, estado, saltear, icono from estados where productos = '1';"
     return db.select_multiple(sql)
 
 
+@lru_cache(maxsize=None)
 def get_id_estado_cancelado():
     sql = "SELECT id FROM estados ORDER BY id DESC LIMIT 1;"
     return db.select_first(sql)["id"]
 
 
+@lru_cache(maxsize=None)
 def get_id_estado_listo():
     sql = "SELECT id FROM estados where productos='1' ORDER BY id DESC LIMIT 1 OFFSET 1;"
     return db.select_first(sql)["id"]
 
 
+@lru_cache(maxsize=None)
 def order_estados(dictionary, actual_id_estado):
     # dictionary = dict(map(lambda x: (x["id"], x), dictionary))
     estados = {}
@@ -51,17 +58,15 @@ def order_estados(dictionary, actual_id_estado):
     return estados
 
 
-def set_estados_venta(actual_id_estado):
-    estados = get_estados_ventas()
-    return order_estados(estados, actual_id_estado)
-
-
 def cambiar_estado_producto(request):
     id_producto = request["idProducto"]  # Pieza asociada al producto de la venta
     nuevo_estado = request["idEstado"]
 
-    estados_ventas = [v["id"] for v in get_estados_ventas()]
-    estados_productos = [p["id"] for p in get_estados_productos()]
+    list_estados_ventas = get_estados_ventas()
+    list_estados_productos = get_estados_productos()
+
+    estados_ventas = [v["id"] for v in list_estados_ventas]
+    estados_productos = [p["id"] for p in list_estados_productos]
 
     if nuevo_estado in estados_productos:
 
@@ -81,8 +86,8 @@ def cambiar_estado_producto(request):
         # Cambiar estado venta
         sql = f"update ventas set idestado='{nuevo_estado_venta}'  where id='{id_venta}';"
         db.update_sql(sql)
-        response = {"producto": order_estados(get_estados_productos(), nuevo_estado),
-                    "venta": order_estados(get_estados_ventas(), nuevo_estado_venta)["actual"]}
+        response = {"producto": order_estados(list_estados_productos, nuevo_estado),
+                    "venta": order_estados(list_estados_ventas, nuevo_estado_venta)["actual"]}
         return jsonify(response), 200
     return jsonify({"error": "No existe ese estado para la pieza"}), 500
 
