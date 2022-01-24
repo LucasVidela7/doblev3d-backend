@@ -5,31 +5,26 @@ from flask import jsonify
 from database import utils as db
 
 
-@lru_cache(maxsize=None)
 def get_estados_ventas():
     sql = f"select id, estado, saltear, icono from estados where ventas = '1';"
     return db.select_multiple(sql)
 
 
-@lru_cache(maxsize=None)
 def get_estados_productos():
     sql = f"select id, estado, saltear, icono from estados where productos = '1';"
     return db.select_multiple(sql)
 
 
-@lru_cache(maxsize=None)
 def get_id_estado_cancelado():
     sql = "SELECT id FROM estados ORDER BY id DESC LIMIT 1;"
     return db.select_first(sql)["id"]
 
 
-@lru_cache(maxsize=None)
 def get_id_estado_listo():
     sql = "SELECT id FROM estados where productos='1' ORDER BY id DESC LIMIT 1 OFFSET 1;"
     return db.select_first(sql)["id"]
 
 
-@lru_cache(maxsize=None)
 def order_estados(dictionary, actual_id_estado):
     # dictionary = dict(map(lambda x: (x["id"], x), dictionary))
     estados = {}
