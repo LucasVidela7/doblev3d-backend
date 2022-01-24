@@ -34,8 +34,7 @@ def order_estados(dictionary, actual_id_estado):
             estados["anterior"] = []
 
             if (n - 1) >= 0:
-                estados["anterior"] = dictionary[n - 1]
-                estados["anterior"].pop("saltear")
+                estados["anterior"].append(dictionary[n - 1].pop("saltear"))
 
             try:
                 if actual_id_estado == dictionary[-1]["id"] or dictionary[n + 1]["id"] == dictionary[-1]["id"]:
