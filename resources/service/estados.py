@@ -97,7 +97,7 @@ def cancelar_venta(id_venta):
 def cancelar_producto(id_producto):
     estado_cancelar = get_id_estado_cancelado()
     sql = f"select avg(idestado) as estado, " \
-          f"(select idventa from ventas_productos where id='{id_producto}' as idventa " \
+          f"(select idventa from ventas_productos where id='{id_producto}') as idventa " \
           f"from ventas_productos " \
           f"where idventa=(select idventa from ventas_productos where id='{id_producto}') and id<>'{id_producto}';"
     consult = db.select_first(sql)
