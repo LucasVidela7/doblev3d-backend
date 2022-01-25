@@ -18,7 +18,7 @@ def token_required(f):
             token = request.headers['x-access-token']
         # return 401 if token is not passed
         if not token:
-            return jsonify({'message': 'Token is missing !!'}), 401
+            return jsonify({'message': 'Token is missing !!'}), 403
 
         try:
             # decoding the payload to fetch the stored details
@@ -31,7 +31,7 @@ def token_required(f):
         except:
             return jsonify({
                 'message': 'Token is invalid !!'
-            }), 401
+            }), 403
         # returns the current logged in users contex to the routes
         return f(current_user, *args, **kwargs)
 
