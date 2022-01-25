@@ -50,6 +50,11 @@ def insertar_venta(request):
         return id_venta
 
 
+def get_ventas_by_product_id(product_id):
+    sql = f"select * from ventas_productos where idproducto='{product_id}'"
+    return db.select_first(sql)
+
+
 def select_venta_by_id(_id):
     # Obtener venta
     sql = f"SELECT v.*, (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia, " \

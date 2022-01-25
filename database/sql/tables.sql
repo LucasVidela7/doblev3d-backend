@@ -126,7 +126,11 @@ INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('LISTO'    
 INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('ENTREGADO'  ,'1','0','0', '' );
 INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('CANCELADO'  ,'1','1','0', '' );
 
-
+CREATE TABLE IF NOT EXISTS images(
+    id SERIAL PRIMARY KEY,
+    imagen TEXT,
+    idproducto BIT
+);
 
 
 

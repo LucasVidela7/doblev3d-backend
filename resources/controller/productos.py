@@ -5,6 +5,7 @@ from resources.service import productos as products
 from resources.service import piezas as piezas
 from resources.service import extras as extras
 from resources.service import cotizacion as cotizacion
+from resources.service.ventas import get_ventas_by_product_id
 
 products_bp = Blueprint("routes-products", __name__)
 
@@ -31,7 +32,8 @@ def get_product_by_id(id_product):
             "totalExtras": extra_amount,
             "extras": list_extras,
             "cotizacionTotal": cot,
-            "precio": precio_unit
+            "precio": precio_unit,
+            "ventas": bool(get_ventas_by_product_id(id_product))
         }
         return jsonify(response)
     return jsonify({"message": "internal server error"}), 500
@@ -50,6 +52,17 @@ def update_product(id_product):
         list_piezas = piezas.select_piezas_by_id_product(id_product)
         return jsonify({"producto": product_details, "piezas": list_piezas})
     return jsonify({"message": "internal server error"})
+
+
+@products_bp.route('/productos/<int:id_product>', methods=['DELETE'])
+def delete_product(id_product):
+    return products.delete_product(id_product)
+
+
+@products_bp.route('/productos/<int:id_product>/imagen', methods=['POST'])
+def imagen_producto(id_product):
+    base = request.json["imagen"]
+    return products.upload_image(base, id_product)
 
 
 @products_bp.route('/productos/<int:id_product>/precio', methods=['POST'])

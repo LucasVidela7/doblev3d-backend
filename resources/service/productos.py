@@ -1,6 +1,10 @@
 from datetime import datetime
+
+from flask import jsonify
+
 from resources.service import cotizacion as cotizacion
 from database import utils as db
+from resources.service.ventas import get_ventas_by_product_id
 
 
 def insert_product(request):
@@ -87,3 +91,19 @@ def update_product(id_product, request):
         sql += ";"
         db.insert_sql(sql)
     return id_product
+
+
+def delete_product(id_producto):
+    if not get_ventas_by_product_id(id_producto):
+        return jsonify({"message": "No se puede borrar producto porque ventas"}), 406
+
+    sql = f"delete from productos where id=64; " \
+          f"delete from piezas where idproducto=64;"
+    db.delete_sql(sql)
+    return jsonify({"message": "Producto borrado correctamente"}), 200
+
+
+def upload_image(base64, id_producto):
+    sql = f"INSERT INTO images(imagen,idproducto) VALUES('{base64}','{id_producto}');"
+    db.insert_sql(sql)
+    return jsonify({"message": "Imagen cargada correctamente"}), 200
