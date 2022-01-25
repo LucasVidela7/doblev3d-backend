@@ -52,7 +52,7 @@ def insertar_venta(request):
 
 def get_ventas_by_product_id(product_id):
     sql = f"select * from ventas_productos where idproducto='{product_id}'"
-    return db.select_first(sql)
+    return db.select_multiple(sql)
 
 
 def select_venta_by_id(_id):

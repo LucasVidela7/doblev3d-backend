@@ -57,11 +57,7 @@ def login(auth):
 
     if not user:
         # returns 401 if user does not exist
-        return make_response(
-            'Could not verify',
-            401,
-            {'WWW-Authenticate': 'Basic realm ="User does not exist !!"'}
-        )
+        return jsonify({'WWW-Authenticate': 'Basic realm ="User does not exist !!"'}), 401
 
     if check_password_hash(user[2], password):
         # generates the JWT Token
@@ -70,13 +66,9 @@ def login(auth):
             'exp': datetime.utcnow() + timedelta(minutes=30)
         }, "8ED81DD4F3589CF6A177DFD1B2D32")
 
-        return make_response(jsonify({'token': token.decode('UTF-8')}), 201)
+        return jsonify({'token': token.decode('UTF-8'), "expires_in": 30 * 60}), 200
     # returns 403 if password is wrong
-    return make_response(
-        'Could not verify',
-        403,
-        {'WWW-Authenticate': 'Basic realm ="Wrong Password !!"'}
-    )
+    return jsonify({'WWW-Authenticate': 'Basic realm ="Wrong Password !!"'}), 403
 
 # # signup route
 # @app.route('/signup', methods=['POST'])
