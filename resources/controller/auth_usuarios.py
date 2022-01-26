@@ -6,5 +6,5 @@ login_bp = Blueprint("routes-login", __name__)
 
 
 @login_bp.route('/login', methods=['POST'])
-def add_products():
+def login():
     return users.login(request.json)

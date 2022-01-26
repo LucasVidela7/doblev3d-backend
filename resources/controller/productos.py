@@ -5,12 +5,14 @@ from resources.service import productos as products
 from resources.service import piezas as piezas
 from resources.service import extras as extras
 from resources.service import cotizacion as cotizacion
+from resources.service.usuarios import token_required
 from resources.service.ventas import get_ventas_by_product_id
 
 products_bp = Blueprint("routes-products", __name__)
 
 
 @products_bp.route('/productos', methods=['POST'])
+@token_required
 def add_products():
     id_product = products.insert_product(request.json)
     if id_product:
@@ -19,6 +21,7 @@ def add_products():
 
 
 @products_bp.route('/productos/<int:id_product>', methods=['GET'])
+@token_required
 def get_product_by_id(id_product):
     if id_product:
         product_details = products.select_product_by_id(id_product)
@@ -40,11 +43,13 @@ def get_product_by_id(id_product):
 
 
 @products_bp.route('/productos', methods=['GET'])
+@token_required
 def all_products():
     return jsonify({"productos": products.get_all_products()})
 
 
 @products_bp.route('/productos/<int:id_product>', methods=['PUT'])
+@token_required
 def update_product(id_product):
     if id_product:
         products.update_product(id_product, request.json)
@@ -55,17 +60,20 @@ def update_product(id_product):
 
 
 @products_bp.route('/productos/<int:id_product>', methods=['DELETE'])
+@token_required
 def delete_product(id_product):
     return products.delete_product(id_product)
 
 
 @products_bp.route('/productos/<int:id_product>/imagen', methods=['POST'])
+@token_required
 def imagen_producto(id_product):
     base = request.json["imagen"]
     return products.upload_image(base, id_product)
 
 
 @products_bp.route('/productos/<int:id_product>/precio', methods=['POST'])
+@token_required
 def insert_product_price(id_product):
     if id_product:
         cotizacion.insert_precio_unitario(id_product, request.json)
@@ -74,6 +82,7 @@ def insert_product_price(id_product):
 
 
 @products_bp.route('/productos/<int:id_product>/piezas', methods=['GET'])
+@token_required
 def productos_piezas(id_product):
     if id_product:
         return jsonify({"piezas": piezas.select_piezas_by_id_product(id_product),
