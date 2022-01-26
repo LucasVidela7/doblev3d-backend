@@ -27,13 +27,14 @@ def token_required(f):
             conn = create_connection()
             cur = conn.cursor()
             cur.execute(sql)
-            current_user = cur.fetchone()[0]
+            if not cur.fetchone()[0]:
+                raise Exception("Usuario no encontrado")
         except:
             return jsonify({
                 'message': 'Token is invalid !!'
             }), 403
         # returns the current logged in users contex to the routes
-        return f(current_user, *args, **kwargs)
+        return f(*args, **kwargs)
 
     return decorated
 
