@@ -94,7 +94,7 @@ def update_product(id_product, request):
 
 
 def delete_product(id_producto):
-    if not get_ventas_by_product_id(id_producto):
+    if get_ventas_by_product_id(id_producto):
         return jsonify({"message": "No se puede borrar producto porque ventas"}), 406
 
     sql = f"delete from productos where id=64; " \
