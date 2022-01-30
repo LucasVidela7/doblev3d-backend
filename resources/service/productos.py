@@ -41,6 +41,7 @@ def select_product_by_id(_id):
           f"INNER JOIN categorias as cats ON cats.id = p.idcategoria " \
           f"WHERE p.id= {_id}"
     product = db.select_first(sql)
+
     product["fechacreacion"] = product["fechacreacion"].strftime('%Y-%m-%d')
     return product
 
@@ -97,8 +98,8 @@ def delete_product(id_producto):
     if get_ventas_by_product_id(id_producto):
         return jsonify({"message": "No se puede borrar producto porque ventas"}), 406
 
-    sql = f"delete from productos where id=64; " \
-          f"delete from piezas where idproducto=64;"
+    sql = f"delete from productos where id={id_producto}; " \
+          f"delete from piezas where idproducto={id_producto};"
     db.delete_sql(sql)
     return jsonify({"message": "Producto borrado correctamente"}), 200
 
