@@ -1,3 +1,5 @@
+from flask import jsonify
+
 from database import utils as db
 
 
@@ -28,16 +30,15 @@ def get_categories_by_extras(id_extra):
     return all_cats
 
 
-def delete_category(request):
-    from_id_categoria = request["fromIdCategoria"]
-    to_id_categoria = request["toIdCategoria"]
+def delete_category(id_categoria):
+    sql = f"select * from productos where idcategoria={id_categoria}"
+    cats = db.select_multiple(sql)
 
-    sql = f"UPDATE productos SET idcategoria='{to_id_categoria}' WHERE idcategoria='{from_id_categoria}'"
-    db.update_sql(sql)
+    if cats:
+        return jsonify({"message": "La categoria tiene productos asignados"}), 406
 
-    sql = f"DELETE FROM extra_categorias WHERE idcategoria='{from_id_categoria}'"
+    sql = f"DELETE FROM extra_categorias WHERE idcategoria='{id_categoria}';" \
+          f"DELETE FROM categorias WHERE id='{id_categoria}';"
     db.delete_sql(sql)
 
-    sql = f"DELETE FROM categorias WHERE id='{from_id_categoria}'"
-    db.delete_sql(sql)
-    return
+    return jsonify({"message": "Categoria borrada con exito"}), 200

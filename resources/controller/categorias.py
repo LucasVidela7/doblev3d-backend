@@ -27,8 +27,7 @@ def update_category(id_categoria):
     return jsonify({"message": "Editado!"}), 200
 
 
-@categorias_bp.route('/categorias', methods=['DELETE'])
+@categorias_bp.route('/categorias/<int:id_categoria>', methods=['DELETE'])
 @token_required
-def delete_category():
-    categories.delete_category(request.json)
-    return jsonify({"mensaje": "categoria borrada"}), 200
+def delete_category(id_categoria):
+    return categories.delete_category(id_categoria)

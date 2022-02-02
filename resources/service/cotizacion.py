@@ -121,20 +121,6 @@ def get_precio_unitario(id_producto):
     return precio_unitario
 
 
-def check_precio_unitario(precio_unitario, costo_total):
-    if costo_total > precio_unitario["costototal"] > 0:
-        porcentaje = costo_total / precio_unitario["costototal"]
-        precio_unitario["preciosugerido"] = round(precio_unitario["preciounitario"] * porcentaje, 2)
-        precio_unitario["ganancia"] = round(precio_unitario["preciounitario"] - costo_total, 2)
-
-    if not precio_unitario["preciounitario"] and not precio_unitario["ganancia"]:
-        precio_unitario["preciounitario"] = costo_total
-        precio_unitario["ganancia"] = 0
-
-    precio_unitario["costototal"] = costo_total
-    return precio_unitario
-
-
 def get_precio_unitario_by_product_id(id_producto):
     sql = f"SELECT * FROM precio_unitario WHERE idproducto='{id_producto}' ORDER BY id DESC;"
     precio_unitario = db.select_first(sql).get("preciounitario", 0)
