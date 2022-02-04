@@ -4,6 +4,7 @@ from flask import Flask, request
 from flask_cors import CORS
 from flasgger import Swagger
 from database.setup import create_tables
+from resources.controller.catalogo import catalogo_bp
 from resources.controller.extras import extras_bp
 from resources.controller.productos import products_bp
 from resources.controller.categorias import categorias_bp
@@ -20,6 +21,7 @@ create_tables()
 CORS(app)
 Swagger(app)
 
+app.register_blueprint(catalogo_bp)
 app.register_blueprint(ventas_bp)
 app.register_blueprint(balance_bp)
 app.register_blueprint(config_bp)

@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS categorias(
     id SERIAL PRIMARY KEY,
-    categoria TEXT
+    categoria TEXT,
+    catalogo BOOL DEFAULT TRUE
 );
 
 
@@ -129,7 +130,7 @@ INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('CANCELADO'
 CREATE TABLE IF NOT EXISTS images(
     id SERIAL PRIMARY KEY,
     imagen TEXT,
-    idproducto BIT
+    idproducto INTEGER
 );
 
 
