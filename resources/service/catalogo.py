@@ -17,8 +17,6 @@ def get_all_products_for_catalog(id_categoria):
           f"WHERE p.estado=true and p.idcategoria={id_categoria} " \
           f"ORDER BY precioUnitario DESC, ventas DESC;"
     products = [dict(p) for p in db.select_multiple(sql)]
-    for p in products:
-        p["fechacreacion"] = p["fechacreacion"].strftime('%Y-%m-%d')
     return products
 
 
@@ -33,6 +31,4 @@ def get_featured_products(limit=20):
           f"WHERE p.estado=true " \
           f"ORDER BY ventas DESC, precioUnitario DESC LIMIT {limit} OFFSET 0;"
     products = [dict(p) for p in db.select_multiple(sql) if p["ventas"] > 0]
-    for p in products:
-        p["fechacreacion"] = p["fechacreacion"].strftime('%Y-%m-%d')
     return products
