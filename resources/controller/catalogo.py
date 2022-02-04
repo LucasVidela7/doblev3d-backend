@@ -16,4 +16,4 @@ def all_products_by_id_category(id_categoria):
 
 @catalogo_bp.route('/catalogo/productos/destacados', methods=['GET'])
 def all_featured_products(id_categoria):
-    return jsonify({"productos": catalogo.get_all_products_for_catalog(id_categoria)}), 200
+    return jsonify({"productos": catalogo.get_featured_products()}), 200
