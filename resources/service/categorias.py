@@ -12,7 +12,7 @@ def get_all_categories():
 
 def add_category(request):
     categoria = request['categoria'].upper()
-    catalogo = request['catalogo']
+    catalogo = request.get('catalogo', True)
     sql = f"INSERT INTO categorias(categoria, catalogo) VALUES ('{categoria}','{catalogo}') RETURNING id;"
     return db.insert_sql(sql, key='id')
 
