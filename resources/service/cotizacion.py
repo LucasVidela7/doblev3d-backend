@@ -107,17 +107,19 @@ def get_precio_unitario(id_producto):
         precio_unitario["preciounitario"] = 0
         precio_unitario["costototal"] = costo_total
         precio_unitario["ganancia"] = 0
-        return precio_unitario
+        # return precio_unitario
     else:
-        precio_unitario["preciosugerido"] = None
-        precio_u = precio_unitario.get("preciounitario", 0)
-        ganancia = precio_u - costo_total
-        precio_unitario["ganancia"] = round(ganancia, 2)
-        ganancia_esperada = costo_material * 1.1
-        if ganancia < ganancia_esperada:
-            diferencia = ganancia_esperada - ganancia
-            precio_unitario["preciosugerido"] = round(precio_u + diferencia, 2)
         precio_unitario["fechaactualizacion"] = precio_unitario["fechaactualizacion"].strftime('%Y-%m-%d')
+
+    precio_unitario["preciosugerido"] = None
+    precio_u = precio_unitario.get("preciounitario", 0)
+    ganancia = precio_u - costo_total
+    precio_unitario["ganancia"] = round(ganancia, 2)
+    ganancia_esperada = costo_material * 1.1
+    if ganancia < ganancia_esperada:
+        diferencia = ganancia_esperada - ganancia
+        precio_unitario["preciosugerido"] = round(precio_u + diferencia, 2)
+
     return precio_unitario
 
 
