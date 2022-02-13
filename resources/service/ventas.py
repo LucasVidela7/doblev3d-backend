@@ -121,7 +121,7 @@ def get_all_ventas():
           f" INNER JOIN estados AS e ON v.idestado = e.id " \
           f" WHERE idestado <>  '{estado_cancelado}'" \
           f" and (SELECT count(vp.id) FROM ventas_productos vp WHERE  vp.idventa = v.id and vp.idestado<>'{estado_cancelado}') > 0" \
-          f" ORDER BY v.idestado DESC, senia DESC, productos DESC;"
+          f" ORDER BY v.idestado DESC, id DESC, senia DESC, productos DESC;"
     ventas = db.select_multiple(sql)
     for v in ventas:
         v["fechacreacion"] = v["fechacreacion"].strftime('%Y-%m-%d')
