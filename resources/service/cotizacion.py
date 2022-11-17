@@ -100,7 +100,6 @@ def get_precio_unitario(id_producto):
 
     costo_material = get_costo_total(id_producto)
     _, extra_total = select_extras_by_id_product(id_producto)
-    print(extra_total)
     costo_total = costo_material + extra_total
     precio_unitario["costototal"] = costo_total
 
@@ -109,8 +108,8 @@ def get_precio_unitario(id_producto):
         precio_unitario["preciounitario"] = 0
         precio_unitario["ganancia"] = 0
         # return precio_unitario
-    else:
-        precio_unitario["fechaactualizacion"] = precio_unitario["fechaactualizacion"].strftime('%Y-%m-%d')
+    # else:
+    #     precio_unitario["fechaactualizacion"] = precio_unitario["fechaactualizacion"].strftime('%Y-%m-%d')
 
     precio_unitario["preciosugerido"] = None
     precio_u = precio_unitario.get("preciounitario", 0)
