@@ -102,11 +102,11 @@ def get_precio_unitario(id_producto):
     _, extra_total = select_extras_by_id_product(id_producto)
     print(extra_total)
     costo_total = costo_material + extra_total
+    precio_unitario["costototal"] = costo_total
 
     if not precio_unitario:
         precio_unitario["preciosugerido"] = None
         precio_unitario["preciounitario"] = 0
-        precio_unitario["costototal"] = costo_total
         precio_unitario["ganancia"] = 0
         # return precio_unitario
     else:
