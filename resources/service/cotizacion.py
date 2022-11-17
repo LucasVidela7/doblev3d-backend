@@ -115,7 +115,7 @@ def get_precio_unitario(id_producto):
     precio_u = precio_unitario.get("preciounitario", 0)
     ganancia = precio_u - costo_total
     precio_unitario["ganancia"] = round(ganancia, 2)
-    ganancia_esperada = costo_material * 1.1
+    ganancia_esperada = costo_material * 1.21
     if ganancia < ganancia_esperada:
         diferencia = ganancia_esperada - ganancia
         precio_unitario["preciosugerido"] = round(precio_u + diferencia, 2)
