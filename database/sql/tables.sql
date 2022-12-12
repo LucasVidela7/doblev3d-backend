@@ -109,6 +109,7 @@ INSERT INTO medios_pago (descripcion) VALUES('EFECTIVO');
 INSERT INTO medios_pago (descripcion) VALUES('BANCO SANTANDER');
 
 --DROP TABLE estados;
+--DROP TABLE estados;
 CREATE TABLE IF NOT EXISTS estados(
     id SERIAL PRIMARY KEY,
     estado TEXT,
