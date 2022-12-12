@@ -98,16 +98,17 @@ CREATE TABLE IF NOT EXISTS gastos(
     tipo TEXT
 );
 
-DROP TABLE medios_pago;
+--DROP TABLE medios_pago;
 CREATE TABLE IF NOT EXISTS medios_pago(
     id SERIAL PRIMARY KEY,
     descripcion TEXT
 );
+DELETE FROM medios_pago;
 INSERT INTO medios_pago (descripcion) VALUES('MERCADO PAGO');
 INSERT INTO medios_pago (descripcion) VALUES('EFECTIVO');
 INSERT INTO medios_pago (descripcion) VALUES('BANCO SANTANDER');
 
-DROP TABLE estados;
+--DROP TABLE estados;
 CREATE TABLE IF NOT EXISTS estados(
     id SERIAL PRIMARY KEY,
     estado TEXT,
@@ -117,6 +118,7 @@ CREATE TABLE IF NOT EXISTS estados(
     icono TEXT
 );
 
+DELETE FROM estados;
 INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('PENDIENTE'  ,'1','0','0', '');
 INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('EN PROCESO' ,'1','0','0', '' );
 INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('IMPRIMIR'   ,'0','1','0', 'bx-printer');
