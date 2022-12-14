@@ -26,17 +26,27 @@ def get_price(hours, minutes, weight):
     price_config = prices_db()
     coste_plastico = price_config["costePlastico"] / 1000
     coste_luz = price_config["costeEnergetico"] * price_config["consumoMedio"]
-    coste_amortizacion = price_config["valorImpresora"] / ((price_config["tiempoDepresiacion"] / 12) * price_config[
-        "diasActiva"] * price_config["horasDia"])
+    coste_amortizacion = price_config["valorImpresora"]
+    coste_amortizacion /= (price_config["tiempoDepresiacion"] / 12) * price_config["diasActiva"] * price_config[
+        "horasDia"]
     taza_fallos = price_config["tasaFallos"] / 100
 
+    # TODO: Convertir a dict
     plastico = round(weight * coste_plastico, 2)
     tiempo = round(hours + (minutes / 60), 2)
     electricidad = round(tiempo * coste_luz, 2)
     amortizacion = round(coste_amortizacion * tiempo, 2)
     taza_fallos = round((plastico + tiempo + electricidad + amortizacion) * taza_fallos, 2)
 
-    return plastico, electricidad, amortizacion, taza_fallos
+    data = {
+        "plastico": plastico,
+        "electricidad": electricidad,
+        "costoAmortizacion": amortizacion,
+        "tazaFallos": taza_fallos,
+        "costoPieza": round(plastico + electricidad + amortizacion + taza_fallos, 2)
+    }
+
+    return data
 
 
 def get_price_piezas(piezas: list):
@@ -46,14 +56,15 @@ def get_price_piezas(piezas: list):
         horas = p["horas"]
         minutos = p["minutos"]
         peso = p["peso"]
-        pl, el, am, tf = get_price(horas, minutos, peso)
-        data = {
-            "plastico": pl,
-            "electricidad": el,
-            "costoAmortizacion": am,
-            "tazaFallos": tf,
-            "costoPieza": round(pl + el + am + tf, 2)
-        }
+        # pl, el, am, tf = get_price(horas, minutos, peso)
+        data = get_price(horas, minutos, peso)
+        # data = {
+        #     "plastico": pl,
+        #     "electricidad": el,
+        #     "costoAmortizacion": am,
+        #     "tazaFallos": tf,
+        #     "costoPieza": round(pl + el + am + tf, 2)
+        # }
         p["cotizacion"] = copy.deepcopy(data)
 
         total_horas += horas
@@ -62,13 +73,13 @@ def get_price_piezas(piezas: list):
 
         if not n:
             all_prices = copy.deepcopy(data)
-            all_prices["costoElaboracion"] = pl + el + am + tf
+            all_prices["costoElaboracion"] = data["costoPieza"]
         else:
-            all_prices["plastico"] += pl
-            all_prices["electricidad"] += el
-            all_prices["costoAmortizacion"] += am
-            all_prices["tazaFallos"] += tf
-            all_prices["costoElaboracion"] += pl + el + am + tf
+            all_prices["plastico"] += data["plastico"]
+            all_prices["electricidad"] += data["electricidad"]
+            all_prices["costoAmortizacion"] += data["costoAmortizacion"]
+            all_prices["tazaFallos"] += data["tazaFallos"]
+            all_prices["costoElaboracion"] += data["costoPieza"]
 
     all_prices = {k: round(v, 2) for k, v in all_prices.items()}
     all_prices["totalHoras"] = total_horas + int(total_minutos / 60)
@@ -102,6 +113,7 @@ def get_precio_unitario(id_producto):
     _, extra_total = select_extras_by_id_product(id_producto)
     costo_total = costo_material + extra_total
     precio_unitario["costototal"] = costo_total
+    precio_unitario["preciosugerido"] = None
 
     if not precio_unitario:
         # precio_unitario["preciosugerido"] = None
@@ -111,12 +123,12 @@ def get_precio_unitario(id_producto):
     # else:
     #     precio_unitario["fechaactualizacion"] = precio_unitario["fechaactualizacion"].strftime('%Y-%m-%d')
 
-    precio_unitario["preciosugerido"] = None
     precio_u = precio_unitario.get("preciounitario", 0)
     ganancia = precio_u - costo_total
     precio_unitario["ganancia"] = round(ganancia, 2)
-    precio_sugerido = costo_total / 0.25
+    precio_sugerido = costo_total / 0.25  # TODO setear "Margen de ganancia" por sistema
     if precio_u < precio_sugerido:
+        # Si el precio unitario es menor al precio sugerido por el sistema, se recomienda nuevo precio
         precio_unitario["preciosugerido"] = round(precio_sugerido, 2)
 
     return precio_unitario
@@ -136,5 +148,5 @@ def get_costo_total(id_producto):
     sql = f"select COALESCE(sum(horas),0) as horas,COALESCE(sum(minutos),0) as minutos, COALESCE(sum(peso),0) as peso " \
           f"from piezas where idproducto = {id_producto};"
     total_piezas = db.select_first(sql)
-    p, e, a, tf = get_price(total_piezas["horas"], total_piezas["minutos"], total_piezas["peso"])
-    return round(p + e + a + tf, 2)
+    data = get_price(total_piezas["horas"], total_piezas["minutos"], total_piezas["peso"])
+    return round(sum([v for k, v in data.items()]), 2)
