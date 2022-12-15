@@ -48,7 +48,7 @@ def get_price(hours, minutes, weight):
         "electricidad": electricidad,
         "costoAmortizacion": amortizacion,
         "tazaFallos": taza_fallos,
-        "costoPieza": round(plastico + electricidad + amortizacion + taza_fallos, 2)
+        "costoPieza": plastico + electricidad + amortizacion + taza_fallos
     }
 
     return data
@@ -63,6 +63,7 @@ def get_price_piezas(piezas: list):
         peso = p["peso"]
         data = get_price(horas, minutos, peso)
         p["cotizacion"] = copy.deepcopy(data)
+        p["cotizacion"] = {k: round(v, 2) for k, v in p["cotizacion"].items()}
 
         total_horas += horas
         total_minutos += minutos
