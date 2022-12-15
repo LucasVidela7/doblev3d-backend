@@ -149,4 +149,4 @@ def get_costo_total(id_producto):
           f"from piezas where idproducto = {id_producto};"
     total_piezas = db.select_first(sql)
     data = get_price(total_piezas["horas"], total_piezas["minutos"], total_piezas["peso"])
-    return round(sum([v for k, v in data.items()]), 2)
+    return round(sum([v for k, v in data.items() if k != "costoPieza"]), 2)

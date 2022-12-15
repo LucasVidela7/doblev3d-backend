@@ -13,14 +13,17 @@ def get_all_categories():
 def add_category(request):
     categoria = request['categoria'].upper()
     catalogo = request.get('catalogo', True)
-    sql = f"INSERT INTO categorias(categoria, catalogo) VALUES ('{categoria}','{catalogo}') RETURNING id;"
+    margen = request.get('margen', 50)
+    sql = f"INSERT INTO categorias(categoria, catalogo, margen) " \
+          f"VALUES ('{categoria}','{catalogo}', '{margen}') RETURNING id;"
     return db.insert_sql(sql, key='id')
 
 
 def update_category(_id, request):
     categoria = request['categoria'].upper()
     catalogo = request['catalogo']
-    sql = f"UPDATE categorias SET categoria='{categoria}', catalogo='{catalogo}' WHERE id='{_id}';"
+    margen = request['margen']
+    sql = f"UPDATE categorias SET categoria='{categoria}', catalogo='{catalogo}', margen='{margen}' WHERE id='{_id}';"
     return db.update_sql(sql)
 
 

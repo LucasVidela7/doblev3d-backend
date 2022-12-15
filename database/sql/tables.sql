@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS categorias(
     id SERIAL PRIMARY KEY,
     categoria TEXT,
-    catalogo BOOL DEFAULT TRUE
+    catalogo BOOL DEFAULT TRUE,
+    margen INTEGER DEFAULT 50
 );
 
 
