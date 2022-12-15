@@ -1,4 +1,5 @@
 from database import utils as db
+import cachetools.func
 
 
 def get_all_extras():
@@ -6,6 +7,7 @@ def get_all_extras():
     return db.select_multiple(sql)
 
 
+@cachetools.func.ttl_cache(maxsize=128, ttl=1 * 60)
 def select_extras_by_id_product(id_product):
     sql = f"""
             SELECT ex.* FROM extra_producto as ep

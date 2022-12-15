@@ -1,10 +1,13 @@
 import copy
 from datetime import datetime
-
+from functools import lru_cache
+import cachetools.func
 from database import utils as db
 from resources.service.extras import select_extras_by_id_product
 
 
+# @lru_cache(maxsize=10)
+@cachetools.func.ttl_cache(maxsize=128, ttl=1 * 60)
 def prices_db():
     sql = "select * from cotizacion;"
     prices = db.select_multiple(sql)
