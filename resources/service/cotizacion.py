@@ -37,11 +37,11 @@ def get_price(hours, minutes, weight):
         "horasDia"]
     taza_fallos = price_config["tasaFallos"] / 100
 
-    plastico = round(weight * coste_plastico, 2)
-    tiempo = round(hours + (minutes / 60), 2)
-    electricidad = round(tiempo * coste_luz, 2)
-    amortizacion = round(coste_amortizacion * tiempo, 2)
-    taza_fallos = round((plastico + tiempo + electricidad + amortizacion) * taza_fallos, 2)
+    plastico = weight * coste_plastico
+    tiempo = hours + (minutes / 60)
+    electricidad = tiempo * coste_luz
+    amortizacion = coste_amortizacion * tiempo
+    taza_fallos = (plastico + tiempo + electricidad + amortizacion) * taza_fallos
 
     data = {
         "plastico": plastico,
@@ -143,4 +143,4 @@ def get_costo_total(id_producto):
           f"from piezas where idproducto = {id_producto};"
     total_piezas = db.select_first(sql)
     data = get_price(total_piezas["horas"], total_piezas["minutos"], total_piezas["peso"])
-    return round(sum([v for k, v in data.items() if k != "costoPieza"]), 2)
+    return round(data['costoPieza'], 2)
