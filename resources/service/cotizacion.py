@@ -22,6 +22,12 @@ def update_prices(request):
     db.update_sql(sql)
 
 
+def get_margen(id_producto):
+    sql = "SELECT cats.margen AS margen FROM productos AS p " \
+          f"INNER JOIN categorias as cats ON cats.id = p.idcategoria WHERE p.id= '{id_producto}';"
+    return db.select_first(sql)["margen"]
+
+
 def get_price(hours, minutes, weight):
     price_config = prices_db()
     coste_plastico = price_config["costePlastico"] / 1000
@@ -96,9 +102,7 @@ def insert_precio_unitario(id_producto, request):
 
 
 def get_precio_unitario(id_producto):
-    sql = f"SELECT preciounitario, ganancia, costototal, fechaactualizacion, " \
-          f"(SELECT cats.margen AS margen FROM productos AS p " \
-          f"INNER JOIN categorias as cats ON cats.id = p.idcategoria WHERE p.id= '{id_producto}') as margen " \
+    sql = f"SELECT preciounitario, ganancia, costototal, fechaactualizacion " \
           f"FROM precio_unitario WHERE idproducto='{id_producto}' ORDER BY id DESC;"
     precio_unitario = db.select_first(sql)
 
@@ -115,7 +119,7 @@ def get_precio_unitario(id_producto):
     precio_u = precio_unitario.get("preciounitario", 0)
     ganancia = precio_u - costo_total
     precio_unitario["ganancia"] = round(ganancia, 2)
-    precio_sugerido = costo_total / ((100 - precio_unitario['margen']) / 100)
+    precio_sugerido = costo_total / (1 - get_margen(id_producto) / 100)
     if precio_u < precio_sugerido:
         # Si el precio unitario es menor al precio sugerido por el sistema, se recomienda nuevo precio
         precio_unitario["preciosugerido"] = round(precio_sugerido, 2)
