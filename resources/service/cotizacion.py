@@ -31,7 +31,6 @@ def get_price(hours, minutes, weight):
         "horasDia"]
     taza_fallos = price_config["tasaFallos"] / 100
 
-    # TODO: Convertir a dict
     plastico = round(weight * coste_plastico, 2)
     tiempo = round(hours + (minutes / 60), 2)
     electricidad = round(tiempo * coste_luz, 2)
@@ -56,15 +55,7 @@ def get_price_piezas(piezas: list):
         horas = p["horas"]
         minutos = p["minutos"]
         peso = p["peso"]
-        # pl, el, am, tf = get_price(horas, minutos, peso)
         data = get_price(horas, minutos, peso)
-        # data = {
-        #     "plastico": pl,
-        #     "electricidad": el,
-        #     "costoAmortizacion": am,
-        #     "tazaFallos": tf,
-        #     "costoPieza": round(pl + el + am + tf, 2)
-        # }
         p["cotizacion"] = copy.deepcopy(data)
 
         total_horas += horas
@@ -105,7 +96,9 @@ def insert_precio_unitario(id_producto, request):
 
 
 def get_precio_unitario(id_producto):
-    sql = f"SELECT preciounitario, ganancia, costototal, fechaactualizacion " \
+    sql = f"SELECT preciounitario, ganancia, costototal, fechaactualizacion, " \
+          f"(SELECT cats.margen AS margen FROM productos AS p " \
+          f"INNER JOIN categorias as cats ON cats.id = p.idcategoria WHERE p.id= '{id_producto}') as margen " \
           f"FROM precio_unitario WHERE idproducto='{id_producto}' ORDER BY id DESC;"
     precio_unitario = db.select_first(sql)
 
@@ -116,17 +109,13 @@ def get_precio_unitario(id_producto):
     precio_unitario["preciosugerido"] = None
 
     if not precio_unitario:
-        # precio_unitario["preciosugerido"] = None
         precio_unitario["preciounitario"] = 0
         precio_unitario["ganancia"] = 0
-        # return precio_unitario
-    # else:
-    #     precio_unitario["fechaactualizacion"] = precio_unitario["fechaactualizacion"].strftime('%Y-%m-%d')
 
     precio_u = precio_unitario.get("preciounitario", 0)
     ganancia = precio_u - costo_total
     precio_unitario["ganancia"] = round(ganancia, 2)
-    precio_sugerido = costo_total / 0.25  # TODO setear "Margen de ganancia" por sistema
+    precio_sugerido = costo_total / ((100 - precio_unitario['margen']) / 100)
     if precio_u < precio_sugerido:
         # Si el precio unitario es menor al precio sugerido por el sistema, se recomienda nuevo precio
         precio_unitario["preciosugerido"] = round(precio_sugerido, 2)
