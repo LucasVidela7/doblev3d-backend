@@ -8,7 +8,7 @@ from resources.service.extras import select_extras_by_id_product
 
 # @lru_cache(maxsize=10)
 @cachetools.func.ttl_cache(maxsize=128, ttl=1 * 60)
-def prices_db():
+def prices_db(cache=True):
     sql = "select * from cotizacion;"
     prices = db.select_multiple(sql)
     data = {}
@@ -113,7 +113,7 @@ def get_precio_unitario(id_producto):
     costo_material = get_costo_total(id_producto)
     _, extra_total = select_extras_by_id_product(id_producto)
     costo_total = costo_material + extra_total
-    precio_unitario["costototal"] = costo_total
+    precio_unitario["costototal"] = round(costo_total, 2)
     precio_unitario["preciosugerido"] = None
 
     if not precio_unitario:
@@ -123,7 +123,8 @@ def get_precio_unitario(id_producto):
     precio_u = precio_unitario.get("preciounitario", 0)
     ganancia = precio_u - costo_total
     precio_unitario["ganancia"] = round(ganancia, 2)
-    precio_sugerido = costo_total / (1 - get_margen(id_producto) / 100)
+    # precio_sugerido = costo_total / (1 - get_margen(id_producto) / 100)
+    precio_sugerido = (costo_material / (1 - get_margen(id_producto) / 100)) + extra_total
     if precio_u < precio_sugerido:
         # Si el precio unitario es menor al precio sugerido por el sistema, se recomienda nuevo precio
         precio_unitario["preciosugerido"] = round(precio_sugerido, 2)
