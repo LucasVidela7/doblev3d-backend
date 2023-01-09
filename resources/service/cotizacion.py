@@ -148,3 +148,30 @@ def get_costo_total(id_producto):
     total_piezas = db.select_first(sql)
     data = get_price(total_piezas["horas"], total_piezas["minutos"], total_piezas["peso"])
     return round(data['costoPieza'], 2)
+
+
+def precios_por_mayor(id_producto):
+    costo_material = get_costo_total(id_producto)
+    _, extra_total = select_extras_by_id_product(id_producto)
+    costo_total = costo_material + extra_total
+    precio_u = get_precio_unitario_by_product_id(id_producto)
+
+    unidades_minimas = 20  # TODO Configurable
+    unidades_maximas = 100  # TODO Configurable
+
+    precio_minimo = costo_total * 2  # TODO Configurable
+    precio_maximo = precio_u * 0.75  # TODO Configurable
+    diferencia = precio_maximo - precio_minimo
+
+    saltos = 5  # TODO Configurable
+
+    # Rango de unidades
+    p_maximo = unidades_maximas - unidades_minimas
+
+    precios = []
+    for x in range(unidades_minimas, unidades_maximas + saltos, saltos):
+        y = x - unidades_minimas
+        porcentaje = y * 100 / p_maximo
+        p = (precio_minimo + (diferencia * (100 - porcentaje) / 100)) * x
+        precios.append({str(x): {"precio": round(p, 2), "unidad": round(p / x, 2)}})
+    return precios

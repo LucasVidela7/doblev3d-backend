@@ -88,3 +88,11 @@ def productos_piezas(id_product):
         return jsonify({"piezas": piezas.select_piezas_by_id_product(id_product),
                         "producto": products.select_product_by_id(id_product)})
     return jsonify({"message": "internal server error"})
+
+
+@products_bp.route('/productos/<int:id_product>/precios', methods=['GET'])
+@token_required
+def precios_por_mayor(id_product):
+    if id_product:
+        return jsonify(cotizacion.precios_por_mayor(id_product))
+    return jsonify({"message": "internal server error"})
