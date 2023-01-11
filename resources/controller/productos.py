@@ -95,4 +95,5 @@ def productos_piezas(id_product):
 def precios_por_mayor(id_product):
     if id_product:
         return jsonify(cotizacion.precios_por_mayor(id_product))
+
     return jsonify({"message": "internal server error"})

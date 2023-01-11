@@ -151,6 +151,7 @@ def get_costo_total(id_producto):
 
 
 def precios_por_mayor(id_producto):
+
     costo_material = get_costo_total(id_producto)
     _, extra_total = select_extras_by_id_product(id_producto)
     costo_total = costo_material + extra_total
