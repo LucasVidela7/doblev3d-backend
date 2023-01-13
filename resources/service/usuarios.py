@@ -29,6 +29,8 @@ def token_required(f):
             cur.execute(sql)
             if not cur.fetchone()[0]:
                 raise Exception("Usuario no encontrado")
+
+            # TODO Extender la sesión en cada consulta
         except:
             return jsonify({
                 'message': 'Token is invalid !!'
@@ -66,7 +68,7 @@ def login(auth):
             'public_id': user[0],
             'exp': datetime.utcnow() + timedelta(minutes=30)
         }, "8ED81DD4F3589CF6A177DFD1B2D32")
-
+        # TODO Agregar en un tabla "Sesiones" el tiempo de expiración, previamente buscar sesiones y borrarlas
         return jsonify({'token': token.decode('UTF-8'), "expires_in": 30 * 60}), 200
     # returns 403 if password is wrong
     return jsonify({'WWW-Authenticate': 'Basic realm ="Wrong Password !!"'}), 403

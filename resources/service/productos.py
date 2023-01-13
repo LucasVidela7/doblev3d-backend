@@ -18,6 +18,23 @@ def insert_product(request):
 
     if id_product:
         piezas = request.get("piezas", [])
+        dragAndDrop = request.get("dragAndDrop", [])
+        if dragAndDrop:
+            piezas = []
+            for p in dragAndDrop:
+                for descripcion, values in p.items():
+                    time = int(values["time"])
+                    filament = float(values["filament_used"])
+                    filament_kg = 300  # 1kg filamento TODO Setear por base
+                    peso = int(filament * 1000 / filament_kg)  # Regla de 3 simple para calcular peso
+
+                    seconds = time % (24 * 3600)
+                    hour = seconds // 3600
+                    seconds %= 3600
+                    minutes = (seconds // 60) + 1
+                    seconds %= 60
+                    piezas.append({"descripcion": descripcion, "peso": peso, "horas": hour, "minutos": minutes})
+
         if piezas:
             sql = "INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto) VALUES "
             sql += f",".join(
