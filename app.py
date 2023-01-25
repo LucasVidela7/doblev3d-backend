@@ -1,3 +1,4 @@
+import os
 import pprint
 
 from flask import Flask, request
@@ -50,4 +51,5 @@ app.config['SECRET_KEY'] = '8ED81DD4F3589CF6A177DFD1B2D32'
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    app.run(debug=True, ssl_context=(os.getenv('CERTIFICADO'), os.getenv('KEY')))
