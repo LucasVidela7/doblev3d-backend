@@ -1,6 +1,9 @@
+import os
 from datetime import datetime
 
+from PIL.Image import Image
 from flask import jsonify
+from werkzeug.utils import secure_filename
 
 from resources.service import cotizacion as cotizacion
 from database import utils as db
@@ -117,7 +120,26 @@ def delete_product(id_producto):
     return jsonify({"message": "Producto borrado correctamente"}), 200
 
 
-def upload_image(base64, id_producto):
-    sql = f"INSERT INTO images(imagen,idproducto) VALUES('{base64}','{id_producto}');"
-    db.insert_sql(sql)
-    return jsonify({"message": "Imagen cargada correctamente"}), 200
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() in ["jpg", "png", "jpeg"]  # ALLOWED_EXTENSIONS
+
+
+def upload_image(files, id_producto):
+    # check if the post request has the file part
+    if 'file' not in files:
+        return jsonify({"message": "Se debe enviar dentro de un key 'file'"}), 406
+    file = files['file']
+    # if user does not select file, browser also
+    # submit an empty part without filename
+    if file.filename == '':
+        return jsonify({"message": "El archivo no tiene nombre"}), 406
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(os.getenv("FILE_STORE"), filename))
+        sql = f"delete from images where id='{id_producto}';"
+        db.delete_sql(sql)
+        sql = f"INSERT INTO images(imagen,idproducto) VALUES('{filename}','{id_producto}');"
+        db.insert_sql(sql)
+        return jsonify({"message": "Imagen cargada correctamente"}), 200
+    return jsonify({"message": "El archivo no cumple las extensiones adecuadas"}), 406

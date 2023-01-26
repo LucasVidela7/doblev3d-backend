@@ -68,8 +68,9 @@ def delete_product(id_product):
 @products_bp.route('/productos/<int:id_product>/imagen', methods=['POST'])
 @token_required
 def imagen_producto(id_product):
-    base = request.json["imagen"]
-    return products.upload_image(base, id_product)
+    # base = request.json["imagen"]
+    file = request.files
+    return products.upload_image(file, id_product)
 
 
 @products_bp.route('/productos/<int:id_product>/precio', methods=['POST'])
