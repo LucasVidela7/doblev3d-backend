@@ -37,17 +37,17 @@ app.register_blueprint(login_bp)
 app.config['SECRET_KEY'] = '8ED81DD4F3589CF6A177DFD1B2D32'
 
 
-@app.before_request
-def log_request_info():
-    print('Headers: %s \n Method: %s\n Request: \n%s',
-                    request.headers, request.method,
-                    pprint.pformat(request.json, indent=4))
-
-
-@app.after_request
-def log_response_info(response):
-    print('Response: \n%s', pprint.pformat(response.json, indent=4))
-    return response
+# @app.before_request
+# def log_request_info():
+#     print('Headers: %s \n Method: %s\n Request: \n%s',
+#                     request.headers, request.method,
+#                     pprint.pformat(request.json, indent=4))
+#
+#
+# @app.after_request
+# def log_response_info(response):
+#     print('Response: \n%s', pprint.pformat(response.json, indent=4))
+#     return response
 
 
 if __name__ == '__main__':
