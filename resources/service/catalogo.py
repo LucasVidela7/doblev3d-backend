@@ -27,7 +27,7 @@ def get_featured_products(limit=20):
           f" (SELECT precioUnitario FROM precio_unitario WHERE idproducto=p.id ORDER BY id DESC LIMIT 1 OFFSET 0) as precioUnitario, " \
           f" (SELECT imagen FROM images WHERE idproducto=p.id ORDER BY id DESC LIMIT 1 OFFSET 0) as imagen " \
           f"FROM productos AS p " \
-          f"INNER JOIN categorias as cats ON cats.id = p.idcategoria and cats.catalogo=true" \
+          f"INNER JOIN categorias as cats ON cats.id = p.idcategoria and cats.catalogo=true " \
           f"WHERE p.estado=true " \
           f"ORDER BY ventas DESC, precioUnitario DESC LIMIT {limit} OFFSET 0;"
     products = [dict(p) for p in db.select_multiple(sql)]  # if p["ventas"] > 0]
