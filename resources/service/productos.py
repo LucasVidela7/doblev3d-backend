@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 
-from PIL.Image import Image
 from flask import jsonify
 from werkzeug.utils import secure_filename
 
