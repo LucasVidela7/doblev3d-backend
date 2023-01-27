@@ -71,7 +71,7 @@ def select_product_by_id(_id):
 def get_all_products():
     products = redisx.get('productos')
     if products is None:
-        sql = f"SELECT p.*, cats.categoria AS idcategoria, " \
+        sql = f"SELECT p.*, cats.categoria AS idcategoria, cats.categoria AS categoria, " \
               f"(SELECT count(id) FROM ventas_productos WHERE idproducto=p.id " \
               f"and idestado<>(SELECT id FROM estados where productos='1' ORDER BY id DESC LIMIT 1 OFFSET 0)) AS ventas, " \
               f" (SELECT precioUnitario FROM precio_unitario WHERE idproducto=p.id ORDER BY id DESC LIMIT 1 OFFSET 0) as precioUnitario, " \

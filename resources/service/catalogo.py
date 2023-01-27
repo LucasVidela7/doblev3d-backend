@@ -20,7 +20,7 @@ def get_all_categories_for_catalog():
 def get_all_products_for_catalog(id_categoria):
     products = get_all_products()
     categorias = dict(map(lambda x: (x["id"], x), get_all_categories_for_catalog()))
-    products = [p for p in products if p['estado'] and p['idcategoria'] == categorias[id_categoria]["categoria"]]
+    products = [p for p in products if p['estado'] and p['categoria'] == categorias[id_categoria]["categoria"]]
     # sql = f"SELECT p.id, p.descripcion, cats.categoria AS categoria, " \
     #       f"(SELECT count(id) FROM ventas_productos WHERE idproducto=p.id " \
     #       f"and idestado<>(SELECT id FROM estados where productos='1' ORDER BY id DESC LIMIT 1 OFFSET 0)) AS ventas, " \
@@ -36,7 +36,8 @@ def get_all_products_for_catalog(id_categoria):
 
 def get_featured_products(limit=20):
     products = get_all_products()
-    products = [p for p in products if p['estado'] and p['idcategoria']]
+    categorias = [c['categoria'] for c in get_all_categories_for_catalog()]
+    products = [p for p in products if p['estado'] and p['categoria'] in categorias]
     # sql = f"SELECT p.id, p.descripcion, cats.categoria AS categoria, " \
     #       f"(SELECT count(id) FROM ventas_productos WHERE idproducto=p.id " \
     #       f"and idestado<>(SELECT id FROM estados where productos='1' ORDER BY id DESC LIMIT 1 OFFSET 0)) AS ventas, " \
