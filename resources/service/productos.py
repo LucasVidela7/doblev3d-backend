@@ -74,7 +74,7 @@ def get_all_products():
         sql = f"SELECT p.*, cats.categoria AS idcategoria, " \
               f"(SELECT count(id) FROM ventas_productos WHERE idproducto=p.id " \
               f"and idestado<>(SELECT id FROM estados where productos='1' ORDER BY id DESC LIMIT 1 OFFSET 0)) AS ventas, " \
-              f" (SELECT precioUnitario FROM precio_unitario WHERE idproducto=p.id ORDER BY id DESC LIMIT 1 OFFSET 0) as precioUnitario " \
+              f" (SELECT precioUnitario FROM precio_unitario WHERE idproducto=p.id ORDER BY id DESC LIMIT 1 OFFSET 0) as precioUnitario, " \
               f" (SELECT imagen FROM images WHERE idproducto=p.id ORDER BY id DESC LIMIT 1 OFFSET 0) as imagen " \
               f"FROM productos AS p " \
               f"INNER JOIN categorias as cats ON cats.id = p.idcategoria " \
