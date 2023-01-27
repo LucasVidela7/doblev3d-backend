@@ -122,6 +122,7 @@ def update_product(id_product, request):
     redisx.delete(f"producto:{id_product}:detalle")
     redisx.delete(f"producto:{id_product}:extras")
     redisx.delete(f"producto:{id_product}:piezas")
+    redisx.delete(f"producto:{id_product}:precio")
     redisx.delete(f"productos")
     return id_product
 
@@ -137,6 +138,7 @@ def delete_product(id_producto):
     redisx.delete(f"producto:{id_producto}:detalle")
     redisx.delete(f"producto:{id_producto}:extras")
     redisx.delete(f"producto:{id_producto}:piezas")
+    redisx.delete(f"producto:{id_producto}:precio")
     redisx.delete(f"productos")
     return jsonify({"message": "Producto borrado correctamente"}), 200
 
@@ -161,7 +163,7 @@ def upload_image(files, id_producto):
     if file and allowed_file(file.filename):
         filename = secure_filename(formalize_filename(file.filename, id_producto))
         file.save(os.path.join(os.getenv("FILE_STORE"), filename))
-        sql = f"delete from images where id='{id_producto}';"
+        sql = f"delete from images where idproducto='{id_producto}';"
         db.delete_sql(sql)
         sql = f"INSERT INTO images(imagen,idproducto) VALUES('{filename}','{id_producto}');"
         db.insert_sql(sql)
