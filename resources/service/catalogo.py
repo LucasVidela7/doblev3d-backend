@@ -1,9 +1,19 @@
+import json
+import pickle
+
 from database import utils as db
+from database.utils import redisx
 
 
 def get_all_categories_for_catalog():
-    sql = f"SELECT * FROM categorias WHERE catalogo = true ORDER BY categoria ASC;"
-    return db.select_multiple(sql)
+    categorias = redisx.get('catalogo:categorias')
+    if categorias is None:
+        sql = f"SELECT * FROM categorias WHERE catalogo = true ORDER BY categoria ASC;"
+        categorias = db.select_multiple(sql)
+        redisx.set('catalogo:categorias', pickle.dumps(categorias))
+    else:
+        categorias = pickle.loads(categorias)
+    return categorias
 
 
 def get_all_products_for_catalog(id_categoria):

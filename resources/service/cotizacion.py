@@ -1,7 +1,6 @@
 import copy
 import pickle
 from datetime import datetime
-from functools import lru_cache
 from database import utils as db
 from database.utils import redisx
 from resources.service.extras import select_extras_by_id_product
@@ -26,8 +25,8 @@ def update_prices(request):
     sql = ""
     for k, v in request.items():
         sql += f"update cotizacion set value='{v}' where key='{k}';"
-
     db.update_sql(sql)
+    redisx.delete('cotizacion')
 
 
 def get_margen(id_producto):
@@ -98,22 +97,24 @@ def get_price_piezas(piezas: list):
 def insert_precio_unitario(id_producto, request):
     fecha = datetime.now().strftime('%Y-%m-%d')  # 2021-11-18
     precio_unitario = float(request["preciounitario"])
-    costo_total = float(request["costoTotal"])
-    ganancia = round(precio_unitario - costo_total, 2)
-
-    sql = f"INSERT INTO precio_unitario(idproducto, precioUnitario, ganancia, costoTotal, fechaActualizacion)" \
-          f" VALUES('{id_producto}','{precio_unitario}','{ganancia}','{costo_total}','{fecha}') RETURNING id;"
-    id = db.insert_sql(sql, key="id")
-    if id:
-        sql = f"DELETE FROM precio_unitario WHERE idproducto='{id_producto}' and id<>'{id}';"
-        db.delete_sql(sql)
+    sql = f"DELETE FROM precio_unitario WHERE idproducto='{id_producto}'"
+    db.delete_sql(sql)
+    sql = f"INSERT INTO precio_unitario(idproducto, precioUnitario, fechaActualizacion)" \
+          f" VALUES('{id_producto}','{precio_unitario}','{fecha}') RETURNING id;"
+    db.insert_sql(sql)
+    redisx.delete(f'producto:{id_producto}:precio')
     return
 
 
 def get_precio_unitario(id_producto):
-    sql = f"SELECT preciounitario, ganancia, costototal, fechaactualizacion " \
-          f"FROM precio_unitario WHERE idproducto='{id_producto}' ORDER BY id DESC;"
-    precio_unitario = db.select_first(sql)
+    precio_unitario = redisx.get(f'producto:{id_producto}:precio')
+    if precio_unitario is None:
+        sql = f"SELECT preciounitario, fechaactualizacion " \
+              f"FROM precio_unitario WHERE idproducto='{id_producto}' ORDER BY id DESC;"
+        precio_unitario = db.select_first(sql)
+        redisx.set(f'producto:{id_producto}:precio', pickle.dumps(precio_unitario))
+    else:
+        precio_unitario = pickle.loads(precio_unitario)
 
     costo_material = get_costo_total(id_producto)
     _, extra_total = select_extras_by_id_product(id_producto)
@@ -138,8 +139,15 @@ def get_precio_unitario(id_producto):
 
 
 def get_precio_unitario_by_product_id(id_producto):
-    sql = f"SELECT * FROM precio_unitario WHERE idproducto='{id_producto}' ORDER BY id DESC;"
-    precio_unitario = db.select_first(sql).get("preciounitario", 0)
+    precio_unitario = redisx.get(f'producto:{id_producto}:precio')
+    if precio_unitario is None:
+        sql = f"SELECT preciounitario, fechaactualizacion " \
+              f"FROM precio_unitario WHERE idproducto='{id_producto}' ORDER BY id DESC;"
+        precio_unitario = db.select_first(sql)
+        redisx.set(f'producto:{id_producto}:precio', pickle.dumps(precio_unitario))
+    else:
+        precio_unitario = pickle.loads(precio_unitario)
+    precio_unitario = precio_unitario.get("preciounitario", 0)
     return precio_unitario
 
 
@@ -148,10 +156,18 @@ def get_precio_unitario_vencido(id_producto):
 
 
 def get_costo_total(id_producto):
-    # TODO obtener piezas de cache del producto y sumarlo
-    sql = f"select COALESCE(sum(horas),0) as horas,COALESCE(sum(minutos),0) as minutos, COALESCE(sum(peso),0) as peso " \
-          f"from piezas where idproducto = {id_producto};"
-    total_piezas = db.select_first(sql)
+    piezas = redisx.get(f'producto:{id_producto}:piezas')
+    if piezas is None:
+        sql = f"select COALESCE(sum(horas),0) as horas,COALESCE(sum(minutos),0) as minutos, COALESCE(sum(peso),0) as peso " \
+              f"from piezas where idproducto = {id_producto};"
+        total_piezas = db.select_first(sql)
+    else:
+        piezas = pickle.loads(piezas)
+        total_piezas = {}
+        total_piezas["horas"] = sum(item['horas'] for item in piezas)
+        total_piezas["minutos"] = sum(item['minutos'] for item in piezas)
+        total_piezas["peso"] = sum(item['peso'] for item in piezas)
+
     data = get_price(total_piezas["horas"], total_piezas["minutos"], total_piezas["peso"])
     return round(data['costoPieza'], 2)
 

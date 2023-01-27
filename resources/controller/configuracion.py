@@ -8,7 +8,7 @@ config_bp = Blueprint("routes-config", __name__)
 @config_bp.route('/configuracion/cotizacion', methods=['GET'])
 @token_required
 def get_configuracion_cotizacion():
-    return jsonify(cotizacion.prices_db(cache=False))
+    return jsonify(cotizacion.prices_db())
 
 
 @config_bp.route('/configuracion/cotizacion', methods=['PUT'])

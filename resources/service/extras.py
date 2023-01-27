@@ -18,7 +18,7 @@ def get_all_extras():
 
 
 def select_extras_by_id_product(id_product):
-    extras = redisx.get(f'productos:{id_product}:extras')
+    extras = redisx.get(f'producto:{id_product}:extras')
     if extras is None:
         sql = f"""
                 SELECT ex.* FROM extra_producto as ep
@@ -26,7 +26,7 @@ def select_extras_by_id_product(id_product):
                 WHERE idproducto= {id_product}
                 """
         extras = db.select_multiple(sql)
-        redisx.set(f'productos:{id_product}:extras', pickle.dumps(extras))
+        redisx.set(f'producto:{id_product}:extras', pickle.dumps(extras))
     else:
         extras = pickle.loads(extras)
     total_amount = sum([ex["precio"] for ex in extras])

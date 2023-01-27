@@ -48,17 +48,19 @@ def insert_product(request):
             sql += f",".join([f"('{id_product}', '{id_extra}')" for id_extra in extras])
             sql += ";"
             db.insert_sql(sql)
+
+        redisx.delete(f"productos")
         return id_product
 
 
 def select_product_by_id(_id):
-    product = redisx.get(f'productos:{_id}:detalle')
+    product = redisx.get(f'producto:{_id}:detalle')
     if product is None:
         sql = f"SELECT p.*, cats.categoria AS categoria FROM productos AS p " \
               f"INNER JOIN categorias as cats ON cats.id = p.idcategoria " \
               f"WHERE p.id= {_id}"
         product = db.select_first(sql)
-        redisx.set(f'productos:{_id}:detalle', pickle.dumps(product))
+        redisx.set(f'producto:{_id}:detalle', pickle.dumps(product))
     else:
         product = pickle.loads(product)
 
@@ -67,14 +69,20 @@ def select_product_by_id(_id):
 
 
 def get_all_products():
-    sql = f"SELECT p.*, cats.categoria AS idcategoria, " \
-          f"(SELECT count(id) FROM ventas_productos WHERE idproducto=p.id " \
-          f"and idestado<>(SELECT id FROM estados where productos='1' ORDER BY id DESC LIMIT 1 OFFSET 0)) AS ventas, " \
-          f" (SELECT precioUnitario FROM precio_unitario WHERE idproducto=p.id ORDER BY id DESC LIMIT 1 OFFSET 0) as precioUnitario " \
-          f"FROM productos AS p " \
-          f"INNER JOIN categorias as cats ON cats.id = p.idcategoria " \
-          f"ORDER BY p.estado DESC, precioUnitario DESC, ventas DESC;"
-    products = [dict(p) for p in db.select_multiple(sql)]
+    products = redisx.get('productos')
+    if products is None:
+        sql = f"SELECT p.*, cats.categoria AS idcategoria, " \
+              f"(SELECT count(id) FROM ventas_productos WHERE idproducto=p.id " \
+              f"and idestado<>(SELECT id FROM estados where productos='1' ORDER BY id DESC LIMIT 1 OFFSET 0)) AS ventas, " \
+              f" (SELECT precioUnitario FROM precio_unitario WHERE idproducto=p.id ORDER BY id DESC LIMIT 1 OFFSET 0) as precioUnitario " \
+              f"FROM productos AS p " \
+              f"INNER JOIN categorias as cats ON cats.id = p.idcategoria " \
+              f"ORDER BY p.estado DESC, precioUnitario DESC, ventas DESC;"
+        products = db.select_multiple(sql)
+        redisx.set('productos', pickle.dumps(products))
+    else:
+        products = pickle.loads(products)
+    products = [dict(p) for p in products]
     for p in products:
         p["fechacreacion"] = p["fechacreacion"].strftime('%Y-%m-%d')
         p["precioUnitarioVencido"] = cotizacion.get_precio_unitario_vencido(p["id"])
@@ -111,9 +119,10 @@ def update_product(id_product, request):
         sql += f",".join([f"('{id_product}', '{id_extra}')" for id_extra in extras])
         sql += ";"
         db.insert_sql(sql)
-    redisx.delete(f"productos:{id_product}:detalle")
-    redisx.delete(f"productos:{id_product}:extras")
-    redisx.delete(f"productos:{id_product}:piezas")
+    redisx.delete(f"producto:{id_product}:detalle")
+    redisx.delete(f"producto:{id_product}:extras")
+    redisx.delete(f"producto:{id_product}:piezas")
+    redisx.delete(f"productos")
     return id_product
 
 
@@ -125,9 +134,10 @@ def delete_product(id_producto):
           f"delete from piezas where idproducto={id_producto};"
     db.delete_sql(sql)
 
-    redisx.delete(f"productos:{id_producto}:detalle")
-    redisx.delete(f"productos:{id_producto}:extras")
-    redisx.delete(f"productos:{id_producto}:piezas")
+    redisx.delete(f"producto:{id_producto}:detalle")
+    redisx.delete(f"producto:{id_producto}:extras")
+    redisx.delete(f"producto:{id_producto}:piezas")
+    redisx.delete(f"productos")
     return jsonify({"message": "Producto borrado correctamente"}), 200
 
 

@@ -27,7 +27,8 @@ def add_category(request):
     sql = f"INSERT INTO categorias(categoria, catalogo, margen) " \
           f"VALUES ('{categoria}','{catalogo}', '{margen}') RETURNING id;"
 
-    redisx.delete('extras')
+    redisx.delete('categorias')
+    redisx.delete('catalogo:categorias')
     return db.insert_sql(sql, key='id')
 
 
@@ -36,7 +37,8 @@ def update_category(_id, request):
     catalogo = request['catalogo']
     margen = request['margen']
     sql = f"UPDATE categorias SET categoria='{categoria}', catalogo='{catalogo}', margen='{margen}' WHERE id='{_id}';"
-    redisx.delete('extras')
+    redisx.delete('categorias')
+    redisx.delete('catalogo:categorias')
     return db.update_sql(sql)
 
 
@@ -62,6 +64,7 @@ def delete_category(id_categoria):
           f"DELETE FROM categorias WHERE id='{id_categoria}';"
     db.delete_sql(sql)
 
-    redisx.delete('extras')
+    redisx.delete('categorias')
+    redisx.delete('catalogo:categorias')
 
     return jsonify({"message": "Categoria borrada con exito"}), 200
