@@ -1,9 +1,9 @@
 import os
+import pickle
 from datetime import datetime
-
 from flask import jsonify
 from werkzeug.utils import secure_filename
-
+from database.utils import redisx
 from resources.service import cotizacion as cotizacion
 from database import utils as db
 from resources.service.ventas import get_ventas_by_product_id
@@ -52,10 +52,15 @@ def insert_product(request):
 
 
 def select_product_by_id(_id):
-    sql = f"SELECT p.*, cats.categoria AS categoria FROM productos AS p " \
-          f"INNER JOIN categorias as cats ON cats.id = p.idcategoria " \
-          f"WHERE p.id= {_id}"
-    product = db.select_first(sql)
+    product = redisx.get(f'productos:{_id}:detalle')
+    if product is None:
+        sql = f"SELECT p.*, cats.categoria AS categoria FROM productos AS p " \
+              f"INNER JOIN categorias as cats ON cats.id = p.idcategoria " \
+              f"WHERE p.id= {_id}"
+        product = db.select_first(sql)
+        redisx.set(f'productos:{_id}:detalle', pickle.dumps(product))
+    else:
+        product = pickle.loads(product)
 
     product["fechacreacion"] = product["fechacreacion"].strftime('%Y-%m-%d')
     return product
@@ -106,6 +111,9 @@ def update_product(id_product, request):
         sql += f",".join([f"('{id_product}', '{id_extra}')" for id_extra in extras])
         sql += ";"
         db.insert_sql(sql)
+    redisx.delete(f"productos:{id_product}:detalle")
+    redisx.delete(f"productos:{id_product}:extras")
+    redisx.delete(f"productos:{id_product}:piezas")
     return id_product
 
 
@@ -116,15 +124,22 @@ def delete_product(id_producto):
     sql = f"delete from productos where id={id_producto}; " \
           f"delete from piezas where idproducto={id_producto};"
     db.delete_sql(sql)
+
+    redisx.delete(f"productos:{id_producto}:detalle")
+    redisx.delete(f"productos:{id_producto}:extras")
+    redisx.delete(f"productos:{id_producto}:piezas")
     return jsonify({"message": "Producto borrado correctamente"}), 200
 
 
-def allowed_file(filename):
-    return '.' in filename and \
-        filename.rsplit('.', 1)[1].lower() in ["jpg", "png", "jpeg"]  # ALLOWED_EXTENSIONS
-
-
 def upload_image(files, id_producto):
+    def allowed_file(filename):
+        return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in ["jpg", "png", "jpeg"]  # ALLOWED_EXTENSIONS
+
+    def formalize_filename(filename, id_producto):
+        name = filename.split(".")
+        return f"producto_{id_producto}.{name[1]}"
+
     # check if the post request has the file part
     if 'file' not in files:
         return jsonify({"message": "Se debe enviar dentro de un key 'file'"}), 406
@@ -134,7 +149,7 @@ def upload_image(files, id_producto):
     if file.filename == '':
         return jsonify({"message": "El archivo no tiene nombre"}), 406
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
+        filename = secure_filename(formalize_filename(file.filename, id_producto))
         file.save(os.path.join(os.getenv("FILE_STORE"), filename))
         sql = f"delete from images where id='{id_producto}';"
         db.delete_sql(sql)

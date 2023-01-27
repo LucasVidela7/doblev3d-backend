@@ -1,16 +1,21 @@
 import copy
+import pickle
 from datetime import datetime
 from functools import lru_cache
-import cachetools.func
 from database import utils as db
+from database.utils import redisx
 from resources.service.extras import select_extras_by_id_product
 
 
-# @lru_cache(maxsize=10)
-@cachetools.func.ttl_cache(maxsize=128, ttl=1 * 60)
-def prices_db(cache=True):
-    sql = "select * from cotizacion;"
-    prices = db.select_multiple(sql)
+def prices_db():
+    prices = redisx.get(f'cotizacion')
+    if prices is None:
+        sql = "select * from cotizacion;"
+        prices = db.select_multiple(sql)
+        redisx.set(f'cotizacion', pickle.dumps(prices))
+    else:
+        prices = pickle.loads(prices)
+
     data = {}
     for p in prices:
         data[p['key']] = p['value']
@@ -143,6 +148,7 @@ def get_precio_unitario_vencido(id_producto):
 
 
 def get_costo_total(id_producto):
+    # TODO obtener piezas de cache del producto y sumarlo
     sql = f"select COALESCE(sum(horas),0) as horas,COALESCE(sum(minutos),0) as minutos, COALESCE(sum(peso),0) as peso " \
           f"from piezas where idproducto = {id_producto};"
     total_piezas = db.select_first(sql)
@@ -151,7 +157,6 @@ def get_costo_total(id_producto):
 
 
 def precios_por_mayor(id_producto):
-
     costo_material = get_costo_total(id_producto)
     _, extra_total = select_extras_by_id_product(id_producto)
     costo_total = costo_material + extra_total

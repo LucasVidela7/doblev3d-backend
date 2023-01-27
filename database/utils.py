@@ -2,6 +2,9 @@ import psycopg2.extras
 from database.connection import create_connection
 from sqlite3 import Error
 
+from database.redis_conn import create_redis_connection
+
+redisx = create_redis_connection()
 
 def execute_sql(sql):
     conn = create_connection()

@@ -1,20 +1,34 @@
+import json
+import pickle
+
 from database import utils as db
-import cachetools.func
+
+from database.utils import redisx
 
 
 def get_all_extras():
-    sql = f"SELECT * FROM extras"
-    return db.select_multiple(sql)
+    extras = redisx.get(f'extras')
+    if extras is None:
+        sql = f"SELECT * FROM extras"
+        extras = db.select_multiple(sql)
+        redisx.set(f'extras', pickle.dumps(extras))
+    else:
+        extras = pickle.loads(extras)
+    return extras
 
 
-@cachetools.func.ttl_cache(maxsize=128, ttl=1 * 60)
 def select_extras_by_id_product(id_product):
-    sql = f"""
-            SELECT ex.* FROM extra_producto as ep
-            INNER JOIN extras as ex ON ex.id = ep.idextra
-            WHERE idproducto= {id_product}
-            """
-    extras = db.select_multiple(sql)
+    extras = redisx.get(f'productos:{id_product}:extras')
+    if extras is None:
+        sql = f"""
+                SELECT ex.* FROM extra_producto as ep
+                INNER JOIN extras as ex ON ex.id = ep.idextra
+                WHERE idproducto= {id_product}
+                """
+        extras = db.select_multiple(sql)
+        redisx.set(f'productos:{id_product}:extras', pickle.dumps(extras))
+    else:
+        extras = pickle.loads(extras)
     total_amount = sum([ex["precio"] for ex in extras])
     return extras, round(total_amount, 2)
 
@@ -31,7 +45,7 @@ def add_extra(request):
     sql += f",".join([f"('{c}', '{id_extra}')" for c in categorias])
     sql += ";"
     db.insert_sql(sql)
-
+    redisx.delete('extras')
     return id_extra
 
 
@@ -51,7 +65,7 @@ def update_extra(_id, request):
     sql += f",".join([f"('{c}', '{_id}')" for c in categorias])
     sql += ";"
     db.insert_sql(sql)
-
+    redisx.delete('extras')
     return
 
 
@@ -78,4 +92,5 @@ def delete_extra(id_extra):
     db.delete_sql(sql)
     sql = f"DELETE FROM extras where id='{id_extra}';"
     db.delete_sql(sql)
+    redisx.delete('extras')
     return
