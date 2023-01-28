@@ -123,7 +123,6 @@ def update_product(id_product, request):
     redisx.delete(f"producto:{id_product}:detalle")
     redisx.delete(f"producto:{id_product}:extras")
     redisx.delete(f"producto:{id_product}:piezas")
-    redisx.delete(f"producto:{id_product}:precio")
     redisx.delete(f"productos")
     return id_product
 
@@ -168,5 +167,6 @@ def upload_image(files, id_producto):
         db.delete_sql(sql)
         sql = f"INSERT INTO images(imagen,idproducto) VALUES('{filename}','{id_producto}');"
         db.insert_sql(sql)
+        redisx.delete(f"productos")
         return jsonify({"message": "Imagen cargada correctamente"}), 200
     return jsonify({"message": "El archivo no cumple las extensiones adecuadas"}), 406
