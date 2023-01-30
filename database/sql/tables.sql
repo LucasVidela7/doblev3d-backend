@@ -18,8 +18,6 @@ CREATE TABLE IF NOT EXISTS precio_unitario(
     id SERIAL PRIMARY KEY,
     idproducto INTEGER NOT NULL,
     precioUnitario FLOAT NOT NULL,
-    ganancia FLOAT,
-    costoTotal FLOAT,
     fechaActualizacion DATE
 );
 

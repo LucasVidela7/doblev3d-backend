@@ -1,4 +1,5 @@
 # decorator for verifying the JWT
+import os
 from datetime import datetime, timedelta
 from functools import wraps
 
@@ -18,11 +19,11 @@ def token_required(f):
             token = request.headers['x-access-token']
         # return 401 if token is not passed
         if not token:
-            return jsonify({'message': 'Token is missing !!'}), 403
+            return jsonify({'message': 'Debe enviarse token'}), 403
 
         try:
             # decoding the payload to fetch the stored details
-            data = jwt.decode(token, "8ED81DD4F3589CF6A177DFD1B2D32")
+            data = jwt.decode(token, os.getenv('JWT_SECRET'))
             sql = f"SELECT id from usuarios where id='{data['public_id']}';"
             conn = create_connection()
             cur = conn.cursor()
@@ -30,10 +31,13 @@ def token_required(f):
             if not cur.fetchone()[0]:
                 raise Exception("Usuario no encontrado")
 
-            # TODO Extender la sesión en cada consulta
+        except jwt.ExpiredSignatureError:
+            return jsonify({
+                'message': 'Token expirado!'
+            }), 403
         except:
             return jsonify({
-                'message': 'Token is invalid !!'
+                'message': 'Token invalido!'
             }), 403
         # returns the current logged in users contex to the routes
         return f(*args, **kwargs)
@@ -67,8 +71,7 @@ def login(auth):
         token = jwt.encode({
             'public_id': user[0],
             'exp': datetime.utcnow() + timedelta(minutes=30)
-        }, "8ED81DD4F3589CF6A177DFD1B2D32")
-        # TODO Agregar en un tabla "Sesiones" el tiempo de expiración, previamente buscar sesiones y borrarlas
+        }, os.getenv('JWT_SECRET'))
         return jsonify({'token': token.decode('UTF-8'), "expires_in": 30 * 60}), 200
     # returns 403 if password is wrong
     return jsonify({'WWW-Authenticate': 'Basic realm ="Wrong Password !!"'}), 403

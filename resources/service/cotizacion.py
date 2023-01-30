@@ -172,14 +172,11 @@ def get_costo_total(id_producto):
     return round(data['costoPieza'], 2)
 
 
-def precios_por_mayor(id_producto):
+def precios_por_mayor(id_producto, unidades_minimas=20, unidades_maximas=100):
     costo_material = get_costo_total(id_producto)
     _, extra_total = select_extras_by_id_product(id_producto)
     costo_total = costo_material + extra_total
     precio_u = get_precio_unitario_by_product_id(id_producto)
-
-    unidades_minimas = 20  # TODO Configurable
-    unidades_maximas = 100  # TODO Configurable
 
     precio_minimo = costo_total * 2  # TODO Configurable
     precio_maximo = precio_u * 0.75  # TODO Configurable

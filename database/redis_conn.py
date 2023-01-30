@@ -1,11 +1,12 @@
+import os
+
 import redis
 
 
 def create_redis_connection():
-    # TODO asignar a variables de entorno
-    pool = redis.ConnectionPool(host='doblev3d.duckdns.org',
+    pool = redis.ConnectionPool(host=os.getenv('DATABASE_HOST'),
                                 port=6379,
                                 db=0,
-                                password="Joaquin.2018")
+                                password=os.getenv('DATABASE_PASSWORD'))
     return redis.Redis(connection_pool=pool)
 

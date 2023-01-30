@@ -93,9 +93,10 @@ def productos_piezas(id_product):
 
 @products_bp.route('/productos/<int:id_product>/precios', methods=['GET'])
 @token_required
-# TODO aceptar query param para filtrar por unidades
 def precios_por_mayor(id_product):
     if id_product:
-        return jsonify(cotizacion.precios_por_mayor(id_product))
+        minimo = int(request.args.get('minimo', 20))
+        maximo = int(request.args.get('maximo', 100))
+        return jsonify(cotizacion.precios_por_mayor(id_product, unidades_minimas=minimo, unidades_maximas=maximo))
 
     return jsonify({"message": "internal server error"})
