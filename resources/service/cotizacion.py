@@ -27,6 +27,8 @@ def update_prices(request):
         sql += f"update cotizacion set value='{v}' where key='{k}';"
     db.update_sql(sql)
     redisx.delete('cotizacion')
+    redisx.delete(*redisx.keys('producto:*:precio'))
+    redisx.delete(*redisx.keys('producto:*:piezas'))
 
 
 def get_margen(id_producto):
@@ -150,10 +152,6 @@ def get_precio_unitario_by_product_id(id_producto):
         precio_unitario = pickle.loads(precio_unitario)
     precio_unitario = precio_unitario.get("preciounitario", 0)
     return precio_unitario
-
-
-def get_precio_unitario_vencido(id_producto):
-    return False
 
 
 def get_costo_total(id_producto):

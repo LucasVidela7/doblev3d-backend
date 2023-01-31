@@ -71,14 +71,18 @@ def select_product_by_id(_id):
 def get_all_products():
     products = redisx.get('productos')
     if products is None:
-        sql = f"SELECT p.*, cats.categoria AS idcategoria, cats.categoria AS categoria, " \
-              f"(SELECT count(id) FROM ventas_productos WHERE idproducto=p.id " \
-              f"and idestado<>(SELECT id FROM estados where productos='1' ORDER BY id DESC LIMIT 1 OFFSET 0)) AS ventas, " \
-              f" (SELECT precioUnitario FROM precio_unitario WHERE idproducto=p.id ORDER BY id DESC LIMIT 1 OFFSET 0) as precioUnitario, " \
-              f" (SELECT imagen FROM images WHERE idproducto=p.id ORDER BY id DESC LIMIT 1 OFFSET 0) as imagen " \
-              f"FROM productos AS p " \
-              f"INNER JOIN categorias as cats ON cats.id = p.idcategoria " \
-              f"ORDER BY p.estado DESC, precioUnitario DESC, ventas DESC;"
+        sql = f"""
+        SELECT p.*, cats.categoria AS idcategoria, cats.categoria AS categoria, 
+        (SELECT count(id) FROM ventas_productos WHERE idproducto=p.id and 
+        idestado<>(SELECT id FROM estados where productos='1' ORDER BY id DESC LIMIT 1 OFFSET 0)) AS ventas,  
+        pu.precioUnitario as precioUnitario,
+        CAST(CASE WHEN pu.fechaActualizacion + 30 < CURRENT_DATE THEN true ELSE false END AS boolean) AS precioUnitarioVencido,
+        (SELECT imagen FROM images WHERE idproducto=p.id ORDER BY id DESC LIMIT 1 OFFSET 0) as imagen 
+        FROM productos AS p 
+        INNER JOIN categorias as cats ON cats.id = p.idcategoria 
+        INNER JOIN precio_unitario as pu ON idproducto=p.id 
+        ORDER BY p.estado DESC, precioUnitario DESC, ventas DESC;
+        """
         products = db.select_multiple(sql)
         redisx.set('productos', pickle.dumps(products))
     else:
@@ -86,7 +90,8 @@ def get_all_products():
     products = [dict(p) for p in products]
     for p in products:
         p["fechacreacion"] = p["fechacreacion"].strftime('%Y-%m-%d')
-        p["precioUnitarioVencido"] = cotizacion.get_precio_unitario_vencido(p["id"])
+        p["precioUnitarioVencido"] = p["preciounitariovencido"]
+        del p["preciounitariovencido"]
     return products
 
 
