@@ -129,12 +129,12 @@ def get_precio_unitario(id_producto):
     precio_unitario["costototal"] = round(costo_total, 2)
     precio_unitario["preciosugerido"] = None
 
-    if not precio_unitario:
+    if not precio_unitario.get('preciounitario', False):
         precio_unitario["preciounitario"] = 0
         precio_unitario["ganancia"] = 0
 
     precio_u = precio_unitario.get("preciounitario", 0)
-    ganancia = precio_u - costo_total
+    ganancia = max(0, precio_u - costo_total)
     precio_unitario["ganancia"] = round(ganancia, 2)
     # precio_sugerido = costo_total / (1 - get_margen(id_producto) / 100)
     precio_sugerido = (costo_material / (1 - get_margen(id_producto) / 100)) + extra_total
