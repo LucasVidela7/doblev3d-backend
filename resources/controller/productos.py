@@ -77,7 +77,7 @@ def imagen_producto(id_product):
 @token_required
 def insert_product_price(id_product):
     if id_product:
-        cotizacion.insert_precio_unitario(id_product, request.json)
+        cotizacion.insert_precio_unitario(id_product, request.json["preciounitario"])
         return jsonify({"mensaje": "Precio agregado"})
     return jsonify({"message": "internal server error"})
 
@@ -100,3 +100,12 @@ def precios_por_mayor(id_product):
         return jsonify(cotizacion.precios_por_mayor(id_product, unidades_minimas=minimo, unidades_maximas=maximo))
 
     return jsonify({"message": "internal server error"})
+
+
+@products_bp.route('/productos/revisar', methods=['GET'])
+@token_required
+def revisar_productos():
+    for p in products.get_all_products():
+        get_product_by_id(p['id'])
+
+    return jsonify({"message": "Proceso terminado"}), 200

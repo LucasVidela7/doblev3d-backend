@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from database.utils import redisx
 from resources.service import cotizacion as cotizacion
 from database import utils as db
+from resources.service.cotizacion import prices_db
 from resources.service.ventas import get_ventas_by_product_id
 
 
@@ -70,13 +71,14 @@ def select_product_by_id(_id):
 
 def get_all_products():
     products = redisx.get('productos')
+
     if products is None:
         sql = f"""
         SELECT p.*, cats.categoria AS idcategoria, cats.categoria AS categoria, 
         (SELECT count(id) FROM ventas_productos WHERE idproducto=p.id and 
         idestado<>(SELECT id FROM estados where productos='1' ORDER BY id DESC LIMIT 1 OFFSET 0)) AS ventas,  
         pu.precioUnitario as precioUnitario,
-        CAST(CASE WHEN pu.fechaActualizacion + 30 < CURRENT_DATE THEN true ELSE false END AS boolean) AS precioUnitarioVencido,
+        CAST(CASE WHEN pu.fechaActualizacion + {int(prices_db()['diasVencimiento'])} < CURRENT_DATE THEN true ELSE false END AS boolean) AS precioUnitarioVencido,
         (SELECT imagen FROM images WHERE idproducto=p.id ORDER BY id DESC LIMIT 1 OFFSET 0) as imagen 
         FROM productos AS p 
         INNER JOIN categorias as cats ON cats.id = p.idcategoria 
@@ -90,8 +92,8 @@ def get_all_products():
     products = [dict(p) for p in products]
     for p in products:
         p["fechacreacion"] = p["fechacreacion"].strftime('%Y-%m-%d')
-        p["precioUnitarioVencido"] = p["preciounitariovencido"]
-        del p["preciounitariovencido"]
+        p["precioUnitarioVencido"] = p.get("preciounitariovencido", True)
+        p.pop("preciounitariovencido", None)
     return products
 
 

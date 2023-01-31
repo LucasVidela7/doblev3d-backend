@@ -1,8 +1,9 @@
 import copy
 import pickle
-from datetime import datetime
+from datetime import datetime, timedelta, date
 from database import utils as db
 from database.utils import redisx
+from resources.service.categorias import get_all_categories
 from resources.service.extras import select_extras_by_id_product
 
 
@@ -32,9 +33,12 @@ def update_prices(request):
 
 
 def get_margen(id_producto):
-    sql = "SELECT cats.margen AS margen FROM productos AS p " \
-          f"INNER JOIN categorias as cats ON cats.id = p.idcategoria WHERE p.id= '{id_producto}';"
-    return db.select_first(sql)["margen"]
+    producto = redisx.get(f'producto:{id_producto}:detalle')
+    if producto is None:
+        sql = "SELECT cats.margen AS margen FROM productos AS p " \
+              f"INNER JOIN categorias as cats ON cats.id = p.idcategoria WHERE p.id= '{id_producto}';"
+        return db.select_first(sql)["margen"]
+    return [c for c in get_all_categories() if c['id'] == pickle.loads(producto)['idcategoria']][0]['margen']
 
 
 def get_price(hours, minutes, weight):
@@ -96,9 +100,9 @@ def get_price_piezas(piezas: list):
     return piezas, all_prices
 
 
-def insert_precio_unitario(id_producto, request):
-    fecha = datetime.now().strftime('%Y-%m-%d')  # 2021-11-18
-    precio_unitario = float(request["preciounitario"])
+def insert_precio_unitario(id_producto, precio_unitario, rest_days=0):
+    fecha = (datetime.now() - timedelta(rest_days)).strftime('%Y-%m-%d')  # 2021-11-18
+    precio_unitario = float(precio_unitario)
     sql = f"DELETE FROM precio_unitario WHERE idproducto='{id_producto}'"
     db.delete_sql(sql)
     sql = f"INSERT INTO precio_unitario(idproducto, precioUnitario, fechaActualizacion)" \
@@ -137,7 +141,11 @@ def get_precio_unitario(id_producto):
     if precio_u < precio_sugerido:
         # Si el precio unitario es menor al precio sugerido por el sistema, se recomienda nuevo precio
         precio_unitario["preciosugerido"] = round(precio_sugerido, 2)
-
+        check = (date.today() - precio_unitario.get('fechaactualizacion', date.today())).days
+        if check < (int(prices_db()["diasVencimiento"]) + 1):
+            insert_precio_unitario(id_producto,
+                                   precio_unitario["preciounitario"],
+                                   int(prices_db()["diasVencimiento"]) + 1)
     return precio_unitario
 
 
