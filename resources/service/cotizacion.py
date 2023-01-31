@@ -103,6 +103,7 @@ def insert_precio_unitario(id_producto, request):
           f" VALUES('{id_producto}','{precio_unitario}','{fecha}') RETURNING id;"
     db.insert_sql(sql)
     redisx.delete(f'producto:{id_producto}:precio')
+    redisx.delete(f'productos')
     return
 
 
