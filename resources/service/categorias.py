@@ -14,7 +14,6 @@ def get_all_categories():
               f"FROM categorias ORDER BY categoria ASC;"
         categorias = db.select_multiple(sql)
         redisx.set('categorias', pickle.dumps(categorias))
-
     else:
         categorias = pickle.loads(categorias)
     return categorias

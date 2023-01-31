@@ -120,9 +120,8 @@ def update_product(id_product, request):
         sql += f",".join([f"('{id_product}', '{id_extra}')" for id_extra in extras])
         sql += ";"
         db.insert_sql(sql)
-    redisx.delete(f"producto:{id_product}:detalle")
-    redisx.delete(f"producto:{id_product}:extras")
-    redisx.delete(f"producto:{id_product}:piezas")
+
+    redisx.delete(*redisx.keys(f"producto:{id_product}:*"))
     redisx.delete(f"productos")
     return id_product
 
@@ -135,10 +134,7 @@ def delete_product(id_producto):
           f"delete from piezas where idproducto={id_producto};"
     db.delete_sql(sql)
 
-    redisx.delete(f"producto:{id_producto}:detalle")
-    redisx.delete(f"producto:{id_producto}:extras")
-    redisx.delete(f"producto:{id_producto}:piezas")
-    redisx.delete(f"producto:{id_producto}:precio")
+    redisx.delete(*redisx.keys(f"producto:{id_producto}:*"))
     redisx.delete(f"productos")
     return jsonify({"message": "Producto borrado correctamente"}), 200
 
