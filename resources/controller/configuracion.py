@@ -1,4 +1,6 @@
 from flask import jsonify, Blueprint, request
+
+from resources.controller.productos import revisar_productos
 from resources.service import cotizacion as cotizacion
 from resources.service.usuarios import token_required
 

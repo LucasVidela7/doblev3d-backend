@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../ar-bapro-services-test/.idea/ar-bapro-services-test.iml" filepath="$PROJECT_DIR$/../ar-bapro-services-test/.idea/ar-bapro-services-test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/doblev3d-backend.iml" filepath="$PROJECT_DIR$/.idea/doblev3d-backend.iml" />
     </modules>
   </component>

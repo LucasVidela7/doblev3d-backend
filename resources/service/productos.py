@@ -4,9 +4,8 @@ from datetime import datetime
 from flask import jsonify
 from werkzeug.utils import secure_filename
 from database.utils import redisx
-from resources.service import cotizacion as cotizacion
 from database import utils as db
-from resources.service.cotizacion import prices_db
+from resources.service.cotizacion import prices_db, insert_precio_unitario
 from resources.service.ventas import get_ventas_by_product_id
 
 
@@ -50,6 +49,7 @@ def insert_product(request):
             sql += ";"
             db.insert_sql(sql)
 
+        insert_precio_unitario(id_product, 0)
         redisx.delete(f"productos")
         return id_product
 

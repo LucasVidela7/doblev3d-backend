@@ -28,8 +28,14 @@ def update_prices(request):
         sql += f"update cotizacion set value='{v}' where key='{k}';"
     db.update_sql(sql)
     redisx.delete('cotizacion')
-    redisx.delete(*redisx.keys('producto:*:precio'))
-    redisx.delete(*redisx.keys('producto:*:piezas'))
+    try:
+        redisx.delete(*redisx.keys('producto:*:precio'))
+    except:
+        pass
+    try:
+        redisx.delete(*redisx.keys('producto:*:piezas'))
+    except:
+        pass
 
 
 def get_margen(id_producto):
