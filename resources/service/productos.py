@@ -27,7 +27,7 @@ def insert_product(request):
                     time = int(values["time"])
                     filament = float(values["filament_used"])
                     filament_kg = 300  # 1kg filamento TODO Setear por base
-                    peso = int(filament * 1000 / filament_kg)  # Regla de 3 simple para calcular peso
+                    peso = int(filament * 1000 / filament_kg) + 1  # Regla de 3 simple para calcular peso
 
                     minutes, seconds = divmod(time, 60)
                     hours, minutes = divmod(minutes, 60)
