@@ -66,7 +66,10 @@ def update_extra(_id, request):
     sql += ";"
     db.insert_sql(sql)
     redisx.delete('extras')
-    redisx.delete(*redisx.keys('producto:*:extras'))
+    try:
+        redisx.delete(*redisx.keys('producto:*:extras'))
+    except:
+        return
     return
 
 

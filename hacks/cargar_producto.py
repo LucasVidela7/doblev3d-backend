@@ -6,11 +6,11 @@ import requests as requests
 
 def cargar_producto():
     host = os.getenv('HOST')
-    file_path = "D:\\STL\\Bella - La bella y la bestia - 15cm"
+    file_path = "C:\\Users\\videl\\Desktop\\Cuadro completo"
     archivos = [arch.name for arch in os.scandir(file_path) if arch.is_file() and arch.name.endswith(".gcode")]
     path = "/productos"
     data = {
-        "descripcion": "Bella - La bella y la bestia - 15cm",
+        "descripcion": "Cuadro fotos",
         "idCategoria": "16",
         "dragAndDrop": [],
         "extras": []
