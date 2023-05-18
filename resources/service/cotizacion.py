@@ -201,11 +201,11 @@ def precios_por_mayor(id_producto, unidades_minimas=20, unidades_maximas=100):
 
     saltos = 5  # TODO Configurable
 
-    precios = {}
+    precios = []
     for x in range(unidades_minimas, unidades_maximas + saltos, saltos):
         y = x - unidades_minimas
         porcentaje = y * 100 / p_maximo
         p = (precio_minimo + (diferencia * (100 - porcentaje) / 100)) * x
-        precios[str(x)]= {"precio": round(p, 2), "unidad": round(p / x, 2)}
-        # precios.append(str(x): {"precio": round(p, 2), "unidad": round(p / x, 2)})
+        "precios[str(x)]= {"precio": round(p, 2), "unidad": round(p / x, 2)}
+        precios.append({"unidades": x,"precio": round(p, 2), "unidad": round(p / x, 2)})
     return {"precios":precios}
