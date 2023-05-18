@@ -201,7 +201,7 @@ def precios_por_mayor(id_producto, unidades_minimas=20, unidades_maximas=100):
 
     saltos = 5  # TODO Configurable
 
-    precios = []
+    precios = {}
     for x in range(unidades_minimas, unidades_maximas + saltos, saltos):
         y = x - unidades_minimas
         porcentaje = y * 100 / p_maximo
