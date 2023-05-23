@@ -21,7 +21,7 @@ def add_products():
 
 
 @products_bp.route('/productos/<int:id_product>', methods=['GET'])
-# @token_required
+@token_required
 def get_product_by_id(id_product):
     if id_product:
         product_details = products.select_product_by_id(id_product)
