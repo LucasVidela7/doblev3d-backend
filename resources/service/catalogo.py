@@ -23,5 +23,11 @@ def obtener_productos_destacados(limit=20):
     return products[:limit]
 
 
+def obtener_producto_catalogo(id):
+    products = get_all_products()
+    producto = [p for p in products if p["id"]==id][0]
+    return producto
+
+
 def obtener_todos_productos(limit=20):
     return obtener_productos_destacados(limit=limit)
