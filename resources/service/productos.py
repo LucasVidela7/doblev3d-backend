@@ -168,7 +168,7 @@ def upload_image(files, id_producto):
         file.save(os.path.join(os.getenv("FILE_STORE"), filename))
         sql = f"delete from images where idproducto='{id_producto}';"
         db.delete_sql(sql)
-        sql = f"INSERT INTO images(imagen,idproducto) VALUES('{filename}','{id_producto}');"
+        sql = f"INSERT INTO images(imagen,idproducto) VALUES('https://doblev3d.mooo.com/images/{filename}','{id_producto}');"
         db.insert_sql(sql)
         redisx.delete(f"productos")
         return jsonify({"message": "Imagen cargada correctamente"}), 200
