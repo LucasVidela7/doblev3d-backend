@@ -12,7 +12,7 @@ def obtener_productos_por_categoria(id_categoria):
     products = get_all_products()
     categorias = dict(map(lambda x: (x["id"], x), obtener_categorias_catalogo()))
     products = [p for p in products if p['estado'] and p['categoria'] == categorias[id_categoria]["categoria"]]
-    return products[:20]
+    return products
 
 
 def obtener_productos_destacados(limit=20):
@@ -25,7 +25,7 @@ def obtener_productos_destacados(limit=20):
 
 def obtener_producto_catalogo(id):
     products = get_all_products()
-    producto = [p for p in products if p["id"]==id][0]
+    producto = [p for p in products if p["id"] == id][0]
     return producto
 
 
