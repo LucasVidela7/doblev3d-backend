@@ -74,7 +74,7 @@ def get_all_products():
 
     if products is None:
         sql = f"""
-        SELECT p.*, cats.categoria AS idcategoria, cats.categoria AS categoria, 
+        SELECT p.*, cats.id AS idcategoria, cats.categoria AS categoria, 
         (SELECT count(id) FROM ventas_productos WHERE idproducto=p.id and 
         idestado<>(SELECT id FROM estados where productos='1' ORDER BY id DESC LIMIT 1 OFFSET 0)) AS ventas,  
         pu.precioUnitario as precioUnitario,
