@@ -196,7 +196,7 @@ def precios_por_mayor(id_producto, unidades_minimas=20, unidades_maximas=100):
     # Rango de unidades
     p_maximo = unidades_maximas - unidades_minimas
 
-    precio_minimo = (costo_material / (1 - (get_margen(id_producto) * 0.75) / 100)) + extra_total  # TODO Configurable
+    precio_minimo = (costo_material / (1 - (get_margen(id_producto) * 0.80) / 100)) + extra_total  # TODO Configurable
     precio_maximo = precio_u - (precio_u - precio_minimo) * 45 / 100  # TODO Configurable
     diferencia = precio_maximo - precio_minimo
 
