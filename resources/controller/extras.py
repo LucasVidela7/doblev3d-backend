@@ -43,8 +43,8 @@ def add_extra():
     return jsonify({"idextra": extras.add_extra(request.json)})
 
 
-@extras_bp.route('/extrasByIDCategoria/<int:id_categoria>', methods=['GET'])
-@token_required
-def get_extras_by_id_categoria(id_categoria):
-    categories_by_extra = extras.select_extra_by_id_categoria(id_categoria)
-    return jsonify({"extras": categories_by_extra})
+# @extras_bp.route('/extrasByIDCategoria/<int:id_categoria>', methods=['GET'])
+# @token_required
+# def get_extras_by_id_categoria(id_categoria):
+#     categories_by_extra = extras.select_extra_by_id_categoria(id_categoria)
+#     return jsonify({"extras": categories_by_extra})
