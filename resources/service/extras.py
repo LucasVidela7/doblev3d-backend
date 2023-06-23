@@ -97,5 +97,8 @@ def delete_extra(id_extra):
     sql = f"DELETE FROM extras where id='{id_extra}';"
     db.delete_sql(sql)
     redisx.delete('extras')
-    redisx.delete(*redisx.keys('producto:*:extras'))
+    try:
+        redisx.delete(*redisx.keys('producto:*:extras'))
+    except:
+        return
     return
