@@ -57,6 +57,14 @@ CREATE TABLE IF NOT EXISTS cotizacion(
     value FLOAT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS carrito(
+    id SERIAL PRIMARY KEY,
+    hash TEXT NOT NULL,
+    idcliente INTEGER,
+    idproducto INTEGER NOT NULL,
+    cantidad INTEGER DEFAULT 1
+);
+
 --DROP TABLE ventas;
 CREATE TABLE IF NOT EXISTS ventas(
     id SERIAL PRIMARY KEY,

@@ -16,6 +16,7 @@ from resources.controller.pagos import pagos_bp
 from resources.controller.gastos import gastos_bp
 from resources.controller.configuracion import config_bp
 from resources.controller.balance import balance_bp
+from resources.controller.carrito import carrito_bp
 
 app = Flask(__name__)
 create_tables()
@@ -33,6 +34,7 @@ app.register_blueprint(products_bp)
 app.register_blueprint(categorias_bp)
 app.register_blueprint(extras_bp)
 app.register_blueprint(login_bp)
+app.register_blueprint(carrito_bp)
 
 app.config['SECRET_KEY'] = '8ED81DD4F3589CF6A177DFD1B2D32'
 
@@ -51,4 +53,4 @@ app.config['SECRET_KEY'] = '8ED81DD4F3589CF6A177DFD1B2D32'
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
