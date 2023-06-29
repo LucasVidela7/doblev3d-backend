@@ -6,7 +6,7 @@ def obtener_carrito(hash):
     SELECT 
     c.hash,
     c.idproducto,
-    COUNT(c.cantidad) as cantidad,
+    SUM(c.cantidad) as cantidad,
     p.descripcion,
     img.imagen,	
     pu.preciounitario
@@ -18,7 +18,6 @@ def obtener_carrito(hash):
     GROUP BY
     c.idproducto,
     c.hash,
-    cantidad,
     p.descripcion,
     img.imagen,	
     pu.preciounitario
@@ -34,6 +33,9 @@ def agregar_carrito(request):
 
     if not hash or not id_producto:
         return False
+
+    sql = f""" DELETE FROM carrito WHERE hash='{hash}' and idproducto={id_producto};"""
+    db.delete_sql(sql)
 
     sql = f"""INSERT INTO carrito (hash, idproducto, cantidad) 
         VALUES('{hash}',{id_producto},{cantidad})"""
