@@ -184,13 +184,15 @@ def resize_image():
     for img in imagenes:
         response = tinify.post_image(img['imagen'])
         if response.status_code == 201:
-            a = tinify.get_image(response.json()['output']['url'])
-            filename = img['imagen'].split('/')[-1].split('.')[0]
-            with open(f"{os.getenv('FILE_STORE')}/{filename}.webp", "wb") as file:
-                file.write(a.content)
-            sql = f"""UPDATE images SET imagen='{filename}' WHERE imagen='{img['imagen']}';"""
-            db.update_sql(sql)
-            os.remove(f"{os.getenv('FILE_STORE')}/{img['imagen'].split['/'][-1]}")
+            # a = tinify.get_image(response.json()['output']['url'])
+            # filename = img['imagen'].split('/')[-1].split('.')[0]
+            # with open(f"{os.getenv('FILE_STORE')}/{filename}.webp", "wb") as file:
+            #     file.write(a.content)
+            # sql = f"""UPDATE images SET imagen='{filename}' WHERE imagen='{img['imagen']}';"""
+            # db.update_sql(sql)
+            # print(f"{os.getenv('FILE_STORE')}/{img['imagen'].split['/'][-1]}")
+            # os.remove(f"{os.getenv('FILE_STORE')}/{img['imagen'].split['/'][-1]}")
+            print(f"{os.getenv('FILE_STORE')}/{img['imagen'].split['/'][-1]}")
             print(f"{img['imagen']}: Exito")
         else:
             print(f"{img['imagen']}: Falló")
