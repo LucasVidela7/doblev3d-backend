@@ -73,6 +73,12 @@ def imagen_producto(id_product):
     return products.upload_image(file, id_product)
 
 
+@products_bp.route('/productos/imagenes/resize', methods=['GET'])
+# @token_required
+def imagen_tamano():
+    return products.resize_image()
+
+
 @products_bp.route('/productos/<int:id_product>/precio', methods=['POST'])
 @token_required
 def insert_product_price(id_product):

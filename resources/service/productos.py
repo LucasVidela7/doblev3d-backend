@@ -3,10 +3,13 @@ import pickle
 from datetime import datetime
 from flask import jsonify
 from werkzeug.utils import secure_filename
+
+from database.tinify import Tinify
 from database.utils import redisx
 from database import utils as db
 from resources.service.cotizacion import prices_db, insert_precio_unitario
 from resources.service.ventas import get_ventas_by_product_id
+from PIL import Image
 
 
 def insert_product(request):
@@ -173,3 +176,23 @@ def upload_image(files, id_producto):
         redisx.delete(f"productos")
         return jsonify({"message": "Imagen cargada correctamente"}), 200
     return jsonify({"message": "El archivo no cumple las extensiones adecuadas"}), 406
+
+
+def resize_image():
+    sql = "SELECT * from images WHERE imagen NOT LIKE '%.webp';"
+    imagenes = db.select_multiple(sql)
+    tinify = Tinify()
+    for img in imagenes:
+        response = tinify.post_image(img['imagen'])
+        if response.status_code == 201:
+            a = tinify.get_image(response.json()['output']['url'])
+            filename = img['imagen'].split('/')[-1].split('.')[0]
+            with open(f"{os.getenv('FILE_STORE')}/{filename}.webp", "wb") as file:
+                file.write(a.content)
+            sql = f"""UPDATE images SET imagen='{filename}' WHERE imagen='{img['imagen']}';"""
+            db.update_sql(sql)
+            os.remove(img['imagen'])
+            print(f"{img['imagen']}: Exito")
+        else:
+            print(f"{img['imagen']}: Falló")
+    return imagenes
