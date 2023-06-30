@@ -188,7 +188,7 @@ def resize_image():
             filename = img['imagen'].split('/')[-1].split('.')[0]
             with open(f"{os.getenv('FILE_STORE')}/{filename}.webp", "wb") as file:
                 file.write(a.content)
-            sql = f"""UPDATE images SET imagen='{filename}' WHERE imagen='{img['imagen']}';"""
+            sql = f"""UPDATE images SET imagen='https://doblev3d.mooo.com/images/{filename}.webp' WHERE imagen='{img['imagen']}';"""
             db.update_sql(sql)
             os.remove(f"{os.getenv('FILE_STORE')}/{img['imagen'].split('/')[-1]}")
             print(f"{img['imagen']}: Exito")
