@@ -9,8 +9,6 @@ from database.utils import redisx
 from database import utils as db
 from resources.service.cotizacion import prices_db, insert_precio_unitario
 from resources.service.ventas import get_ventas_by_product_id
-from PIL import Image
-
 
 def insert_product(request):
     descripcion = request['descripcion']
