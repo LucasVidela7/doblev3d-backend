@@ -190,7 +190,7 @@ def resize_image():
                 file.write(a.content)
             sql = f"""UPDATE images SET imagen='{filename}' WHERE imagen='{img['imagen']}';"""
             db.update_sql(sql)
-            os.remove(f"{os.getenv('FILE_STORE')}/{img['imagen'].split['/'][-1]}'")
+            os.remove(f"{os.getenv('FILE_STORE')}/{img['imagen'].split['/'][-1]}")
             print(f"{img['imagen']}: Exito")
         else:
             print(f"{img['imagen']}: Falló")
