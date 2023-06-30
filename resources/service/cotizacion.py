@@ -147,8 +147,8 @@ def get_precio_unitario(id_producto):
     # precio_sugerido = costo_total / (1 - get_margen(id_producto) / 100)
     precio_sugerido = (costo_material / (1 - get_margen(id_producto) / 100)) + extra_total
     precio_sugerido = 50 * ceil(precio_sugerido / 50)
-    if precio_u < precio_sugerido:
-        # Si el precio unitario es menor al precio sugerido por el sistema, se recomienda nuevo precio
+    if precio_u != precio_sugerido:
+        # Si el precio unitario es distinto al precio sugerido por el sistema, se recomienda nuevo precio según margen
         precio_unitario["preciosugerido"] = round(precio_sugerido, 2)
         check = (date.today() - precio_unitario.get('fechaactualizacion', date.today())).days
         if check < (int(prices_db()["diasVencimiento"]) + 1):
