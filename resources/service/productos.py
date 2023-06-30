@@ -168,30 +168,39 @@ def upload_image(files, id_producto):
     if file and allowed_file(file.filename):
         filename = secure_filename(formalize_filename(file.filename, id_producto))
         file.save(os.path.join(os.getenv("FILE_STORE"), filename))
+        URL = f"https://doblev3d.mooo.com/images/{filename}"
+        URL = tinypng(URL)
         sql = f"delete from images where idproducto='{id_producto}';"
         db.delete_sql(sql)
-        sql = f"INSERT INTO images(imagen,idproducto) VALUES('https://doblev3d.mooo.com/images/{filename}','{id_producto}');"
+        sql = f"INSERT INTO images(imagen,idproducto) VALUES('{URL}','{id_producto}');"
         db.insert_sql(sql)
         redisx.delete(f"productos")
         return jsonify({"message": "Imagen cargada correctamente"}), 200
     return jsonify({"message": "El archivo no cumple las extensiones adecuadas"}), 406
 
 
+def tinypng(url):
+    tinify = Tinify()
+    response = tinify.post_image(url)
+    if response.status_code == 201:
+        a = tinify.get_image(response.json()['output']['url'])
+        filename = url.split('/')[-1].split('.')[0]
+        with open(f"{os.getenv('FILE_STORE')}/{filename}.webp", "wb") as file:
+            file.write(a.content)
+        new_url = f"https://doblev3d.mooo.com/images/{filename}.webp'"
+        sql = f"""UPDATE images SET imagen='{new_url}' WHERE imagen='{url}';"""
+        db.update_sql(sql)
+        os.remove(f"{os.getenv('FILE_STORE')}/{url.split('/')[-1]}")
+        print(f"{url}: Imagen comprimida")
+        return new_url
+    else:
+        print(f"{url}: Falló la compresión")
+        return url
+
+
 def resize_image():
     sql = "SELECT * from images WHERE imagen NOT LIKE '%.webp';"
     imagenes = db.select_multiple(sql)
-    tinify = Tinify()
     for img in imagenes:
-        response = tinify.post_image(img['imagen'])
-        if response.status_code == 201:
-            a = tinify.get_image(response.json()['output']['url'])
-            filename = img['imagen'].split('/')[-1].split('.')[0]
-            with open(f"{os.getenv('FILE_STORE')}/{filename}.webp", "wb") as file:
-                file.write(a.content)
-            sql = f"""UPDATE images SET imagen='https://doblev3d.mooo.com/images/{filename}.webp' WHERE imagen='{img['imagen']}';"""
-            db.update_sql(sql)
-            os.remove(f"{os.getenv('FILE_STORE')}/{img['imagen'].split('/')[-1]}")
-            print(f"{img['imagen']}: Exito")
-        else:
-            print(f"{img['imagen']}: Falló")
+        _ = tinypng(img['imagen'])
     return imagenes
