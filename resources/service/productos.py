@@ -187,7 +187,7 @@ def tinypng(url):
         filename = url.split('/')[-1].split('.')[0]
         with open(f"{os.getenv('FILE_STORE')}/{filename}.webp", "wb") as file:
             file.write(a.content)
-        new_url = f"https://doblev3d.mooo.com/images/{filename}.webp'"
+        new_url = f"https://doblev3d.mooo.com/images/{filename}.webp"
         sql = f"""UPDATE images SET imagen='{new_url}' WHERE imagen='{url}';"""
         db.update_sql(sql)
         os.remove(f"{os.getenv('FILE_STORE')}/{url.split('/')[-1]}")
