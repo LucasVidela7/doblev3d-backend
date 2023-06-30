@@ -151,7 +151,7 @@ def get_precio_unitario(id_producto):
         # Si el precio unitario es distinto al precio sugerido por el sistema, se recomienda nuevo precio según margen
         precio_unitario["preciosugerido"] = round(precio_sugerido, 2)
         check = (date.today() - precio_unitario.get('fechaactualizacion', date.today())).days
-        if check < (int(prices_db()["diasVencimiento"]) + 1):
+        if check < (int(prices_db()["diasVencimiento"]) + 1) and precio_u > precio_sugerido:
             insert_precio_unitario(id_producto,
                                    precio_unitario["preciounitario"],
                                    int(prices_db()["diasVencimiento"]) + 1)
