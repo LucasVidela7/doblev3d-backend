@@ -155,6 +155,10 @@ def get_precio_unitario(id_producto):
             insert_precio_unitario(id_producto,
                                    precio_unitario["preciounitario"],
                                    int(prices_db()["diasVencimiento"]) + 1)
+        else:
+            insert_precio_unitario(id_producto,
+                                   precio_unitario["preciounitario"])
+
     return precio_unitario
 
 
