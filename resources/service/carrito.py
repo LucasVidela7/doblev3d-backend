@@ -1,7 +1,13 @@
 from database import utils as db
 
 
+def vaciar_carrito():
+    sql = "DELETE FROM carrito WHERE time < now()-'3 hours'::interval;"
+    db.delete_sql(sql)
+
+
 def obtener_carrito(hash):
+    vaciar_carrito()
     sql = f"""
     SELECT 
     c.hash,
@@ -40,6 +46,10 @@ def agregar_carrito(request):
     sql = f"""INSERT INTO carrito (hash, idproducto, cantidad) 
         VALUES('{hash}',{id_producto},{cantidad})"""
     db.insert_sql(sql)
+
+    sql = f"UPDATE carrito SET time = now() where hash = '{hash}';"
+    db.update_sql(sql)
+
     return True
 
 
