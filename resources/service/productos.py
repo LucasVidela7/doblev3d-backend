@@ -192,6 +192,8 @@ def resize_image():
             # db.update_sql(sql)
             # print(f"{os.getenv('FILE_STORE')}/{img['imagen'].split['/'][-1]}")
             # os.remove(f"{os.getenv('FILE_STORE')}/{img['imagen'].split['/'][-1]}")
+            print(f"{img['imagen'].split['/'][-1]}")
+            print(f"{os.getenv('FILE_STORE')}")
             print(f"{os.getenv('FILE_STORE')}/{img['imagen'].split['/'][-1]}")
             print(f"{img['imagen']}: Exito")
         else:
