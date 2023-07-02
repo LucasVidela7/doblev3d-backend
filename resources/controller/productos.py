@@ -112,6 +112,6 @@ def precios_por_mayor(id_product):
 @token_required
 def revisar_productos():
     for p in products.get_all_products():
-        get_product_by_id(p['id'])
+        cotizacion.get_precio_unitario(p['id'])
 
     return jsonify({"message": "Proceso terminado"}), 200
