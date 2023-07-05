@@ -147,7 +147,8 @@ CREATE TABLE IF NOT EXISTS clientes(
     id SERIAL PRIMARY KEY,
     dni INTEGER UNIQUE NOT NULL,
     email TEXT UNIQUE,
-    password TEXT
+    password TEXT,
+    activo BOOL DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS datos_clientes(
