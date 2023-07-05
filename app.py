@@ -9,7 +9,7 @@ from resources.controller.catalogo import catalogo_bp
 from resources.controller.extras import extras_bp
 from resources.controller.productos import products_bp
 from resources.controller.categorias import categorias_bp
-from resources.controller.auth_usuarios import login_bp
+from resources.controller.usuarios import login_bp
 from resources.controller.ventas import ventas_bp
 from resources.controller.estados import estados_bp
 from resources.controller.pagos import pagos_bp
@@ -17,6 +17,7 @@ from resources.controller.gastos import gastos_bp
 from resources.controller.configuracion import config_bp
 from resources.controller.balance import balance_bp
 from resources.controller.carrito import carrito_bp
+from resources.controller.clientes import clientes_bp
 
 app = Flask(__name__)
 create_tables()
@@ -35,9 +36,9 @@ app.register_blueprint(categorias_bp)
 app.register_blueprint(extras_bp)
 app.register_blueprint(login_bp)
 app.register_blueprint(carrito_bp)
+app.register_blueprint(clientes_bp)
 
-app.config['SECRET_KEY'] = '8ED81DD4F3589CF6A177DFD1B2D32'
-
+app.config['SECRET_KEY'] = os.getenv('JWT_SECRET')
 
 # @app.before_request
 # def log_request_info():

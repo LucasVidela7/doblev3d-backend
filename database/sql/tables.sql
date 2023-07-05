@@ -126,21 +126,44 @@ CREATE TABLE IF NOT EXISTS estados(
     icono TEXT
 );
 
-DELETE FROM estados;
-INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('PENDIENTE'  ,'1','0','0', '');
-INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('EN PROCESO' ,'1','0','0', '' );
-INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('IMPRIMIR'   ,'0','1','0', 'bx-printer');
-INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('IMPRIMIENDO','0','1','0', 'bxs-printer');
-INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('PINTAR'     ,'0','1','1', 'bx-palette');
-INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('PINTANDO'   ,'0','1','0', 'bxs-brush');
-INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('LISTO'      ,'1','1','0', 'bx-check-square');
-INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('ENTREGADO'  ,'1','0','0', '' );
-INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('CANCELADO'  ,'1','1','0', '' );
+--DELETE FROM estados;
+--INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('PENDIENTE'  ,'1','0','0', '');
+--INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('EN PROCESO' ,'1','0','0', '' );
+--INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('IMPRIMIR'   ,'0','1','0', 'bx-printer');
+--INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('IMPRIMIENDO','0','1','0', 'bxs-printer');
+--INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('PINTAR'     ,'0','1','1', 'bx-palette');
+--INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('PINTANDO'   ,'0','1','0', 'bxs-brush');
+--INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('LISTO'      ,'1','1','0', 'bx-check-square');
+--INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('ENTREGADO'  ,'1','0','0', '' );
+--INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('CANCELADO'  ,'1','1','0', '' );
 
 CREATE TABLE IF NOT EXISTS images(
     id SERIAL PRIMARY KEY,
     imagen TEXT,
     idproducto INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS clientes(
+    id SERIAL PRIMARY KEY,
+    dni INTEGER UNIQUE NOT NULL,
+    email TEXT UNIQUE,
+    password TEXT
+);
+
+CREATE TABLE IF NOT EXISTS datos_clientes(
+    id SERIAL PRIMARY KEY,
+    id_cliente INTEGER NOT NULL,
+    nombre TEXT NOT NULL,
+    apellido TEXT NOT NULL,
+    telefono INTEGER,
+    domicilio TEXT,
+    numero INTEGER,
+    depto TEXT,
+    piso TEXT,
+    entre_calles TEXT,
+    localidad TEXT,
+    codigo_postal INTEGER,
+    principal BOOL DEFAULT FALSE
 );
 
 
