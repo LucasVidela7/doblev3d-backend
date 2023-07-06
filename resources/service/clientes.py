@@ -61,12 +61,15 @@ def login(auth):
     if not auth or not usuario or not password or not hash:
         return jsonify({'message': 'No se están enviando todos los datos'}), 400
 
-    sql = f"SELECT * FROM clientes WHERE dni='{usuario}' or email='{usuario}';"
+    if '@' in usuario:
+        sql = f"SELECT * FROM clientes WHERE email='{usuario}';"
+    else:
+        sql = f"SELECT * FROM clientes WHERE dni='{usuario}';"
     user = db.select_first(sql)
 
     if not user:
         # returns 401 if user does not exist
-        return jsonify({'message': 'Los datos ingresados no son correctos'}), 401
+        return jsonify({'message': 'Usuario y/o contraseña inválidos'}), 401
 
     if check_password_hash(user['password'], password):
         # generates the JWT Token
@@ -79,7 +82,7 @@ def login(auth):
         db.update_sql(sql)
         return jsonify({'token': token.decode('UTF-8'), "expires_in": 30 * 60}), 200
     # returns 403 if password is wrong
-    return jsonify({'message': 'Los datos ingresados no son correctos'}), 401
+    return jsonify({'message': 'Usuario y/o contraseña inválidos'}), 401
 
 
 def registro(auth):
