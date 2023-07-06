@@ -10,47 +10,55 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from database import utils as db
 
 
-def token_cliente_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-        # jwt is passed in the request header
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
-        # return 401 if token is not passed
-        if not token:
-            return jsonify({'message': 'Debe enviarse token'}), 403
+def token_cliente_required(opcional=False):
+    def decorator(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            token = None
+            if opcional:
+                kwargs['user_id'] = None
+            # jwt is passed in the request header
+            if 'x-access-token' in request.headers:
+                token = request.headers['x-access-token']
+            # return 401 if token is not passed
+            if not token and not opcional:
+                return jsonify({'message': 'Debe enviarse token'}), 403
 
-        try:
-            # decoding the payload to fetch the stored details
-            data = jwt.decode(token, os.getenv('JWT_SECRET'))
-            sql = f"SELECT id from clientes where id='{data['public_id']}';"
-            user = db.select_first(sql)
+            try:
+                # decoding the payload to fetch the stored details
+                data = jwt.decode(token, os.getenv('JWT_SECRET'))
+                sql = f"SELECT id from clientes where id='{data['public_id']}';"
+                user = db.select_first(sql)
 
-            if not user:
-                raise Exception("Usuario no encontrado")
+                if not user:
+                    raise Exception("Usuario no encontrado")
 
-            kwargs['user_id'] = data['public_id']
+                kwargs['user_id'] = data['public_id']
 
-        except jwt.ExpiredSignatureError:
-            return jsonify({
-                'message': 'Token expirado!'
-            }), 403
-        except:
-            return jsonify({
-                'message': 'Token invalido!'
-            }), 403
-        # returns the current logged in users contex to the routes
-        return f(*args, **kwargs)
+            except jwt.ExpiredSignatureError:
+                if not opcional:
+                    return jsonify({
+                        'message': 'Token expirado!'
+                    }), 403
+            except:
+                if not opcional:
+                    return jsonify({
+                        'message': 'Token invalido!'
+                    }), 403
+            # returns the current logged in users contex to the routes
+            return f(*args, **kwargs)
 
-    return decorated
+        return decorated
+
+    return decorator
 
 
 def login(auth):
     usuario = auth.get('usuario', False)
     password = auth.get('password', False)
+    hash = auth.get('hash', False)
 
-    if not auth or not usuario or not password:
+    if not auth or not usuario or not password or not hash:
         return jsonify({'message': 'No se están enviando todos los datos'}), 400
 
     sql = f"SELECT * FROM clientes WHERE dni='{usuario}' or email='{usuario}';"
@@ -66,6 +74,9 @@ def login(auth):
             'public_id': user['id'],
             'exp': datetime.utcnow() + timedelta(minutes=30)
         }, os.getenv('JWT_SECRET'))
+
+        sql = f"""UPDATE carrito SET idcliente='{user['id']}' WHERE hash='{hash}';"""
+        db.update_sql(sql)
         return jsonify({'token': token.decode('UTF-8'), "expires_in": 30 * 60}), 200
     # returns 403 if password is wrong
     return jsonify({'message': 'Los datos ingresados no son correctos'}), 401

@@ -18,13 +18,13 @@ def registro():
 
 
 @clientes_bp.route('/clientes/datos', methods=['GET'])
-@token_cliente_required
+@token_cliente_required()
 def datos_clientes(user_id):
     return clientes.datos(user_id)
 
 
 @clientes_bp.route('/clientes/datos', methods=['PUT'])
-@token_cliente_required
+@token_cliente_required()
 def guardar_datos_clientes(user_id):
     body = request.json
     clientes.guardar_datos(user_id, body)

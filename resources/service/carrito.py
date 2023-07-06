@@ -6,11 +6,10 @@ def vaciar_carrito():
     db.delete_sql(sql)
 
 
-def obtener_carrito(hash):
+def obtener_carrito_by_hash(hash):
     vaciar_carrito()
     sql = f"""
     SELECT 
-    c.hash,
     c.idproducto,
     SUM(c.cantidad) as cantidad,
     p.descripcion,
@@ -23,7 +22,6 @@ def obtener_carrito(hash):
     WHERE hash = '{hash}'
     GROUP BY
     c.idproducto,
-    c.hash,
     p.descripcion,
     img.imagen,	
     pu.preciounitario
@@ -32,31 +30,55 @@ def obtener_carrito(hash):
     return carrito
 
 
-def agregar_carrito(request):
-    hash = request.get('hash', False)
-    id_producto = request.get('idProducto', False)
-    cantidad = request.get('cantidad', 1)
+def obtener_carrito_by_user_id(user_id):
+    vaciar_carrito()
+    sql = f"""
+    SELECT 
+    c.idproducto,
+    SUM(c.cantidad) as cantidad,
+    p.descripcion,
+    img.imagen,	
+    pu.preciounitario
+    FROM carrito as c
+    INNER JOIN productos as p ON p.id = c.idproducto 
+    LEFT OUTER JOIN images as img ON img.idproducto = c.idproducto
+    LEFT OUTER JOIN precio_unitario as pu ON pu.idproducto = c.idproducto
+    WHERE idcliente = '{user_id}'
+    GROUP BY
+    c.idproducto,
+    p.descripcion,
+    img.imagen,	
+    pu.preciounitario
+    """
+    carrito = db.select_multiple(sql)
+    return carrito
 
-    if not hash or not id_producto:
-        return False
 
-    sql = f""" DELETE FROM carrito WHERE hash='{hash}' and idproducto={id_producto};"""
-    db.delete_sql(sql)
-
-    sql = f"""INSERT INTO carrito (hash, idproducto, cantidad) 
-        VALUES('{hash}',{id_producto},{cantidad})"""
-    db.insert_sql(sql)
-
-    sql = f"UPDATE carrito SET time = now() where hash = '{hash}';"
-    db.update_sql(sql)
-
+def agregar_carrito(id_producto, cantidad, hash=None, user_id=None):
+    if hash:
+        sql = f""" DELETE FROM carrito WHERE hash='{hash}' and idproducto={id_producto};"""
+        db.delete_sql(sql)
+        sql = f"""INSERT INTO carrito (hash, idproducto, cantidad) 
+            VALUES('{hash}',{id_producto},{cantidad})"""
+        db.insert_sql(sql)
+        sql = f"UPDATE carrito SET time = now() where hash = '{hash}';"
+        db.update_sql(sql)
+    elif user_id:
+        sql = f""" DELETE FROM carrito WHERE idcliente='{user_id}' and idproducto={id_producto};"""
+        db.delete_sql(sql)
+        sql = f"""INSERT INTO carrito (idcliente, idproducto, cantidad) 
+            VALUES('{user_id}',{id_producto},{cantidad})"""
+        db.insert_sql(sql)
+        sql = f"UPDATE carrito SET time = now() where idcliente='{user_id}';"
+        db.update_sql(sql)
     return True
 
 
-def borrar_carrito(hash, id_producto):
-    if not hash or not id_producto:
-        return False
-
-    sql = f"""DELETE FROM carrito where hash='{hash}' and idproducto={id_producto}"""
-    db.delete_sql(sql)
+def borrar_carrito(id_producto, hash=None, user_id=None):
+    if hash:
+        sql = f"""DELETE FROM carrito where hash='{hash}' and idproducto={id_producto}"""
+        db.delete_sql(sql)
+    elif user_id:
+        sql = f"""DELETE FROM carrito where idcliente='{user_id}' and idproducto={id_producto}"""
+        db.delete_sql(sql)
     return True

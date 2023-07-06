@@ -59,10 +59,11 @@ CREATE TABLE IF NOT EXISTS cotizacion(
 
 CREATE TABLE IF NOT EXISTS carrito(
     id SERIAL PRIMARY KEY,
-    hash TEXT NOT NULL,
+    hash TEXT,
     idcliente INTEGER,
     idproducto INTEGER NOT NULL,
-    cantidad INTEGER DEFAULT 1
+    cantidad INTEGER DEFAULT 1,
+    time TIMESTAMP DEFAULT now()
 );
 
 --DROP TABLE ventas;
