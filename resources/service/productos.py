@@ -168,7 +168,7 @@ def upload_image(files, id_producto):
     if file and allowed_file(file.filename):
         filename = secure_filename(formalize_filename(file.filename, id_producto))
         file.save(os.path.join(os.getenv("FILE_STORE"), filename))
-        URL = f"https://doblev3d.mooo.com/images/{filename}"
+        URL = f"https://{os.getenv('DATABASE_HOST')}/{os.getenv('FILE_FOLDER')}/{filename}"
         URL = tinypng(URL)
         sql = f"delete from images where idproducto='{id_producto}';"
         db.delete_sql(sql)
@@ -187,7 +187,7 @@ def tinypng(url):
         filename = url.split('/')[-1].split('.')[0]
         with open(f"{os.getenv('FILE_STORE')}/{filename}.webp", "wb") as file:
             file.write(a.content)
-        new_url = f"https://doblev3d.mooo.com/images/{filename}.webp"
+        new_url = f"https://{os.getenv('DATABASE_HOST')}/{os.getenv('FILE_FOLDER')}{filename}.webp"
         sql = f"""UPDATE images SET imagen='{new_url}' WHERE imagen='{url}';"""
         db.update_sql(sql)
         os.remove(f"{os.getenv('FILE_STORE')}/{url.split('/')[-1]}")
