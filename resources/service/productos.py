@@ -184,15 +184,16 @@ def tinypng(url):
     response = tinify.post_image(url)
     if response.status_code == 201:
         a = tinify.get_image(response.json()['output']['url'])
-        filename = url.split('/')[-1].split('.')[0]
-        with open(f"{os.getenv('FILE_STORE')}/{filename}.webp", "wb") as file:
-            file.write(a.content)
-        new_url = f"https://{os.getenv('DATABASE_HOST')}/{os.getenv('FILE_FOLDER')}{filename}.webp"
-        sql = f"""UPDATE images SET imagen='{new_url}' WHERE imagen='{url}';"""
-        db.update_sql(sql)
-        os.remove(f"{os.getenv('FILE_STORE')}/{url.split('/')[-1]}")
-        print(f"{url}: Imagen comprimida")
-        return new_url
+        if a.status_code == 200:
+            filename = url.split('/')[-1].split('.')[0]
+            with open(f"{os.getenv('FILE_STORE')}/{filename}.webp", "wb") as file:
+                file.write(a.content)
+            new_url = f"https://{os.getenv('DATABASE_HOST')}/{os.getenv('FILE_FOLDER')}/{filename}.webp"
+            sql = f"""UPDATE images SET imagen='{new_url}' WHERE imagen='{url}';"""
+            db.update_sql(sql)
+            os.remove(f"{os.getenv('FILE_STORE')}/{url.split('/')[-1]}")
+            print(f"{url}: Imagen comprimida")
+            return new_url
     else:
         print(f"{url}: Falló la compresión")
         return url
