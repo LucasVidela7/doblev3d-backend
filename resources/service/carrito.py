@@ -1,4 +1,5 @@
 from database import utils as db
+from resources.service.catalogo import set_ofertas
 
 
 def vaciar_carrito():
@@ -13,6 +14,7 @@ def obtener_carrito_by_hash(hash):
     c.idproducto,
     SUM(c.cantidad) as cantidad,
     p.descripcion,
+	p.idcategoria,
     img.imagen,	
     pu.preciounitario
     FROM carrito as c
@@ -23,10 +25,12 @@ def obtener_carrito_by_hash(hash):
     GROUP BY
     c.idproducto,
     p.descripcion,
+	p.idcategoria,
     img.imagen,	
     pu.preciounitario
     """
     carrito = db.select_multiple(sql)
+    set_ofertas(carrito)
     return carrito
 
 
@@ -37,6 +41,7 @@ def obtener_carrito_by_user_id(user_id):
     c.idproducto,
     SUM(c.cantidad) as cantidad,
     p.descripcion,
+	p.idcategoria,
     img.imagen,	
     pu.preciounitario
     FROM carrito as c
@@ -47,10 +52,12 @@ def obtener_carrito_by_user_id(user_id):
     GROUP BY
     c.idproducto,
     p.descripcion,
+	p.idcategoria,
     img.imagen,	
     pu.preciounitario
     """
     carrito = db.select_multiple(sql)
+    set_ofertas(carrito)
     return carrito
 
 

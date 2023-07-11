@@ -168,5 +168,21 @@ CREATE TABLE IF NOT EXISTS datos_clientes(
     principal BOOL DEFAULT FALSE
 );
 
+CREATE TABLE IF NOT EXISTS ofertas(
+    id SERIAL PRIMARY KEY,
+    tipo TEXT NOT NULL,
+    fecha_desde TIMESTAMP,
+    fecha_hasta TIMESTAMP,
+    login BOOL,
+    porcentaje FLOAT NOT NULL,
+    label TEXT,
+    objeto TEXT
+);
+
+CREATE TABLE IF NOT EXISTS ofertas_tipo(
+    id SERIAL PRIMARY KEY,
+    tipo TEXT
+);
+
 
 
