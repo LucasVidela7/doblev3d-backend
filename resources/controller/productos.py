@@ -115,3 +115,12 @@ def revisar_productos():
         cotizacion.get_precio_unitario(p['id'])
 
     return jsonify({"message": "Proceso terminado"}), 200
+
+
+@products_bp.route('/productos/actualizarPrecios', methods=['GET'])
+@token_required
+def actualizar_precios_productos():
+    for p in products.get_all_products():
+        cotizacion.get_precio_unitario(p['id'], actualizar=True)
+
+    return jsonify({"message": "Proceso terminado"}), 200
