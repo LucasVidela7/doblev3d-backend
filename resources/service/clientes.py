@@ -108,7 +108,9 @@ def registro(auth):
 
 
 def datos(user_id):
-    sql = f"SELECT * FROM datos_clientes WHERE id_cliente='{user_id}';"
+    sql = f"""SELECT dc.*, c.dni, c.email FROM datos_clientes as dc
+            INNER JOIN clientes as c ON c.id = dc.id_cliente
+            WHERE id_cliente='{user_id}';"""
     user = db.select_first(sql)
     return user
 

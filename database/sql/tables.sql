@@ -69,8 +69,7 @@ CREATE TABLE IF NOT EXISTS carrito(
 --DROP TABLE ventas;
 CREATE TABLE IF NOT EXISTS ventas(
     id SERIAL PRIMARY KEY,
-    cliente TEXT NOT NULL,
-    contacto TEXT,
+    idcliente INTEGER,
     fechaCreacion DATE,
     idestado INTEGER NOT NULL
 );

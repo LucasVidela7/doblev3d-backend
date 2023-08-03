@@ -28,13 +28,13 @@ def crear_oferta():
         response = False
     elif tipo == 'TIENDA':
         response = ofertas.crear_oferta_tienda(body['fechaDesde'],
-                                               body['fechaHasta'],
+                                               body['fechaHasta'] + ' 23:59:59',
                                                body['porcentaje'],
                                                body['label'],
                                                body.get('login', False))
     elif tipo == 'CATEGORIA':
         response = ofertas.crear_oferta_categoria(body['fechaDesde'],
-                                                  body['fechaHasta'],
+                                                  body['fechaHasta'] + ' 23:59:59',
                                                   body['porcentaje'],
                                                   body['idCategoria'],
                                                   body['label'],
