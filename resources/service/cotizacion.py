@@ -144,19 +144,21 @@ def get_precio_unitario(id_producto, actualizar=False):
     precio_u = precio_unitario.get("preciounitario", 0)
     ganancia = max(0, precio_u - costo_total)
     precio_unitario["ganancia"] = round(ganancia, 2)
-    # precio_sugerido = costo_total / (1 - get_margen(id_producto) / 100)
     precio_sugerido = (costo_material / (1 - get_margen(id_producto) / 100)) + extra_total
     precio_sugerido = 50 * ceil(precio_sugerido / 50)
+
+    check = (date.today() - precio_unitario.get('fechaactualizacion', date.today())).days
     if actualizar:
         if 0 < precio_u < precio_sugerido:
             insert_precio_unitario(id_producto,
                                    precio_sugerido)
-
+        elif check > (int(prices_db()["diasVencimiento"]) + 1):
+            insert_precio_unitario(id_producto,
+                                   precio_u)
     else:
         if precio_u != precio_sugerido:
             # Si el precio unitario es distinto al precio sugerido por el sistema, se recomienda nuevo precio según margen
             precio_unitario["preciosugerido"] = round(precio_sugerido, 2)
-            check = (date.today() - precio_unitario.get('fechaactualizacion', date.today())).days
             if check > (int(prices_db()["diasVencimiento"]) + 1) or precio_u < precio_sugerido:
                 insert_precio_unitario(id_producto,
                                        precio_unitario["preciounitario"],
