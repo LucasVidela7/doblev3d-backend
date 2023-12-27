@@ -144,7 +144,8 @@ def get_precio_unitario(id_producto, actualizar=False):
     precio_u = precio_unitario.get("preciounitario", 0)
     ganancia = max(0, precio_u - costo_total)
     precio_unitario["ganancia"] = round(ganancia, 2)
-    precio_sugerido = (costo_material / (1 - get_margen(id_producto) / 100)) + extra_total
+    margen = get_margen(id_producto) + prices_db()['margenGeneral']
+    precio_sugerido = (costo_material / (1 - margen / 100)) + extra_total
     precio_sugerido = 50 * ceil(precio_sugerido / 50)
 
     check = (date.today() - precio_unitario.get('fechaactualizacion', date.today())).days
@@ -204,8 +205,8 @@ def precios_por_mayor(id_producto, unidades_minimas=20, unidades_maximas=100):
 
     # Rango de unidades
     p_maximo = unidades_maximas - unidades_minimas
-
-    precio_minimo = (costo_material / (1 - (get_margen(id_producto) * 0.80) / 100)) + extra_total  # TODO Configurable
+    margen = get_margen(id_producto) + prices_db()['margenGeneral']
+    precio_minimo = (costo_material / (1 - (margen * 0.80) / 100)) + extra_total  # TODO Configurable
     precio_maximo = precio_u - (precio_u - precio_minimo) * 45 / 100  # TODO Configurable
     diferencia = precio_maximo - precio_minimo
 
