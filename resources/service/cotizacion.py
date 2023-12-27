@@ -76,7 +76,7 @@ def get_price(hours, minutes, weight):
 
 
 def get_price_piezas(piezas: list):
-    all_prices = {}
+    all_prices = {} # para commitear
     total_horas, total_minutos, total_peso = 0, 0, 0
     for n, p in enumerate(piezas):
         horas = p["horas"]
