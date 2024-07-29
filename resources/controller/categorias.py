@@ -17,14 +17,14 @@ def all_categories():
 @token_required
 def add_category():
     id_categoria = categories.add_category(request.json)
-    return jsonify({"idcategoria": id_categoria}), 200
+    return jsonify({"idcategoria": id_categoria, "status": true}), 200
 
 
 @categorias_bp.route('/categorias/<int:id_categoria>', methods=['PUT'])
 @token_required
 def update_category(id_categoria):
     categories.update_category(id_categoria, request.json)
-    return jsonify({"message": "Editado!"}), 200
+    return jsonify({"idcategoria": id_categoria, "status": true}), 200
 
 
 @categorias_bp.route('/categorias/<int:id_categoria>', methods=['DELETE'])
