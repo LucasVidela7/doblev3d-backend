@@ -30,4 +30,5 @@ def update_category(id_categoria):
 @categorias_bp.route('/categorias/<int:id_categoria>', methods=['DELETE'])
 @token_required
 def delete_category(id_categoria):
-    return categories.delete_category(id_categoria)
+    categories.delete_category(id_categoria)
+    return jsonify({"status": True}), 200
