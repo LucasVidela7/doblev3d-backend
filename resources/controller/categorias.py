@@ -27,6 +27,13 @@ def update_category(id_categoria):
     return jsonify({"idcategoria": id_categoria, "status": True}), 200
 
 
+@categorias_bp.route('/categorias/catalogo', methods=['PUT'])
+@token_required
+def update_category_in_catalog():
+    categories.update_category_in_catalog(request.json['id'])
+    return jsonify({"status": True}), 200
+
+
 @categorias_bp.route('/categorias/<int:id_categoria>', methods=['DELETE'])
 @token_required
 def delete_category(id_categoria):

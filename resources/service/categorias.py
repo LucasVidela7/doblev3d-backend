@@ -33,9 +33,18 @@ def add_category(request):
 
 def update_category(_id, request):
     categoria = request['categoria'].upper()
-    catalogo = request['catalogo']
+    # catalogo = request['catalogo']
     margen = request['margen']
-    sql = f"UPDATE categorias SET categoria='{categoria}', catalogo='{catalogo}', margen='{margen}' WHERE id='{_id}';"
+    sql = f"UPDATE categorias SET categoria='{categoria}', margen='{margen}' WHERE id='{_id}';"
+    redisx.delete('categorias')
+    redisx.delete('catalogo:categorias')
+    return db.update_sql(sql)
+
+
+def update_category_in_catalog(_id):
+    sql = f"SELECT catalogo FROM categorias WHERE id='{_id}'"
+    catalogo = db.select_first(sql)['catalogo']
+    sql = f"UPDATE categorias SET catalogo = '{not catalogo}' WHERE id='{_id}';"
     redisx.delete('categorias')
     redisx.delete('catalogo:categorias')
     return db.update_sql(sql)
