@@ -19,7 +19,7 @@ def get_extras():
 @token_required
 def update_extra(id_extra):
     extras.update_extra(id_extra, request.json)
-    return jsonify({"mensaje": "editado"})
+    return jsonify({"idextra": id_extra, "status": True})
 
 
 @extras_bp.route('/extras/<int:id_extra>', methods=['GET'])
@@ -34,14 +34,13 @@ def get_extra(id_extra):
 @token_required
 def delete_extra(id_extra):
     extras.delete_extra(id_extra)
-    return jsonify({"mensaje": "borrado"})
+    return jsonify({"status": True})
 
 
 @extras_bp.route('/extras', methods=['POST'])
 @token_required
 def add_extra():
-    return jsonify({"idextra": extras.add_extra(request.json)})
-
+    return jsonify({"idextra": extras.add_extra(request.json), "status": True})
 
 # @extras_bp.route('/extrasByIDCategoria/<int:id_categoria>', methods=['GET'])
 # @token_required
