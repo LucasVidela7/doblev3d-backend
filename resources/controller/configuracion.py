@@ -17,4 +17,4 @@ def get_configuracion_cotizacion():
 @token_required
 def edit_configuracion_cotizacion():
     cotizacion.update_prices(request.json)
-    return jsonify({"mensaje": "Editado"})
+    return jsonify({"status": True})

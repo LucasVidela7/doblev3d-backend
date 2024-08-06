@@ -33,8 +33,18 @@ def get_extra(id_extra):
 @extras_bp.route('/extras/<int:id_extra>', methods=['DELETE'])
 @token_required
 def delete_extra(id_extra):
-    extras.delete_extra(id_extra)
-    return jsonify({"status": True})
+    forced = request.json.get('forced', False)
+    productos = []
+
+    if forced:
+        extras.delete_extra(id_extra)
+    else:
+        productos = extras.get_products_by_extra_id(id_extra)
+        if not productos:
+            forced = True
+            extras.delete_extra(id_extra)
+
+    return jsonify({"status": forced, 'productos': productos})
 
 
 @extras_bp.route('/extras', methods=['POST'])

@@ -33,6 +33,15 @@ def select_extras_by_id_product(id_product):
     return extras, round(total_amount, 2)
 
 
+def get_products_by_extra_id(id_extra):
+    sql = f"""
+            SELECT p.id, p.descripcion FROM extra_producto as ep 
+            INNER JOIN productos as p ON ep.idproducto = p.id
+            WHERE idextra = '{id_extra}'
+            """
+    return db.select_multiple(sql)
+
+
 def add_extra(request):
     descripcion = request["descripcion"].upper()
     precio = request["precio"]
