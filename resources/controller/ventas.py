@@ -13,8 +13,8 @@ ventas_bp = Blueprint("routes-ventas", __name__)
 def add_venta():
     id_venta = ventas.insertar_venta(request.json)
     if id_venta:
-        return jsonify({"idVenta": id_venta})
-    return jsonify({"message": "internal server error"})
+        return jsonify({"id": id_venta, "status": True})
+    return jsonify({"status": False})
 
 
 @ventas_bp.route('/ventas', methods=['GET'])

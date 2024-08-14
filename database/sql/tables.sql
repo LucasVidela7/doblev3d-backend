@@ -80,13 +80,18 @@ CREATE TABLE IF NOT EXISTS ventas_productos(
     id SERIAL PRIMARY KEY,
     idventa INTEGER NOT NULL,
     idproducto INTEGER NOT NULL,
+    costounidad FLOAT,
     costototal FLOAT,
-    ganancia FLOAT,
-    descuento INTEGER DEFAULT 0,
+    gananciaunidad FLOAT,
+    gananciatotal FLOAT,
     preciounidad FLOAT,
-    adddata TEXT,
+    cantidad INTEGER NOT NULL,
+    descuento FLOAT DEFAULT 0,
+    subtotal FLOAT,
+    total FLOAT,
     observaciones TEXT,
-    idestado INTEGER NOT NULL
+    idestado INTEGER NOT NULL,
+    itemid TEXT
 );
 
 --DROP TABLE pagos;

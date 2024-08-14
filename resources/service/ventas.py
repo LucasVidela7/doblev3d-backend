@@ -21,32 +21,47 @@ def insertar_venta(request):
             RETURNING id;"""
     id_venta = db.insert_sql(sql, key='id')
     if id_venta:
+        productos_pedido = []
+        sql = "SELECT id FROM estados where productos='1' ORDER BY id ASC LIMIT 1 OFFSET 0"
+        estado = db.select_first(sql)['id']
         for p in productos:
             id_producto = p["id"]
-            observaciones = str(p.get("observaciones", "")).split(',')
+            uuid_item = p["itemId"]
+            cantidad = int(p["cantidad"])
+            observaciones = str(p.get("observaciones", ""))
 
-            for x in range(int(p["cantidad"])):
-                try:
-                    obs = observaciones[x]
-                except:
-                    obs = ""
-                # Costo total
-                costo_total = cotizacion.get_costo_total(id_producto)
-                costo_total += extras.select_extras_by_id_product(id_producto)[1]
+            # for x in range(int(p["cantidad"])):
+            costo_unidad = cotizacion.get_costo_total(id_producto)
+            costo_unidad += extras.select_extras_by_id_product(id_producto)[1]
 
-                # Precio unitario
-                descuento = round(float(p.get("descuento", '0')), 2)
-                precio_unidad = round(
-                    cotizacion.get_precio_unitario(id_producto)['preciounitario'] * (100 - descuento) / 100, 2)
-                ganancia = round(precio_unidad - costo_total, 2)
-                sql = f"INSERT INTO ventas_productos (idventa, idproducto, costototal, ganancia, descuento, " \
-                      f"preciounidad, observaciones, adddata, idestado) " \
-                      f"VALUES('{id_venta}','{id_producto}','{round(costo_total, 2)}','{ganancia}',{descuento}," \
-                      f"{precio_unidad},'{obs}',''," \
-                      f"(SELECT id FROM estados where productos='1' ORDER BY id ASC LIMIT 1 OFFSET 0)) " \
-                      f"RETURNING id;"
-                id_detalle = db.insert_sql(sql, key='id')
+            # Precio unitario
+            descuento = int(p.get("descuento", '0'))
+            precio_unidad = round(cotizacion.get_precio_unitario_by_product_id(id_producto) * (100 - descuento) / 100,
+                                  2)
+            ganancia_unidad = precio_unidad - costo_unidad
 
+            productos_pedido.append([id_venta,
+                                     id_producto,
+                                     round(costo_unidad, 2),
+                                     round(costo_unidad * cantidad, 2),
+                                     round(ganancia_unidad, 2),
+                                     round(ganancia_unidad * cantidad, 2),
+                                     precio_unidad,
+                                     cantidad,
+                                     descuento,
+                                     round(precio_unidad * cantidad, 2),
+                                     round(precio_unidad * cantidad, 2),
+                                     observaciones,
+                                     estado,
+                                     uuid_item])
+
+        values = ""
+        for pp in productos_pedido:
+            values += '(' + ",".join(f"'{p}'" for p in pp) + '),'
+        sql = f"""INSERT INTO ventas_productos (idventa, idproducto, costounidad, costototal, gananciaunidad, 
+                gananciatotal, preciounidad, cantidad, descuento, subtotal, total, observaciones, idestado, 
+                itemid) VALUES {values[:-1]}"""
+        db.insert_sql(sql)
         return id_venta
 
 
