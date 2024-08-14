@@ -30,6 +30,12 @@ def select_venta(id_venta):
     return ventas.select_venta_by_id(id_venta)
 
 
+@ventas_bp.route('/ventas/<int:id_venta>/detalle', methods=['GET'])
+@token_required
+def detalle_venta(id_venta):
+    return ventas.detalle_venta(id_venta)
+
+
 @ventas_bp.route('/ventas/<int:id_venta>', methods=['DELETE'])
 @token_required
 def cancelar_venta(id_venta):

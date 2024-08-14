@@ -94,6 +94,18 @@ CREATE TABLE IF NOT EXISTS ventas_productos(
     itemid TEXT
 );
 
+
+CREATE TABLE IF NOT EXISTS ventas_productos_detalle(
+    id SERIAL PRIMARY KEY,
+    idventa INTEGER NOT NULL,
+    itemid TEXT NOT NULL,
+    imprimir INTEGER NOT NULL,
+    imprimiendo INTEGER DEFAULT 0,
+    listo INTEGER DEFAULT 0,
+    total INTEGER NOT NULL
+);
+
+
 --DROP TABLE pagos;
 CREATE TABLE IF NOT EXISTS pagos(
     id SERIAL PRIMARY KEY,

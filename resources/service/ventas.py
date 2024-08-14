@@ -55,6 +55,10 @@ def insertar_venta(request):
                                      estado,
                                      uuid_item])
 
+            sql = (f"INSERT INTO ventas_productos_detalle (itemid, idventa, imprimir, total) VALUES ('{uuid_item}', "
+                   f"'{id_venta}','{cantidad}', '{cantidad}')")
+            db.insert_sql(sql)
+
         values = ""
         for pp in productos_pedido:
             values += '(' + ",".join(f"'{p}'" for p in pp) + '),'
@@ -68,6 +72,39 @@ def insertar_venta(request):
 def get_ventas_by_product_id(product_id):
     sql = f"select * from ventas_productos where idproducto='{product_id}'"
     return db.select_multiple(sql)
+
+
+def detalle_venta(_id):
+
+    sql = f"SELECT v.*, (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia, " \
+          f"(SELECT COALESCE(SUM(vp.preciounidad),0) FROM ventas_productos vp WHERE vp.idventa = v.id) AS preciototal " \
+          f"FROM ventas AS v WHERE v.id= {_id};"
+    venta = db.select_first(sql)
+
+    if not venta:
+        return jsonify({"status": False})
+
+    venta["fechacreacion"] = venta["fechacreacion"].strftime('%Y-%m-%d')
+
+    # Obtener productos
+    sql = f"SELECT vp.cantidad, vp.itemid, vp.idproducto, "\
+          f"CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion FROM ventas_productos AS vp " \
+          f"INNER JOIN productos AS p ON vp.idproducto=p.id " \
+          f"INNER JOIN categorias AS cats ON cats.id=p.idcategoria " \
+          f"WHERE idventa= {_id} " \
+          f"ORDER BY vp.id DESC;"
+    venta['productos'] = db.select_multiple(sql)
+
+    # DETALLE de items
+    sql = f"SELECT imprimir, imprimiendo, listo, total, itemid FROM ventas_productos_detalle where idventa='{_id}'"
+    detalles = db.select_multiple(sql)
+    detalles = dict(map(lambda x: (x["itemid"], x), detalles))
+
+    for dv in venta['productos']:
+        dv['detalle'] = detalles[dv['itemid']]
+        del dv['detalle']['itemid']
+
+    return venta
 
 
 def select_venta_by_id(_id):
