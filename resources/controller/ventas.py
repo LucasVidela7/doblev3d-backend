@@ -20,7 +20,7 @@ def add_venta():
 @ventas_bp.route('/ventas', methods=['GET'])
 @token_required
 def all_ventas():
-    list_ventas = ventas.get_all_ventas()
+    list_ventas = ventas.obtener_todas_las_ventas()
     return jsonify({"ventas": list_ventas})
 
 

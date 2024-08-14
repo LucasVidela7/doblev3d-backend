@@ -90,7 +90,8 @@ def cambiar_estado_producto(request):
 def cancelar_venta(id_venta):
     # Cambiar estado productos
     sql = f"delete from ventas where id='{id_venta}';" \
-          f"delete from ventas_productos where idventa='{id_venta}';"
+          f"delete from ventas_productos where idventa='{id_venta}';"\
+          f"delete from ventas_productos_detalle where idventa='{id_venta}';"
     db.update_sql(sql)
 
 
