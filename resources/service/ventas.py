@@ -219,7 +219,12 @@ def modificar_item(id_venta, item_id, request):
 
 
 def registrar_error(id_venta, item_id, cantidad):
-    sql = (f"UPDATE ventas_productos_detalle SET errores = errores + {cantidad} "
+    item = detalle_item(id_venta, item_id)
+    if item['imprimiendo'] < cantidad:
+        return {}
+
+    sql = (f"UPDATE ventas_productos_detalle SET errores = errores + {cantidad}, pendiente = pendiente + {cantidad}, "
+           f"imprimiendo = imprimiendo - {cantidad} "
            f"WHERE idventa='{id_venta}' and itemid='{item_id}';")
     db.update_sql(sql)
     return detalle_item(id_venta, item_id)
