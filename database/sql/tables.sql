@@ -98,11 +98,13 @@ CREATE TABLE IF NOT EXISTS ventas_productos(
 CREATE TABLE IF NOT EXISTS ventas_productos_detalle(
     id SERIAL PRIMARY KEY,
     idventa INTEGER NOT NULL,
+    idproducto INTEGER NOT NULL,
     itemid TEXT NOT NULL,
-    imprimir INTEGER NOT NULL,
+    pendiente INTEGER NOT NULL,
     imprimiendo INTEGER DEFAULT 0,
     listo INTEGER DEFAULT 0,
-    total INTEGER NOT NULL
+    errores INTEGER DEFAULT 0,
+    cancelados INTEGER DEFAULT 0
 );
 
 

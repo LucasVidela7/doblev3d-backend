@@ -55,8 +55,8 @@ def insertar_venta(request):
                                      estado,
                                      uuid_item])
 
-            sql = (f"INSERT INTO ventas_productos_detalle (itemid, idventa, imprimir, total) VALUES ('{uuid_item}', "
-                   f"'{id_venta}','{cantidad}', '{cantidad}')")
+            sql = (f"INSERT INTO ventas_productos_detalle (itemid, idventa, pendiente, idproducto) VALUES ('{uuid_item}', "
+                   f"'{id_venta}','{cantidad}', {id_producto})")
             db.insert_sql(sql)
 
         values = ""
@@ -88,7 +88,7 @@ def detalle_venta(_id):
     venta.pop("idestado", None)
 
     # Obtener productos
-    sql = f"SELECT vp.cantidad, vp.itemid, vp.idproducto, "\
+    sql = f"SELECT vp.cantidad, vp.itemid, vp.idproducto, vp.observaciones, "\
           f"CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion FROM ventas_productos AS vp " \
           f"INNER JOIN productos AS p ON vp.idproducto=p.id " \
           f"INNER JOIN categorias AS cats ON cats.id=p.idcategoria " \
@@ -97,7 +97,8 @@ def detalle_venta(_id):
     venta['productos'] = db.select_multiple(sql)
 
     # DETALLE de items
-    sql = f"SELECT imprimir, imprimiendo, listo, total, itemid FROM ventas_productos_detalle where idventa='{_id}'"
+    sql = (f"SELECT pendiente, imprimiendo, listo, errores, cancelados, itemid "
+           f"FROM ventas_productos_detalle where idventa='{_id}'")
     detalles = db.select_multiple(sql)
     detalles = dict(map(lambda x: (x["itemid"], x), detalles))
 
