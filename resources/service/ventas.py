@@ -89,7 +89,7 @@ def detalle_venta(_id):
     venta.pop("idestado", None)
 
     # Obtener productos
-    sql = f"SELECT vp.cantidad, vp.itemid, vp.idproducto, vp.observaciones, " \
+    sql = f"SELECT vp.cantidad, vp.itemid, vp.idproducto, vp.observaciones, vp.total, vp.preciounidad, " \
           f"CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion FROM ventas_productos AS vp " \
           f"INNER JOIN productos AS p ON vp.idproducto=p.id " \
           f"INNER JOIN categorias AS cats ON cats.id=p.idcategoria " \
@@ -203,7 +203,7 @@ def modificar_item(id_venta, item_id, request):
     estado_nuevo = request['estadoNuevo']
     cantidad = request['cantidad']
 
-    if estado_anterior not in estados or estado_nuevo not in estados or cantidad < 1:
+    if estado_anterior not in estados or estado_nuevo not in estados or cantidad < 1 or estado_nuevo == estado_anterior:
         return {}
 
     item = detalle_item(id_venta, item_id)
