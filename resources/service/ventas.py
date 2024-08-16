@@ -55,8 +55,9 @@ def insertar_venta(request):
                                      estado,
                                      uuid_item])
 
-            sql = (f"INSERT INTO ventas_productos_detalle (itemid, idventa, pendiente, idproducto) VALUES ('{uuid_item}', "
-                   f"'{id_venta}','{cantidad}', {id_producto})")
+            sql = (
+                f"INSERT INTO ventas_productos_detalle (itemid, idventa, pendiente, idproducto) VALUES ('{uuid_item}', "
+                f"'{id_venta}','{cantidad}', {id_producto})")
             db.insert_sql(sql)
 
         values = ""
@@ -88,7 +89,7 @@ def detalle_venta(_id):
     venta.pop("idestado", None)
 
     # Obtener productos
-    sql = f"SELECT vp.cantidad, vp.itemid, vp.idproducto, vp.observaciones, "\
+    sql = f"SELECT vp.cantidad, vp.itemid, vp.idproducto, vp.observaciones, " \
           f"CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion FROM ventas_productos AS vp " \
           f"INNER JOIN productos AS p ON vp.idproducto=p.id " \
           f"INNER JOIN categorias AS cats ON cats.id=p.idcategoria " \
@@ -188,3 +189,37 @@ def obtener_todas_las_ventas():
             aux_ventas.append(v)
 
     return aux_ventas
+
+
+def detalle_item(id_venta, item_id):
+    sql = (f"SELECT pendiente, imprimiendo, listo, errores, cancelados "
+           f"FROM ventas_productos_detalle WHERE idventa='{id_venta}' and itemid='{item_id}';")
+    return db.select_first(sql)
+
+
+def modificar_item(id_venta, item_id, request):
+    estados = ['pendiente', 'imprimiendo', 'listo']
+    estado_anterior = request['estadoAnterior']
+    estado_nuevo = request['estadoNuevo']
+    cantidad = request['cantidad']
+
+    if estado_anterior not in estados or estado_nuevo not in estados:
+        return {}
+
+    item = detalle_item(id_venta, item_id)
+
+    if item[estado_anterior] < cantidad:
+        return {}
+
+    sql = (f"UPDATE ventas_productos_detalle SET {estado_anterior} = {estado_anterior} - {cantidad}, "
+           f"{estado_nuevo} = {estado_nuevo} + {cantidad} WHERE idventa='{id_venta}' and itemid='{item_id}';")
+    db.update_sql(sql)
+
+    return detalle_item(id_venta, item_id)
+
+
+def registrar_error(id_venta, item_id, cantidad):
+    sql = (f"UPDATE ventas_productos_detalle SET errores = errores + {cantidad} "
+           f"WHERE idventa='{id_venta}' and itemid='{item_id}';")
+    db.update_sql(sql)
+    return detalle_item(id_venta, item_id)

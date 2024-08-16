@@ -36,6 +36,21 @@ def detalle_venta(id_venta):
     return ventas.detalle_venta(id_venta)
 
 
+@ventas_bp.route('/ventas/<int:id_venta>/estadoItem/<itemId>', methods=['PUT'])
+@token_required
+def modificar_item(id_venta, itemId):
+    response = ventas.modificar_item(id_venta, itemId, request.json)
+    return jsonify({"status": bool(response), "detalle": response})
+
+
+@ventas_bp.route('/ventas/<int:id_venta>/error/<itemId>', methods=['PUT'])
+@token_required
+def registrar_error(id_venta, itemId):
+    cantidad = request.json['cantidad']
+    response = ventas.registrar_error(id_venta, itemId, cantidad)
+    return jsonify({"status": bool(response), "detalle": response})
+
+
 @ventas_bp.route('/ventas/<int:id_venta>', methods=['DELETE'])
 @token_required
 def cancelar_venta(id_venta):
