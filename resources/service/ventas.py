@@ -203,7 +203,7 @@ def modificar_item(id_venta, item_id, request):
     estado_nuevo = request['estadoNuevo']
     cantidad = request['cantidad']
 
-    if estado_anterior not in estados or estado_nuevo not in estados:
+    if estado_anterior not in estados or estado_nuevo not in estados or cantidad < 1:
         return {}
 
     item = detalle_item(id_venta, item_id)
@@ -220,7 +220,7 @@ def modificar_item(id_venta, item_id, request):
 
 def registrar_error(id_venta, item_id, cantidad):
     item = detalle_item(id_venta, item_id)
-    if item['imprimiendo'] < cantidad:
+    if item['imprimiendo'] < cantidad and cantidad > 0:
         return {}
 
     sql = (f"UPDATE ventas_productos_detalle SET errores = errores + {cantidad}, pendiente = pendiente + {cantidad}, "
