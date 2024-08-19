@@ -77,7 +77,7 @@ def get_ventas_by_product_id(product_id):
 
 def detalle_venta(_id):
     sql = f"SELECT v.*, (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia, " \
-          f"(SELECT COALESCE(SUM(vp.preciounidad),0) FROM ventas_productos vp WHERE vp.idventa = v.id) AS preciototal " \
+          f"(SELECT COALESCE(SUM(vp.total),0) FROM ventas_productos vp WHERE vp.idventa = v.id) AS preciototal " \
           f"FROM ventas AS v WHERE v.id= {_id};"
     venta = db.select_first(sql)
 
