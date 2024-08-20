@@ -173,7 +173,7 @@ def select_venta_by_id(_id):
 
 def obtener_todas_las_ventas():
     sql = f"SELECT v.*, " \
-          f" (SELECT (SELECT COALESCE(SUM(vp.cantidad),0) FROM ventas_productos vp WHERE vp.idventa = v.id) AS productos, " \
+          f" (SELECT (SELECT COALESCE(SUM(vp.cantidad),0)) FROM ventas_productos vp WHERE vp.idventa = v.id) AS productos, " \
           f" (SELECT sum(vp.preciounidad) FROM ventas_productos vp WHERE vp.idventa = v.id) AS precioTotal, " \
           f" (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia " \
           f" FROM ventas AS v " \
