@@ -9,6 +9,14 @@ from resources.service import estados as estados
 from database import utils as db
 
 
+class estadosVentas:
+    PENDIENTE = "PENDIENTE"
+    EN_PROCESO = "EN PROCESO"
+    TERMINADO = "TERMINADO"
+    ENTREGADO = "ENTREGADO"
+    CANCELADO = "CANCELADO"
+
+
 def insertar_venta(request):
     cliente = request['cliente']
     contacto = request['contacto']
@@ -22,8 +30,6 @@ def insertar_venta(request):
     id_venta = db.insert_sql(sql, key='id')
     if id_venta:
         productos_pedido = []
-        sql = "SELECT id FROM estados where productos='1' ORDER BY id ASC LIMIT 1 OFFSET 0"
-        estado = db.select_first(sql)['id']
         for p in productos:
             id_producto = p["id"]
             uuid_item = p["itemId"]
@@ -52,7 +58,6 @@ def insertar_venta(request):
                                      round(precio_unidad * cantidad, 2),
                                      round(precio_unidad * cantidad, 2),
                                      observaciones,
-                                     estado,
                                      uuid_item])
 
             sql = (
@@ -85,6 +90,7 @@ def detalle_venta(_id):
         return jsonify({"status": False})
 
     venta["fechacreacion"] = venta["fechacreacion"].strftime('%Y-%m-%d')
+    # TODO CAMBIAR
     venta["estado"] = estados.order_estados(estados.get_estados_ventas(), venta["idestado"])
     venta.pop("idestado", None)
 

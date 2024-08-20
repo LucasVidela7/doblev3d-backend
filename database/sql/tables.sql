@@ -67,15 +67,18 @@ CREATE TABLE IF NOT EXISTS carrito(
 );
 
 --DROP TABLE ventas;
+--DROP TABLE ventas_productos;
+--DROP TABLE ventas_productos_detalle;
+
 CREATE TABLE IF NOT EXISTS ventas(
     id SERIAL PRIMARY KEY,
     cliente TEXT NOT NULL,
     contacto TEXT,
     fechaCreacion DATE,
-    idestado INTEGER NOT NULL
+    idestado INTEGER NOT NULL,
+    estado TEXT NOT NULL
 );
 
---DROP TABLE ventas_productos;
 CREATE TABLE IF NOT EXISTS ventas_productos(
     id SERIAL PRIMARY KEY,
     idventa INTEGER NOT NULL,
@@ -90,7 +93,6 @@ CREATE TABLE IF NOT EXISTS ventas_productos(
     subtotal FLOAT,
     total FLOAT,
     observaciones TEXT,
-    idestado INTEGER NOT NULL,
     itemid TEXT
 );
 
@@ -130,21 +132,21 @@ CREATE TABLE IF NOT EXISTS medios_pago(
     id SERIAL PRIMARY KEY,
     descripcion TEXT
 );
-DELETE FROM medios_pago;
-INSERT INTO medios_pago (descripcion) VALUES('MERCADO PAGO');
-INSERT INTO medios_pago (descripcion) VALUES('EFECTIVO');
-INSERT INTO medios_pago (descripcion) VALUES('BANCO SANTANDER');
+--DELETE FROM medios_pago;
+--INSERT INTO medios_pago (descripcion) VALUES('MERCADO PAGO');
+--INSERT INTO medios_pago (descripcion) VALUES('EFECTIVO');
+--INSERT INTO medios_pago (descripcion) VALUES('BANCO SANTANDER');
 
 --DROP TABLE estados;
 --DROP TABLE estados;
-CREATE TABLE IF NOT EXISTS estados(
-    id SERIAL PRIMARY KEY,
-    estado TEXT,
-    ventas BIT,
-    productos BIT,
-    saltear BIT,
-    icono TEXT
-);
+--CREATE TABLE IF NOT EXISTS estados(
+--    id SERIAL PRIMARY KEY,
+--    estado TEXT,
+--    ventas BIT,
+--    productos BIT,
+--    saltear BIT,
+--    icono TEXT
+--);
 
 --DELETE FROM estados;
 --INSERT INTO estados (estado, ventas, productos,saltear,icono) VALUES('PENDIENTE'  ,'1','0','0', '');

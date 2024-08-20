@@ -43,11 +43,11 @@ def modificar_item(id_venta, itemId):
     return jsonify({"status": bool(response), "detalle": response})
 
 
-@ventas_bp.route('/ventas/<int:id_venta>/error/<itemId>', methods=['PUT'])
+@ventas_bp.route('/ventas/<int:id_venta>/error/<item_id>', methods=['PUT'])
 @token_required
-def registrar_error(id_venta, itemId):
+def registrar_error(id_venta, item_id):
     cantidad = request.json['cantidad']
-    response = ventas.registrar_error(id_venta, itemId, cantidad)
+    response = ventas.registrar_error(id_venta, item_id, cantidad)
     return jsonify({"status": bool(response), "detalle": response})
 
 
@@ -55,7 +55,7 @@ def registrar_error(id_venta, itemId):
 @token_required
 def cancelar_venta(id_venta):
     estados.cancelar_venta(id_venta)
-    return jsonify({"mensaje": "venta cancelada"})
+    return jsonify({"status": True})
 
 
 @ventas_bp.route('/ventas/producto/<int:id_producto>', methods=['DELETE'])
@@ -74,4 +74,4 @@ def select_pagos_venta(id_venta):
 @token_required
 def entregar_venta(id_venta):
     estados.entregar_venta(id_venta)
-    return jsonify({"mensaje": "producto cancelado"})
+    return jsonify({"status": True})
