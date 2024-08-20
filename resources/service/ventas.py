@@ -90,8 +90,6 @@ def detalle_venta(_id):
         return jsonify({"status": False})
 
     venta["fechacreacion"] = venta["fechacreacion"].strftime('%Y-%m-%d')
-    # TODO CAMBIAR
-    #venta["estado"] = estados.order_estados(estados.get_estados_ventas(), venta["idestado"])
     venta.pop("idestado", None)
 
     # Obtener productos
@@ -200,7 +198,7 @@ def detalle_item(id_venta, item_id):
 
 
 def modificar_item(id_venta, item_id, request):
-    estados = ['pendiente', 'imprimiendo', 'listo']
+    estados = ['pendiente', 'imprimiendo', 'listo', 'cancelados']
     estado_anterior = request['estadoAnterior']
     estado_nuevo = request['estadoNuevo']
     cantidad = request['cantidad']
