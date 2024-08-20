@@ -9,7 +9,7 @@ from database.utils import redisx
 def get_all_extras():
     extras = redisx.get(f'extras')
     if extras is None:
-        sql = f"SELECT * FROM extras"
+        sql = f"SELECT * FROM extras ORDER BY descripcion ASC"
         extras = db.select_multiple(sql)
         redisx.set(f'extras', pickle.dumps(extras))
     else:
