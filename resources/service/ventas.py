@@ -230,3 +230,9 @@ def registrar_error(id_venta, item_id, cantidad):
            f"WHERE idventa='{id_venta}' and itemid='{item_id}';")
     db.update_sql(sql)
     return detalle_item(id_venta, item_id)
+
+
+def cancelar_venta(id_venta):
+    # Cambiar estado productos
+    sql = f"UPDATE ventas SET estado = '{estadosVentas.CANCELADO}' where id='{id_venta}';"
+    db.update_sql(sql)

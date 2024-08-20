@@ -54,7 +54,7 @@ def registrar_error(id_venta, item_id):
 @ventas_bp.route('/ventas/<int:id_venta>', methods=['DELETE'])
 @token_required
 def cancelar_venta(id_venta):
-    estados.cancelar_venta(id_venta)
+    ventas.cancelar_venta(id_venta)
     return jsonify({"status": True})
 
 
