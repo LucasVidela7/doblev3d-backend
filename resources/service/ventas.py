@@ -69,7 +69,7 @@ def insertar_venta(request):
         for pp in productos_pedido:
             values += '(' + ",".join(f"'{p}'" for p in pp) + '),'
         sql = f"""INSERT INTO ventas_productos (idventa, idproducto, costounidad, costototal, gananciaunidad, 
-                gananciatotal, preciounidad, cantidad, descuento, subtotal, total, observaciones, idestado, 
+                gananciatotal, preciounidad, cantidad, descuento, subtotal, total, observaciones, 
                 itemid) VALUES {values[:-1]}"""
         db.insert_sql(sql)
         return id_venta
