@@ -198,7 +198,7 @@ def detalle_item(id_venta, item_id):
 
 
 def modificar_item(id_venta, item_id, request):
-    estados = ['pendiente', 'imprimiendo', 'listo', 'cancelados']
+    estados = ['pendiente', 'imprimiendo', 'listo']
     estado_anterior = request['estadoAnterior']
     estado_nuevo = request['estadoNuevo']
     cantidad = request['cantidad']
