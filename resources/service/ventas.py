@@ -91,7 +91,7 @@ def detalle_venta(_id):
 
     venta["fechacreacion"] = venta["fechacreacion"].strftime('%Y-%m-%d')
     # TODO CAMBIAR
-    venta["estado"] = estados.order_estados(estados.get_estados_ventas(), venta["idestado"])
+    #venta["estado"] = estados.order_estados(estados.get_estados_ventas(), venta["idestado"])
     venta.pop("idestado", None)
 
     # Obtener productos
