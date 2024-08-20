@@ -172,16 +172,12 @@ def select_venta_by_id(_id):
 
 
 def obtener_todas_las_ventas():
-    estado_cancelado = estados.get_id_estado_cancelado()
-    sql = f"SELECT v.*, e.estado, " \
-          f" (SELECT count(vp.id) FROM ventas_productos vp WHERE " \
-          f"vp.idventa = v.id and vp.idestado<>'{estados.get_id_estado_cancelado()}') AS productos, " \
+    sql = f"SELECT v.*, " \
+          f" (SELECT count(vp.id) FROM ventas_productos vp WHERE vp.idventa = v.id) AS productos, " \
           f" (SELECT sum(vp.preciounidad) FROM ventas_productos vp WHERE vp.idventa = v.id) AS precioTotal, " \
           f" (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia " \
           f" FROM ventas AS v " \
-          f" INNER JOIN estados AS e ON v.idestado = e.id " \
-          f" WHERE idestado <>  '{estado_cancelado}'" \
-          f" and (SELECT count(vp.id) FROM ventas_productos vp WHERE  vp.idventa = v.id and vp.idestado<>'{estado_cancelado}') > 0" \
+          f" WHERE estado <>  '{estadosVentas.CANCELADO}'" \
           f" ORDER BY v.idestado DESC, id ASC, senia DESC, productos DESC;"
     ventas = db.select_multiple(sql)
     for v in ventas:
