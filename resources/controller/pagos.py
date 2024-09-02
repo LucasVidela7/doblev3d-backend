@@ -20,7 +20,7 @@ def add_pago():
 def all_pagos():
     mes = request.args.get('mes')
     anio = request.args.get('anio')
-    return jsonify({"pagos": pagos.get_all_pagos(mes=mes, anio=anio)})
+    return jsonify(pagos.get_all_pagos(mes=mes, anio=anio))
 
 
 @pagos_bp.route('/pagos/<int:id_pago>', methods=['DELETE'])
