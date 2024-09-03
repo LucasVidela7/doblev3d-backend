@@ -59,8 +59,9 @@ def insert_product(request):
 def select_product_by_id(_id):
     product = redisx.get(f'producto:{_id}:detalle')
     if product is None:
-        sql = f"SELECT p.*, cats.categoria AS categoria FROM productos AS p " \
+        sql = f"SELECT p.*, img.imagen, cats.categoria AS categoria FROM productos AS p " \
               f"INNER JOIN categorias as cats ON cats.id = p.idcategoria " \
+              f"LEFT JOIN images as img ON img.idproducto = p.id " \
               f"WHERE p.id= {_id}"
         product = db.select_first(sql)
         redisx.set(f'producto:{_id}:detalle', pickle.dumps(product))
