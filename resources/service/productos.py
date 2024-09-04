@@ -150,7 +150,7 @@ def delete_product(id_producto):
 def upload_image(files, id_producto):
     def allowed_file(filename):
         return '.' in filename and \
-            filename.rsplit('.', 1)[1].lower() in ["jpg", "png", "jpeg"]  # ALLOWED_EXTENSIONS
+            filename.rsplit('.', 1)[1].lower() in ["jpg", "png", "jpeg", "webp"]  # ALLOWED_EXTENSIONS
 
     def formalize_filename(filename, id_producto):
         name = filename.split(".")

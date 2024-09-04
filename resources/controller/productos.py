@@ -15,7 +15,7 @@ products_bp = Blueprint("routes-products", __name__)
 
 @products_bp.route('/productos', methods=['POST'])
 @token_required
-def add_products():
+def agregar_producto():
     id_product = products.insert_product(request.json)
     if id_product:
         return jsonify({"idproducto": id_product})
@@ -24,7 +24,7 @@ def add_products():
 
 @products_bp.route('/productos/<int:id_product>', methods=['GET'])
 @token_required
-def get_product_by_id(id_product):
+def obtener_producto_por_id(id_product):
     if id_product:
         product_details = products.select_product_by_id(id_product)
         list_piezas, cot = cotizacion.get_price_piezas(piezas.select_piezas_by_id_product(id_product))
@@ -46,13 +46,13 @@ def get_product_by_id(id_product):
 
 @products_bp.route('/productos', methods=['GET'])
 @token_required
-def all_products():
+def obtener_productos():
     return jsonify({"productos": products.get_all_products()})
 
 
 @products_bp.route('/productos/<int:id_product>', methods=['PUT'])
 @token_required
-def update_product(id_product):
+def actualizar_producto(id_product):
     if id_product:
         products.update_product(id_product, request.json)
         product_details = products.select_product_by_id(id_product)
@@ -63,13 +63,13 @@ def update_product(id_product):
 
 @products_bp.route('/productos/<int:id_product>', methods=['DELETE'])
 @token_required
-def delete_product(id_product):
+def borrar_producto(id_product):
     return products.delete_product(id_product)
 
 
 @products_bp.route('/productos/<int:id_product>/imagen', methods=['POST'])
 @token_required
-def imagen_producto(id_product):
+def agregar_imagen_producto(id_product):
     # base = request.json["imagen"]
     file = request.files
     imagen = products.upload_image(file, id_product)
@@ -93,19 +93,11 @@ def eliminar_imagen_producto(id_product):
     return {'status': True}
 
 
-@products_bp.route('/productos/imagenes/resize', methods=['GET'])
-# @token_required
-def imagen_tamano():
-    return products.resize_image()
-
-
 @products_bp.route('/productos/<int:id_product>/precio', methods=['POST'])
 @token_required
-def insert_product_price(id_product):
-    if id_product:
-        cotizacion.insert_precio_unitario(id_product, request.json["preciounitario"])
-        return jsonify({"mensaje": "Precio agregado"})
-    return jsonify({"message": "internal server error"})
+def insertar_precio_producto(id_product):
+    cotizacion.insert_precio_unitario(id_product, request.json["preciounitario"])
+    return jsonify({"status": True})
 
 
 @products_bp.route('/productos/<int:id_product>/piezas', methods=['GET'])
@@ -120,12 +112,9 @@ def productos_piezas(id_product):
 @products_bp.route('/productos/<int:id_product>/precios', methods=['GET'])
 @token_required
 def precios_por_mayor(id_product):
-    if id_product:
-        minimo = int(request.args.get('minimo', 20))
-        maximo = int(request.args.get('maximo', 100))
-        return jsonify(cotizacion.precios_por_mayor(id_product, unidades_minimas=minimo, unidades_maximas=maximo))
-
-    return jsonify({"message": "internal server error"})
+    minimo = int(request.args.get('minimo', 20))
+    maximo = int(request.args.get('maximo', 100))
+    return jsonify(cotizacion.precios_por_mayor(id_product, unidades_minimas=minimo, unidades_maximas=maximo))
 
 
 @products_bp.route('/productos/revisar', methods=['GET'])
