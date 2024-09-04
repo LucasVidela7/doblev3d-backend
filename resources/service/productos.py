@@ -174,8 +174,14 @@ def upload_image(files, id_producto):
         db.delete_sql(sql)
         sql = f"INSERT INTO images(imagen,idproducto) VALUES('{URL}','{id_producto}');"
         db.insert_sql(sql)
-        redisx.delete(*redisx.keys(f"producto:{id_producto}:*"))
-        redisx.delete(f"productos")
+        try:
+            redisx.delete(*redisx.keys(f"producto:{id_producto}:*"))
+        except:
+            pass
+        try:
+            redisx.delete(f"productos")
+        except:
+            pass
         return URL
     return ""
 
@@ -192,8 +198,14 @@ def tinypng(url, id_producto):
         sql = f"""UPDATE images SET imagen='{new_url}' WHERE imagen='{url}';"""
         db.update_sql(sql)
         os.remove(f"{os.getenv('FILE_STORE')}/{url.split('/')[-1]}")
-        redisx.delete(*redisx.keys(f"producto:{id_producto}:*"))
-        redisx.delete(f"productos")
+        try:
+            redisx.delete(*redisx.keys(f"producto:{id_producto}:*"))
+        except:
+            pass
+        try:
+            redisx.delete(f"productos")
+        except:
+            pass
         print(f"{url}: Imagen comprimida")
         return new_url
     else:
