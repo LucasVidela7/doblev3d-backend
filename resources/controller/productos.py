@@ -1,3 +1,5 @@
+import threading
+
 from flasgger import swag_from
 from flask import request, jsonify, Blueprint
 
@@ -70,7 +72,18 @@ def delete_product(id_product):
 def imagen_producto(id_product):
     # base = request.json["imagen"]
     file = request.files
-    return products.upload_image(file, id_product)
+    imagen = products.upload_image(file, id_product)
+
+    def tinify(**kwargs):
+        url = kwargs.get('url')
+        id_producto =  kwargs.get('id_producto')
+        products.tinypng(url, id_producto)
+
+    if imagen:
+        thread = threading.Thread(target=tinify, kwargs={'url': imagen, 'id_producto': id_product})
+        thread.start()
+
+    return {"status": bool(imagen), "imagen": imagen}, 200
 
 
 @products_bp.route('/productos/imagenes/resize', methods=['GET'])

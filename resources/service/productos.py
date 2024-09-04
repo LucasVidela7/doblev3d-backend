@@ -159,28 +159,28 @@ def upload_image(files, id_producto):
 
     # check if the post request has the file part
     if 'file' not in files:
-        return jsonify({"status": False}), 406
+        return ""
     file = files['file']
     # if user does not select file, browser also
     # submit an empty part without filename
     if file.filename == '':
-        return jsonify({"status": False}), 406
+        return ""
     if file and allowed_file(file.filename):
         filename = secure_filename(formalize_filename(file.filename, id_producto))
         file.save(os.path.join(os.getenv("FILE_STORE"), filename))
         URL = f"https://doblev3d.mooo.com/images/{filename}"
-        URL = tinypng(URL)
+        # URL = tinypng(URL)
         sql = f"delete from images where idproducto='{id_producto}';"
         db.delete_sql(sql)
         sql = f"INSERT INTO images(imagen,idproducto) VALUES('{URL}','{id_producto}');"
         db.insert_sql(sql)
         redisx.delete(*redisx.keys(f"producto:{id_producto}:*"))
         redisx.delete(f"productos")
-        return jsonify({"status": True, "imagen": URL}), 200
-    return jsonify({"status": False}), 406
+        return URL
+    return ""
 
 
-def tinypng(url):
+def tinypng(url, id_producto):
     tinify = Tinify()
     response = tinify.post_image(url)
     if response.status_code == 201:
@@ -192,6 +192,8 @@ def tinypng(url):
         sql = f"""UPDATE images SET imagen='{new_url}' WHERE imagen='{url}';"""
         db.update_sql(sql)
         os.remove(f"{os.getenv('FILE_STORE')}/{url.split('/')[-1]}")
+        redisx.delete(*redisx.keys(f"producto:{id_producto}:*"))
+        redisx.delete(f"productos")
         print(f"{url}: Imagen comprimida")
         return new_url
     else:
