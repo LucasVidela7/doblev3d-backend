@@ -143,8 +143,7 @@ def delete_product(id_producto):
           f"delete from piezas where idproducto={id_producto};"
     db.delete_sql(sql)
 
-    redisx.delete(*redisx.keys(f"producto:{id_producto}:*"))
-    redisx.delete(f"productos")
+    limpiar_cache_producto(id_producto)
     return jsonify({"message": "Producto borrado correctamente"}), 200
 
 
@@ -169,19 +168,11 @@ def upload_image(files, id_producto):
         filename = secure_filename(formalize_filename(file.filename, id_producto))
         file.save(os.path.join(os.getenv("FILE_STORE"), filename))
         URL = f"https://doblev3d.mooo.com/images/{filename}"
-        # URL = tinypng(URL)
         sql = f"delete from images where idproducto='{id_producto}';"
         db.delete_sql(sql)
         sql = f"INSERT INTO images(imagen,idproducto) VALUES('{URL}','{id_producto}');"
         db.insert_sql(sql)
-        try:
-            redisx.delete(*redisx.keys(f"producto:{id_producto}:*"))
-        except:
-            pass
-        try:
-            redisx.delete(f"productos")
-        except:
-            pass
+        limpiar_cache_producto(id_producto)
         return URL
     return ""
 
@@ -198,19 +189,39 @@ def tinypng(url, id_producto):
         sql = f"""UPDATE images SET imagen='{new_url}' WHERE imagen='{url}';"""
         db.update_sql(sql)
         os.remove(f"{os.getenv('FILE_STORE')}/{url.split('/')[-1]}")
-        try:
-            redisx.delete(*redisx.keys(f"producto:{id_producto}:*"))
-        except:
-            pass
-        try:
-            redisx.delete(f"productos")
-        except:
-            pass
+        limpiar_cache_producto(id_producto)
         print(f"{url}: Imagen comprimida")
         return new_url
     else:
         print(f"{url}: Falló la compresión")
         return url
+
+
+def eliminar_imagen_producto(id_producto):
+    sql = f"SELECT imagen FROM images WHERE idproducto = '{id_producto}';"
+    url = db.select_first(sql)['imagen']
+
+    filename = url.split('/')[-1]
+    archivo = os.getenv('FILE_STORE') + '\\' + filename
+
+    if os.path.isfile(archivo):
+        os.remove(archivo)
+
+    sql = f"DELETE FROM images WHERE idproducto = '{id_producto}';"
+    db.delete_sql(sql)
+    limpiar_cache_producto(id_producto)
+    return True
+
+
+def limpiar_cache_producto(id_producto):
+    try:
+        redisx.delete(*redisx.keys(f"producto:{id_producto}:*"))
+    except:
+        pass
+    try:
+        redisx.delete(f"productos")
+    except:
+        pass
 
 
 def resize_image():

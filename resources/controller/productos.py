@@ -76,7 +76,7 @@ def imagen_producto(id_product):
 
     def tinify(**kwargs):
         url = kwargs.get('url')
-        id_producto =  kwargs.get('id_producto')
+        id_producto = kwargs.get('id_producto')
         products.tinypng(url, id_producto)
 
     if imagen:
@@ -84,6 +84,13 @@ def imagen_producto(id_product):
         thread.start()
 
     return {"status": bool(imagen), "imagen": imagen}, 200
+
+
+@products_bp.route('/productos/<int:id_product>/imagen', methods=['DELETE'])
+@token_required
+def eliminar_imagen_producto(id_product):
+    products.eliminar_imagen_producto(id_product)
+    return {'status': True}
 
 
 @products_bp.route('/productos/imagenes/resize', methods=['GET'])
