@@ -76,7 +76,7 @@ def get_price(hours, minutes, weight):
 
 
 def get_price_piezas(piezas: list):
-    all_prices = {} # para commitear
+    all_prices = {}  # para commitear
     total_horas, total_minutos, total_peso = 0, 0, 0
     for n, p in enumerate(piezas):
         horas = p["horas"]
@@ -198,7 +198,7 @@ def get_costo_total(id_producto):
     return round(data['costoPieza'], 2)
 
 
-def precios_por_mayor(id_producto, unidades_minimas=20, unidades_maximas=100):
+def precios_por_mayor(id_producto, unidades_minimas=5, unidades_maximas=100):
     costo_material = get_costo_total(id_producto)
     _, extra_total = select_extras_by_id_product(id_producto)
     precio_u = get_precio_unitario_by_product_id(id_producto)
@@ -222,3 +222,15 @@ def precios_por_mayor(id_producto, unidades_minimas=20, unidades_maximas=100):
                         "precio": round(p, 2),
                         "unidad": round(p / x, 2)})
     return {"precios": precios}
+
+
+def precio_por_cantidad(id_producto, cantidad):
+    precios_mayor = precios_por_mayor(id_producto)['precios']
+
+    for i, p in enumerate(precios_mayor):
+        if p['unidades'] <= cantidad < precios_mayor[i + 1]['unidades']:
+            return {"unidades": cantidad,
+                    "total": round(p['unidad'] * cantidad, 2),
+                    "unidad": p['unidad']}
+
+    return {}

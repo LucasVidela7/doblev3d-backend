@@ -112,9 +112,17 @@ def productos_piezas(id_product):
 @products_bp.route('/productos/<int:id_product>/precios', methods=['GET'])
 @token_required
 def precios_por_mayor(id_product):
-    minimo = int(request.args.get('minimo', 20))
+    minimo = int(request.args.get('minimo', 5))
     maximo = int(request.args.get('maximo', 100))
     return jsonify(cotizacion.precios_por_mayor(id_product, unidades_minimas=minimo, unidades_maximas=maximo))
+
+
+@products_bp.route('/productos/<int:id_product>/precioPorCantidad', methods=['GET'])
+@token_required
+def precio_por_cantidad(id_product):
+    cantidad = request.json['cantidad']
+    precio = cotizacion.precio_por_cantidad(id_product, cantidad)
+    return jsonify({'status': bool(precio), 'precio': precio})
 
 
 @products_bp.route('/productos/revisar', methods=['GET'])
