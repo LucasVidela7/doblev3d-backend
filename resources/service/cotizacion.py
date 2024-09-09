@@ -214,23 +214,34 @@ def precios_por_mayor(id_producto, unidades_minimas=5, unidades_maximas=100):
 
     precios = []
     for x in range(unidades_minimas, unidades_maximas + saltos, saltos):
-        y = x - unidades_minimas
-        porcentaje = y * 100 / p_maximo
+        y = x + 1 - unidades_minimas
+        porcentaje = min(round(y * 100 / p_maximo, 2), 100)
         p = (precio_minimo + (diferencia * (100 - porcentaje) / 100)) * x
         p = 50 * ceil(p / 50)
         precios.append({"unidades": x,
                         "precio": round(p, 2),
+                        "precioUnitario": precio_u,
+                        "descuento": porcentaje,
                         "unidad": round(p / x, 2)})
     return {"precios": precios}
 
 
 def precio_por_cantidad(id_producto, cantidad):
-    precios_mayor = precios_por_mayor(id_producto)['precios']
+    precios_mayor = precios_por_mayor(id_producto, unidades_maximas=max([100, cantidad]))['precios']
+
+    if cantidad >= precios_mayor[-1]['unidades']:
+        return {"unidades": cantidad,
+                "total": round(precios_mayor[-1]['unidad'] * cantidad, 2),
+                "descuento": precios_mayor[-1]['descuento'],
+                "precioReal": precios_mayor[-1]['precioUnitario'],
+                "unidad": precios_mayor[-1]['unidad']}
 
     for i, p in enumerate(precios_mayor):
         if p['unidades'] <= cantidad < precios_mayor[i + 1]['unidades']:
             return {"unidades": cantidad,
                     "total": round(p['unidad'] * cantidad, 2),
+                    "descuento": p['descuento'],
+                    "precioReal": p['precioUnitario'],
                     "unidad": p['unidad']}
 
     return {}
