@@ -117,7 +117,7 @@ def precios_por_mayor(id_product):
     return jsonify(cotizacion.precios_por_mayor(id_product, unidades_minimas=minimo, unidades_maximas=maximo))
 
 
-@products_bp.route('/productos/<int:id_product>/precioPorCantidad', methods=['GET'])
+@products_bp.route('/productos/<int:id_product>/precioPorCantidad', methods=['POST'])
 @token_required
 def precio_por_cantidad(id_product):
     cantidad = request.json['cantidad']
