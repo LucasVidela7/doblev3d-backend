@@ -1,7 +1,6 @@
 import json
 
 from database import utils as db
-from resources.service.ventas import get_all_ventas
 
 
 def get_ofertas():
