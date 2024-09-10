@@ -122,6 +122,10 @@ def insertar_venta(request):
                 gananciatotal, precioreal, preciounidad, cantidad, descuento, subtotal, total, observaciones, 
                 itemid) VALUES {values[:-1]}"""
         db.insert_sql(sql)
+
+        sql = f"DELETE FROM preventa WHERE hash = '{hash}'"
+        db.delete_sql(sql)
+
         return id_venta
 
 
