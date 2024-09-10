@@ -13,7 +13,7 @@ ventas_bp = Blueprint("routes-ventas", __name__)
 def pre_venta():
     uuid = ventas.insertar_preventa(request.json)
     if uuid:
-        return jsonify({"hash": uuid, "status": True})
+        return jsonify({"preVenta": uuid, "status": True})
     return jsonify({"status": False})
 
 
