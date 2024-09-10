@@ -40,11 +40,18 @@ def insertar_preventa(request):
         id_producto = str(p["id"])
         cantidad = int(p["cantidad"])
         precios = cotizacion.precio_por_cantidad(id_producto, cantidades[id_producto])
-        p['preciounitario'] = precios['precioReal']
-        p['descuento'] = precios['descuento']
-        p['descuentoTotal'] = precios['descuento']
-        p['precioUnitarioFinal'] = precios['unidad']
-        p['precioTotal'] = precios['unidad'] * cantidad
+        if precios:
+            p['preciounitario'] = precios['precioReal']
+            p['descuento'] = precios['descuento']
+            p['descuentoTotal'] = precios['descuento']
+            p['precioUnitarioFinal'] = precios['unidad']
+            p['precioTotal'] = precios['unidad'] * cantidad
+        else:
+            p['preciounitario'] = cotizacion.get_precio_unitario_by_product_id(id_producto)
+            p['descuento'] = 0
+            p['descuentoTotal'] = p['descuentoAdicional']
+            p['precioUnitarioFinal'] = round((100 - p['descuentoTotal']) * p['preciounitario'] / 100, 2)
+            p['precioTotal'] = p['precioUnitarioFinal'] * cantidad
 
     sql = f"""INSERT INTO preventa (response, hash) VALUES ('{json.dumps(response)}', '{hash}') RETURNING id;"""
     id = db.insert_sql(sql, key='id')
