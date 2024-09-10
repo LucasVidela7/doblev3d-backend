@@ -1,6 +1,8 @@
 import copy
+import json
 from datetime import datetime
 
+import uuid
 from flask import jsonify
 
 from resources.service import extras as extras
@@ -17,15 +19,56 @@ class estadosVentas:
     CANCELADO = "CANCELADO"
 
 
+def insertar_preventa(request):
+    response = request.copy()
+    hash = request['hash']
+
+    sql = f"DELETE FROM preventa WHERE hash = '{hash}';"
+    db.delete_sql(sql)
+
+    cantidades = {}
+    for p in request['productos']:
+        id_producto = str(p["id"])
+        cantidad = int(p["cantidad"])
+
+        if id_producto not in cantidades:
+            cantidades[id_producto] = cantidad
+        else:
+            cantidades[id_producto] += cantidad
+
+    for p in response['productos']:
+        id_producto = str(p["id"])
+        cantidad = int(p["cantidad"])
+        precios = cotizacion.precio_por_cantidad(id_producto, cantidades[id_producto])
+        p['preciounitario'] = precios['precioReal']
+        p['descuento'] = precios['descuento']
+        p['descuentoTotal'] = precios['descuento']
+        p['precioUnitarioFinal'] = precios['unidad']
+        p['precioTotal'] = precios['unidad'] * cantidad
+
+    sql = f"""INSERT INTO preventa (response, hash) VALUES ('{json.dumps(response)}', '{hash}') RETURNING id;"""
+    id = db.insert_sql(sql, key='id')
+    if not id:
+        return {}
+    return response
+
+
 def insertar_venta(request):
     cliente = request['cliente']
     contacto = request['contacto']
-    productos = request['productos']
+    hash = request['hash']
+
+    sql = f"SELECT * FROM preventa WHERE hash = '{hash}'"
+    productos = db.select_first(sql)
+
+    if not productos:
+        return None
+
+    productos = json.loads(productos['response'])['productos']
     fecha_creacion = datetime.now().strftime('%Y-%m-%d')  # 2021-11-18
 
-    sql = f"""INSERT INTO ventas(cliente,fechaCreacion, contacto, idestado)
-            VALUES('{cliente}','{fecha_creacion}','{contacto}',
-            (SELECT id FROM estados where ventas='1' ORDER BY id ASC LIMIT 1 OFFSET 0)) 
+    sql = f"""INSERT INTO ventas(cliente,fechaCreacion, contacto, estado)
+            VALUES('{cliente}','{fecha_creacion}','{contacto}', '{estadosVentas.PENDIENTE}')   
             RETURNING id;"""
     id_venta = db.insert_sql(sql, key='id')
     if id_venta:
@@ -41,22 +84,22 @@ def insertar_venta(request):
             costo_unidad += extras.select_extras_by_id_product(id_producto)[1]
 
             # Precio unitario
-            descuento = int(p.get("descuento", '0'))
-            precio_unidad = round(cotizacion.get_precio_unitario_by_product_id(id_producto) * (100 - descuento) / 100,
-                                  2)
+            descuento = int(p['descuentoTotal'])  # TODO Calcular en base si hay descuento adicional
+            precio_unidad = round(p['precioUnitarioFinal'], 2)
             ganancia_unidad = precio_unidad - costo_unidad
 
             productos_pedido.append([id_venta,
                                      id_producto,
-                                     round(costo_unidad, 2),
-                                     round(costo_unidad * cantidad, 2),
-                                     round(ganancia_unidad, 2),
-                                     round(ganancia_unidad * cantidad, 2),
-                                     precio_unidad,
-                                     cantidad,
-                                     descuento,
-                                     round(precio_unidad * cantidad, 2),
-                                     round(precio_unidad * cantidad, 2),
+                                     round(costo_unidad, 2),  # Costo unidad
+                                     round(costo_unidad * cantidad, 2),  # Costo total
+                                     round(ganancia_unidad, 2),  # Ganancia unidad
+                                     round(ganancia_unidad * cantidad, 2),  # Ganancia total
+                                     round(p['preciounitario'], 2),  # Precio unitario real
+                                     precio_unidad,  # Precio unidad con descuento
+                                     cantidad,  # Cantidad
+                                     descuento,  # Descuento
+                                     round(p['precioTotal'], 2),  # Subtotal
+                                     round(p['precioTotal'], 2),  # Total
                                      observaciones,
                                      uuid_item])
 
@@ -69,7 +112,7 @@ def insertar_venta(request):
         for pp in productos_pedido:
             values += '(' + ",".join(f"'{p}'" for p in pp) + '),'
         sql = f"""INSERT INTO ventas_productos (idventa, idproducto, costounidad, costototal, gananciaunidad, 
-                gananciatotal, preciounidad, cantidad, descuento, subtotal, total, observaciones, 
+                gananciatotal, precioreal, preciounidad, cantidad, descuento, subtotal, total, observaciones, 
                 itemid) VALUES {values[:-1]}"""
         db.insert_sql(sql)
         return id_venta
@@ -176,7 +219,7 @@ def obtener_todas_las_ventas():
           f" (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia " \
           f" FROM ventas AS v " \
           f" WHERE estado <>  '{estadosVentas.CANCELADO}'" \
-          f" ORDER BY v.idestado DESC, id ASC, senia DESC, productos DESC;"
+          f" ORDER BY id ASC, senia DESC, productos DESC;"
     ventas = db.select_multiple(sql)
     for v in ventas:
         v["fechacreacion"] = v["fechacreacion"].strftime('%Y-%m-%d')
