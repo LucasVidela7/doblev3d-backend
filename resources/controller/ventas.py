@@ -13,14 +13,14 @@ ventas_bp = Blueprint("routes-ventas", __name__)
 def add_venta():
     id_venta = ventas.insertar_venta(request.json)
     if id_venta:
-        return jsonify({"idVenta": id_venta})
-    return jsonify({"message": "internal server error"})
+        return jsonify({"id": id_venta, "status": True})
+    return jsonify({"status": False})
 
 
 @ventas_bp.route('/ventas', methods=['GET'])
 @token_required
 def all_ventas():
-    list_ventas = ventas.get_all_ventas()
+    list_ventas = ventas.obtener_todas_las_ventas()
     return jsonify({"ventas": list_ventas})
 
 
@@ -30,11 +30,32 @@ def select_venta(id_venta):
     return ventas.select_venta_by_id(id_venta)
 
 
+@ventas_bp.route('/ventas/<int:id_venta>/detalle', methods=['GET'])
+@token_required
+def detalle_venta(id_venta):
+    return ventas.detalle_venta(id_venta)
+
+
+@ventas_bp.route('/ventas/<int:id_venta>/estadoItem/<itemId>', methods=['PUT'])
+@token_required
+def modificar_item(id_venta, itemId):
+    response = ventas.modificar_item(id_venta, itemId, request.json)
+    return jsonify({"status": bool(response), "detalle": response})
+
+
+@ventas_bp.route('/ventas/<int:id_venta>/error/<item_id>', methods=['PUT'])
+@token_required
+def registrar_error(id_venta, item_id):
+    cantidad = request.json['cantidad']
+    response = ventas.registrar_error(id_venta, item_id, cantidad)
+    return jsonify({"status": bool(response), "detalle": response})
+
+
 @ventas_bp.route('/ventas/<int:id_venta>', methods=['DELETE'])
 @token_required
 def cancelar_venta(id_venta):
-    estados.cancelar_venta(id_venta)
-    return jsonify({"mensaje": "venta cancelada"})
+    ventas.cancelar_venta(id_venta)
+    return jsonify({"status": True})
 
 
 @ventas_bp.route('/ventas/producto/<int:id_producto>', methods=['DELETE'])
@@ -53,4 +74,4 @@ def select_pagos_venta(id_venta):
 @token_required
 def entregar_venta(id_venta):
     estados.entregar_venta(id_venta)
-    return jsonify({"mensaje": "producto cancelado"})
+    return jsonify({"status": True})

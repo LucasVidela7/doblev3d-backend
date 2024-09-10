@@ -11,8 +11,8 @@ pagos_bp = Blueprint("routes-pagos", __name__)
 def add_pago():
     id_pago = pagos.insertar_pago(request.json)
     if id_pago:
-        return jsonify({"idPago": id_pago})
-    return jsonify({"message": "internal server error"}), 500
+        return jsonify({"idPago": id_pago, "status": True})
+    return jsonify({"status": False})
 
 
 @pagos_bp.route('/pagos', methods=['GET'])
@@ -20,14 +20,14 @@ def add_pago():
 def all_pagos():
     mes = request.args.get('mes')
     anio = request.args.get('anio')
-    return jsonify({"pagos": pagos.get_all_pagos(mes=mes, anio=anio)})
+    return jsonify(pagos.get_all_pagos(mes=mes, anio=anio))
 
 
 @pagos_bp.route('/pagos/<int:id_pago>', methods=['DELETE'])
 @token_required
 def delete_pago(id_pago):
     pagos.borrar_pago(id_pago)
-    return jsonify({"pagos": "Pago borrado"})
+    return jsonify({"status": True})
 
 
 @pagos_bp.route('/mediosDePago', methods=['GET'])

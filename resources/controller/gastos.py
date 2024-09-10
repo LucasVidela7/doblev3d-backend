@@ -9,8 +9,8 @@ gastos_bp = Blueprint("routes-gastos", __name__)
 @gastos_bp.route('/gastos', methods=['POST'])
 @token_required
 def add_gastos():
-    gastos.insertar_gastos(request.json)
-    return jsonify({"gastos": gastos.get_gastos()})
+    id = gastos.insertar_gastos(request.json)
+    return jsonify({"id": id, 'status': True})
 
 
 @gastos_bp.route('/gastos', methods=['GET'])
@@ -25,4 +25,4 @@ def all_gastos():
 @token_required
 def delete_gasto(id_gasto):
     gastos.borrar_gasto(id_gasto)
-    return jsonify({"mensaje": "Gasto borrado"})
+    return jsonify({'status': True})

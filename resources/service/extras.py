@@ -9,7 +9,7 @@ from database.utils import redisx
 def get_all_extras():
     extras = redisx.get(f'extras')
     if extras is None:
-        sql = f"SELECT * FROM extras"
+        sql = f"SELECT * FROM extras ORDER BY descripcion ASC"
         extras = db.select_multiple(sql)
         redisx.set(f'extras', pickle.dumps(extras))
     else:
@@ -31,6 +31,15 @@ def select_extras_by_id_product(id_product):
         extras = pickle.loads(extras)
     total_amount = sum([ex["precio"] for ex in extras])
     return extras, round(total_amount, 2)
+
+
+def get_products_by_extra_id(id_extra):
+    sql = f"""
+            SELECT p.id, p.descripcion FROM extra_producto as ep 
+            INNER JOIN productos as p ON ep.idproducto = p.id
+            WHERE idextra = '{id_extra}'
+            """
+    return db.select_multiple(sql)
 
 
 def add_extra(request):

@@ -1,5 +1,5 @@
 from database import utils as db
-from resources.service.ventas import get_all_ventas
+from resources.service.ventas import obtener_todas_las_ventas
 
 
 def get_balance():
@@ -26,7 +26,7 @@ def get_balance():
         gastos_total += m["gastos"]
 
     # Otros
-    ventas = get_all_ventas()
+    ventas = obtener_todas_las_ventas()
     falta_cobrar = sum([float(v["preciototal"] - v["senia"]) for v in ventas])
 
     response = {}

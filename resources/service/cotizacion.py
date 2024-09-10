@@ -76,7 +76,7 @@ def get_price(hours, minutes, weight):
 
 
 def get_price_piezas(piezas: list):
-    all_prices = {}
+    all_prices = {}  # para commitear
     total_horas, total_minutos, total_peso = 0, 0, 0
     for n, p in enumerate(piezas):
         horas = p["horas"]
@@ -121,7 +121,7 @@ def insert_precio_unitario(id_producto, precio_unitario, rest_days=0):
     return
 
 
-def get_precio_unitario(id_producto):
+def get_precio_unitario(id_producto, actualizar=False):
     precio_unitario = redisx.get(f'producto:{id_producto}:precio')
     if precio_unitario is None:
         sql = f"SELECT preciounitario, fechaactualizacion " \
@@ -144,17 +144,26 @@ def get_precio_unitario(id_producto):
     precio_u = precio_unitario.get("preciounitario", 0)
     ganancia = max(0, precio_u - costo_total)
     precio_unitario["ganancia"] = round(ganancia, 2)
-    # precio_sugerido = costo_total / (1 - get_margen(id_producto) / 100)
-    precio_sugerido = (costo_material / (1 - get_margen(id_producto) / 100)) + extra_total
+    margen = get_margen(id_producto) + prices_db()['margenGeneral']
+    precio_sugerido = (costo_material / (1 - margen / 100)) + extra_total
     precio_sugerido = 50 * ceil(precio_sugerido / 50)
-    if precio_u != precio_sugerido:
-        # Si el precio unitario es distinto al precio sugerido por el sistema, se recomienda nuevo precio según margen
-        precio_unitario["preciosugerido"] = round(precio_sugerido, 2)
-        check = (date.today() - precio_unitario.get('fechaactualizacion', date.today())).days
-        if check > (int(prices_db()["diasVencimiento"]) + 1) or precio_u < precio_sugerido:
+
+    check = (date.today() - precio_unitario.get('fechaactualizacion', date.today())).days
+    if actualizar:
+        if 0 < precio_u < precio_sugerido:
             insert_precio_unitario(id_producto,
-                                   precio_unitario["preciounitario"],
-                                   int(prices_db()["diasVencimiento"]) + 1)
+                                   precio_sugerido)
+        elif check > (int(prices_db()["diasVencimiento"]) + 1):
+            insert_precio_unitario(id_producto,
+                                   precio_u)
+    else:
+        if precio_u != precio_sugerido:
+            # Si el precio unitario es distinto al precio sugerido por el sistema, se recomienda nuevo precio según margen
+            precio_unitario["preciosugerido"] = round(precio_sugerido, 2)
+            if check > (int(prices_db()["diasVencimiento"]) + 1) or precio_u < precio_sugerido:
+                insert_precio_unitario(id_producto,
+                                       precio_unitario["preciounitario"],
+                                       int(prices_db()["diasVencimiento"]) + 1)
 
     return precio_unitario
 
@@ -189,15 +198,15 @@ def get_costo_total(id_producto):
     return round(data['costoPieza'], 2)
 
 
-def precios_por_mayor(id_producto, unidades_minimas=20, unidades_maximas=100):
+def precios_por_mayor(id_producto, unidades_minimas=5, unidades_maximas=100):
     costo_material = get_costo_total(id_producto)
     _, extra_total = select_extras_by_id_product(id_producto)
     precio_u = get_precio_unitario_by_product_id(id_producto)
 
     # Rango de unidades
     p_maximo = unidades_maximas - unidades_minimas
-
-    precio_minimo = (costo_material / (1 - (get_margen(id_producto) * 0.80) / 100)) + extra_total  # TODO Configurable
+    margen = get_margen(id_producto) + prices_db()['margenGeneral']
+    precio_minimo = (costo_material / (1 - (margen * 0.80) / 100)) + extra_total  # TODO Configurable
     precio_maximo = precio_u - (precio_u - precio_minimo) * 45 / 100  # TODO Configurable
     diferencia = precio_maximo - precio_minimo
 
@@ -205,11 +214,34 @@ def precios_por_mayor(id_producto, unidades_minimas=20, unidades_maximas=100):
 
     precios = []
     for x in range(unidades_minimas, unidades_maximas + saltos, saltos):
-        y = x - unidades_minimas
-        porcentaje = y * 100 / p_maximo
+        y = x + 1 - unidades_minimas
+        porcentaje = min(round(y * 100 / p_maximo, 2), 100)
         p = (precio_minimo + (diferencia * (100 - porcentaje) / 100)) * x
         p = 50 * ceil(p / 50)
         precios.append({"unidades": x,
                         "precio": round(p, 2),
+                        "precioUnitario": precio_u,
+                        "descuento": porcentaje,
                         "unidad": round(p / x, 2)})
     return {"precios": precios}
+
+
+def precio_por_cantidad(id_producto, cantidad):
+    precios_mayor = precios_por_mayor(id_producto, unidades_maximas=max([100, cantidad]))['precios']
+
+    if cantidad >= precios_mayor[-1]['unidades']:
+        return {"unidades": cantidad,
+                "total": round(precios_mayor[-1]['unidad'] * cantidad, 2),
+                "descuento": precios_mayor[-1]['descuento'],
+                "precioReal": precios_mayor[-1]['precioUnitario'],
+                "unidad": precios_mayor[-1]['unidad']}
+
+    for i, p in enumerate(precios_mayor):
+        if p['unidades'] <= cantidad < precios_mayor[i + 1]['unidades']:
+            return {"unidades": cantidad,
+                    "total": round(p['unidad'] * cantidad, 2),
+                    "descuento": p['descuento'],
+                    "precioReal": p['precioUnitario'],
+                    "unidad": p['unidad']}
+
+    return {}

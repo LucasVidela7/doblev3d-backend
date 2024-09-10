@@ -59,8 +59,9 @@ def insert_product(request):
 def select_product_by_id(_id):
     product = redisx.get(f'producto:{_id}:detalle')
     if product is None:
-        sql = f"SELECT p.*, cats.categoria AS categoria FROM productos AS p " \
+        sql = f"SELECT p.*, img.imagen, cats.categoria AS categoria FROM productos AS p " \
               f"INNER JOIN categorias as cats ON cats.id = p.idcategoria " \
+              f"LEFT JOIN images as img ON img.idproducto = p.id " \
               f"WHERE p.id= {_id}"
         product = db.select_first(sql)
         redisx.set(f'producto:{_id}:detalle', pickle.dumps(product))
@@ -77,8 +78,7 @@ def get_all_products():
     if products is None:
         sql = f"""
         SELECT p.*, cats.id AS idcategoria, cats.categoria AS categoria, 
-        (SELECT count(id) FROM ventas_productos WHERE idproducto=p.id and 
-        idestado<>(SELECT id FROM estados where productos='1' ORDER BY id DESC LIMIT 1 OFFSET 0)) AS ventas,  
+        (SELECT (SELECT COALESCE(SUM(cantidad),0)) FROM ventas_productos WHERE idproducto=p.id) AS ventas,  
         pu.precioUnitario as precioUnitario,
         CAST(CASE WHEN pu.fechaActualizacion + {int(prices_db()['diasVencimiento'])} < CURRENT_DATE THEN true ELSE false END AS boolean) AS precioUnitarioVencido,
         (SELECT imagen FROM images WHERE idproducto=p.id ORDER BY id DESC LIMIT 1 OFFSET 0) as imagen 
@@ -143,15 +143,14 @@ def delete_product(id_producto):
           f"delete from piezas where idproducto={id_producto};"
     db.delete_sql(sql)
 
-    redisx.delete(*redisx.keys(f"producto:{id_producto}:*"))
-    redisx.delete(f"productos")
+    limpiar_cache_producto(id_producto)
     return jsonify({"message": "Producto borrado correctamente"}), 200
 
 
 def upload_image(files, id_producto):
     def allowed_file(filename):
         return '.' in filename and \
-            filename.rsplit('.', 1)[1].lower() in ["jpg", "png", "jpeg"]  # ALLOWED_EXTENSIONS
+            filename.rsplit('.', 1)[1].lower() in ["jpg", "png", "jpeg", "webp"]  # ALLOWED_EXTENSIONS
 
     def formalize_filename(filename, id_producto):
         name = filename.split(".")
@@ -159,44 +158,70 @@ def upload_image(files, id_producto):
 
     # check if the post request has the file part
     if 'file' not in files:
-        return jsonify({"message": "Se debe enviar dentro de un key 'file'"}), 406
+        return ""
     file = files['file']
     # if user does not select file, browser also
     # submit an empty part without filename
     if file.filename == '':
-        return jsonify({"message": "El archivo no tiene nombre"}), 406
+        return ""
     if file and allowed_file(file.filename):
         filename = secure_filename(formalize_filename(file.filename, id_producto))
         file.save(os.path.join(os.getenv("FILE_STORE"), filename))
-        URL = f"https://{os.getenv('DATABASE_HOST')}/{os.getenv('FILE_FOLDER')}/{filename}"
-        URL = tinypng(URL)
+        URL = f"https://doblev3d.mooo.com/images/{filename}"
         sql = f"delete from images where idproducto='{id_producto}';"
         db.delete_sql(sql)
         sql = f"INSERT INTO images(imagen,idproducto) VALUES('{URL}','{id_producto}');"
         db.insert_sql(sql)
-        redisx.delete(f"productos")
-        return jsonify({"message": "Imagen cargada correctamente"}), 200
-    return jsonify({"message": "El archivo no cumple las extensiones adecuadas"}), 406
+        limpiar_cache_producto(id_producto)
+        return URL
+    return ""
 
 
-def tinypng(url):
+def tinypng(url, id_producto):
     tinify = Tinify()
     response = tinify.post_image(url)
     if response.status_code == 201:
         a = tinify.get_image(response.json()['output']['url'])
-        if a.status_code == 200:
-            filename = url.split('/')[-1].split('.')[0]
-            with open(f"{os.getenv('FILE_STORE')}/{filename}.webp", "wb") as file:
-                file.write(a.content)
-            new_url = f"https://{os.getenv('DATABASE_HOST')}/{os.getenv('FILE_FOLDER')}/{filename}.webp"
-            sql = f"""UPDATE images SET imagen='{new_url}' WHERE imagen='{url}';"""
-            db.update_sql(sql)
-            os.remove(f"{os.getenv('FILE_STORE')}/{url.split('/')[-1]}")
-            print(f"{url}: Imagen comprimida")
-            return new_url
+        filename = url.split('/')[-1].split('.')[0]
+        with open(f"{os.getenv('FILE_STORE')}/{filename}.webp", "wb") as file:
+            file.write(a.content)
+        new_url = f"https://doblev3d.mooo.com/images/{filename}.webp"
+        sql = f"""UPDATE images SET imagen='{new_url}' WHERE imagen='{url}';"""
+        db.update_sql(sql)
+        os.remove(f"{os.getenv('FILE_STORE')}/{url.split('/')[-1]}")
+        limpiar_cache_producto(id_producto)
+        print(f"{url}: Imagen comprimida")
+        return new_url
     else:
         print(f"{url}: Falló la compresión")
         return url
+
+
+def eliminar_imagen_producto(id_producto):
+    sql = f"SELECT imagen FROM images WHERE idproducto = '{id_producto}';"
+    url = db.select_first(sql)['imagen']
+
+    filename = url.split('/')[-1]
+    archivo = os.getenv('FILE_STORE') + '\\' + filename
+
+    if os.path.isfile(archivo):
+        os.remove(archivo)
+
+    sql = f"DELETE FROM images WHERE idproducto = '{id_producto}';"
+    db.delete_sql(sql)
+    limpiar_cache_producto(id_producto)
+    return True
+
+
+def limpiar_cache_producto(id_producto):
+    try:
+        redisx.delete(*redisx.keys(f"producto:{id_producto}:*"))
+    except:
+        pass
+    try:
+        redisx.delete(f"productos")
+    except:
+        pass
 
 
 def resize_image():

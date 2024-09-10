@@ -9,6 +9,14 @@ from resources.service import estados as estados
 from database import utils as db
 
 
+class estadosVentas:
+    PENDIENTE = "PENDIENTE"
+    EN_PROCESO = "EN PROCESO"
+    TERMINADO = "TERMINADO"
+    ENTREGADO = "ENTREGADO"
+    CANCELADO = "CANCELADO"
+
+
 def insertar_venta(request):
     cliente = request['cliente']
     contacto = request['contacto']
@@ -21,38 +29,89 @@ def insertar_venta(request):
             RETURNING id;"""
     id_venta = db.insert_sql(sql, key='id')
     if id_venta:
+        productos_pedido = []
         for p in productos:
             id_producto = p["id"]
-            observaciones = str(p.get("observaciones", "")).split(',')
+            uuid_item = p["itemId"]
+            cantidad = int(p["cantidad"])
+            observaciones = str(p.get("observaciones", ""))
 
-            for x in range(int(p["cantidad"])):
-                try:
-                    obs = observaciones[x]
-                except:
-                    obs = ""
-                # Costo total
-                costo_total = cotizacion.get_costo_total(id_producto)
-                costo_total += extras.select_extras_by_id_product(id_producto)[1]
+            # for x in range(int(p["cantidad"])):
+            costo_unidad = cotizacion.get_costo_total(id_producto)
+            costo_unidad += extras.select_extras_by_id_product(id_producto)[1]
 
-                # Precio unitario
-                descuento = round(float(p.get("descuento", '0')), 2)
-                precio_unidad = round(
-                    cotizacion.get_precio_unitario(id_producto)['preciounitario'] * (100 - descuento) / 100, 2)
-                ganancia = round(precio_unidad - costo_total, 2)
-                sql = f"INSERT INTO ventas_productos (idventa, idproducto, costototal, ganancia, descuento, " \
-                      f"preciounidad, observaciones, adddata, idestado) " \
-                      f"VALUES('{id_venta}','{id_producto}','{round(costo_total, 2)}','{ganancia}',{descuento}," \
-                      f"{precio_unidad},'{obs}',''," \
-                      f"(SELECT id FROM estados where productos='1' ORDER BY id ASC LIMIT 1 OFFSET 0)) " \
-                      f"RETURNING id;"
-                id_detalle = db.insert_sql(sql, key='id')
+            # Precio unitario
+            descuento = int(p.get("descuento", '0'))
+            precio_unidad = round(cotizacion.get_precio_unitario_by_product_id(id_producto) * (100 - descuento) / 100,
+                                  2)
+            ganancia_unidad = precio_unidad - costo_unidad
 
+            productos_pedido.append([id_venta,
+                                     id_producto,
+                                     round(costo_unidad, 2),
+                                     round(costo_unidad * cantidad, 2),
+                                     round(ganancia_unidad, 2),
+                                     round(ganancia_unidad * cantidad, 2),
+                                     precio_unidad,
+                                     cantidad,
+                                     descuento,
+                                     round(precio_unidad * cantidad, 2),
+                                     round(precio_unidad * cantidad, 2),
+                                     observaciones,
+                                     uuid_item])
+
+            sql = (
+                f"INSERT INTO ventas_productos_detalle (itemid, idventa, pendiente, idproducto) VALUES ('{uuid_item}', "
+                f"'{id_venta}','{cantidad}', {id_producto})")
+            db.insert_sql(sql)
+
+        values = ""
+        for pp in productos_pedido:
+            values += '(' + ",".join(f"'{p}'" for p in pp) + '),'
+        sql = f"""INSERT INTO ventas_productos (idventa, idproducto, costounidad, costototal, gananciaunidad, 
+                gananciatotal, preciounidad, cantidad, descuento, subtotal, total, observaciones, 
+                itemid) VALUES {values[:-1]}"""
+        db.insert_sql(sql)
         return id_venta
 
 
 def get_ventas_by_product_id(product_id):
     sql = f"select * from ventas_productos where idproducto='{product_id}'"
     return db.select_multiple(sql)
+
+
+def detalle_venta(_id):
+    sql = f"SELECT v.*, (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia, " \
+          f"(SELECT COALESCE(SUM(vp.total),0) FROM ventas_productos vp WHERE vp.idventa = v.id) AS preciototal " \
+          f"FROM ventas AS v WHERE v.id= {_id};"
+    venta = db.select_first(sql)
+
+    if not venta:
+        return jsonify({"status": False})
+
+    venta["fechacreacion"] = venta["fechacreacion"].strftime('%Y-%m-%d')
+    venta.pop("idestado", None)
+
+    # Obtener productos
+    sql = f"SELECT vp.cantidad, vp.itemid, vp.idproducto, vp.observaciones, vp.total, vp.preciounidad, " \
+          f"CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion FROM ventas_productos AS vp " \
+          f"INNER JOIN productos AS p ON vp.idproducto=p.id " \
+          f"INNER JOIN categorias AS cats ON cats.id=p.idcategoria " \
+          f"WHERE idventa= {_id} " \
+          f"ORDER BY vp.id DESC;"
+    venta['productos'] = db.select_multiple(sql)
+
+    # DETALLE de items
+    sql = (f"SELECT pendiente, imprimiendo, listo, errores, cancelados, itemid "
+           f"FROM ventas_productos_detalle where idventa='{_id}'")
+    detalles = db.select_multiple(sql)
+    detalles = dict(map(lambda x: (x["itemid"], x), detalles))
+
+    for dv in venta['productos']:
+        dv['detalle'] = detalles[dv['itemid']]
+        del dv['detalle']['itemid']
+
+    return venta
 
 
 def select_venta_by_id(_id):
@@ -110,17 +169,13 @@ def select_venta_by_id(_id):
     return jsonify(venta), 200
 
 
-def get_all_ventas():
-    estado_cancelado = estados.get_id_estado_cancelado()
-    sql = f"SELECT v.*, e.estado, " \
-          f" (SELECT count(vp.id) FROM ventas_productos vp WHERE " \
-          f"vp.idventa = v.id and vp.idestado<>'{estados.get_id_estado_cancelado()}') AS productos, " \
-          f" (SELECT sum(vp.preciounidad) FROM ventas_productos vp WHERE vp.idventa = v.id) AS precioTotal, " \
+def obtener_todas_las_ventas():
+    sql = f"SELECT v.*, " \
+          f" (SELECT (SELECT COALESCE(SUM(vp.cantidad),0)) FROM ventas_productos vp WHERE vp.idventa = v.id) AS productos, " \
+          f" (SELECT sum(vp.total) FROM ventas_productos vp WHERE vp.idventa = v.id) AS precioTotal, " \
           f" (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia " \
           f" FROM ventas AS v " \
-          f" INNER JOIN estados AS e ON v.idestado = e.id " \
-          f" WHERE idestado <>  '{estado_cancelado}'" \
-          f" and (SELECT count(vp.id) FROM ventas_productos vp WHERE  vp.idventa = v.id and vp.idestado<>'{estado_cancelado}') > 0" \
+          f" WHERE estado <>  '{estadosVentas.CANCELADO}'" \
           f" ORDER BY v.idestado DESC, id ASC, senia DESC, productos DESC;"
     ventas = db.select_multiple(sql)
     for v in ventas:
@@ -134,3 +189,48 @@ def get_all_ventas():
             aux_ventas.append(v)
 
     return aux_ventas
+
+
+def detalle_item(id_venta, item_id):
+    sql = (f"SELECT pendiente, imprimiendo, listo, errores, cancelados "
+           f"FROM ventas_productos_detalle WHERE idventa='{id_venta}' and itemid='{item_id}';")
+    return db.select_first(sql)
+
+
+def modificar_item(id_venta, item_id, request):
+    estados = ['pendiente', 'imprimiendo', 'listo']
+    estado_anterior = request['estadoAnterior']
+    estado_nuevo = request['estadoNuevo']
+    cantidad = request['cantidad']
+
+    if estado_anterior not in estados or estado_nuevo not in estados or cantidad < 1 or estado_nuevo == estado_anterior:
+        return {}
+
+    item = detalle_item(id_venta, item_id)
+
+    if item[estado_anterior] < cantidad:
+        return {}
+
+    sql = (f"UPDATE ventas_productos_detalle SET {estado_anterior} = {estado_anterior} - {cantidad}, "
+           f"{estado_nuevo} = {estado_nuevo} + {cantidad} WHERE idventa='{id_venta}' and itemid='{item_id}';")
+    db.update_sql(sql)
+
+    return detalle_item(id_venta, item_id)
+
+
+def registrar_error(id_venta, item_id, cantidad):
+    item = detalle_item(id_venta, item_id)
+    if item['imprimiendo'] < cantidad and cantidad > 0:
+        return {}
+
+    sql = (f"UPDATE ventas_productos_detalle SET errores = errores + {cantidad}, pendiente = pendiente + {cantidad}, "
+           f"imprimiendo = imprimiendo - {cantidad} "
+           f"WHERE idventa='{id_venta}' and itemid='{item_id}';")
+    db.update_sql(sql)
+    return detalle_item(id_venta, item_id)
+
+
+def cancelar_venta(id_venta):
+    # Cambiar estado productos
+    sql = f"UPDATE ventas SET estado = '{estadosVentas.CANCELADO}' where id='{id_venta}';"
+    db.update_sql(sql)
