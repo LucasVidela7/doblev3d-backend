@@ -199,15 +199,13 @@ def get_costo_total(id_producto):
 
 
 def precios_por_mayor(id_producto, unidades_minimas=5, unidades_maximas=100):
-    costo_material = get_costo_total(id_producto)
-    _, extra_total = select_extras_by_id_product(id_producto)
     precio_u = get_precio_unitario_by_product_id(id_producto)
 
     # Rango de unidades
     p_maximo = unidades_maximas - unidades_minimas
-    margen = get_margen(id_producto) + prices_db()['margenGeneral']
-    precio_minimo = (costo_material / (1 - (margen * 0.80) / 100)) + extra_total  # TODO Configurable
-    precio_maximo = precio_u - (precio_u - precio_minimo) * 45 / 100  # TODO Configurable
+    margen_producto = get_margen(id_producto)
+    precio_minimo = (100 - margen_producto) * precio_u / 100  # TODO Configurable
+    precio_maximo = 97.5 * precio_u / 100  # TODO Configurable
     diferencia = precio_maximo - precio_minimo
 
     saltos = 5  # TODO Configurable
@@ -218,11 +216,12 @@ def precios_por_mayor(id_producto, unidades_minimas=5, unidades_maximas=100):
         porcentaje = min(round(y * 100 / p_maximo, 2), 100)
         p = (precio_minimo + (diferencia * (100 - porcentaje) / 100)) * x
         p = 50 * ceil(p / 50)
+        unidad = round(p / x, 2)
         precios.append({"unidades": x,
                         "precio": round(p, 2),
                         "precioUnitario": precio_u,
-                        "descuento": porcentaje,
-                        "unidad": round(p / x, 2)})
+                        "descuento": round((100 - (unidad * 100 / precio_u)), 2),
+                        "unidad": unidad})
     return {"precios": precios}
 
 
