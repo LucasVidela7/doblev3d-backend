@@ -72,8 +72,7 @@ CREATE TABLE IF NOT EXISTS carrito(
 
 CREATE TABLE IF NOT EXISTS ventas(
     id SERIAL PRIMARY KEY,
-    cliente TEXT NOT NULL,
-    contacto TEXT,
+    idcliente INTEGER,
     fechaCreacion DATE,
     idestado INTEGER NOT NULL,
     estado TEXT NOT NULL
@@ -187,6 +186,22 @@ CREATE TABLE IF NOT EXISTS datos_clientes(
     localidad TEXT,
     codigo_postal INTEGER,
     principal BOOL DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS ofertas(
+    id SERIAL PRIMARY KEY,
+    tipo TEXT NOT NULL,
+    fecha_desde TIMESTAMP,
+    fecha_hasta TIMESTAMP,
+    login BOOL,
+    porcentaje FLOAT NOT NULL,
+    label TEXT,
+    objeto TEXT
+);
+
+CREATE TABLE IF NOT EXISTS ofertas_tipo(
+    id SERIAL PRIMARY KEY,
+    tipo TEXT
 );
 
 

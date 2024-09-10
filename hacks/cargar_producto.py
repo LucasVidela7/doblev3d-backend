@@ -6,7 +6,7 @@ import requests as requests
 
 def cargar_producto():
     host = os.getenv('HOST')
-    file_path = "C:\\Users\\videl\\Desktop\\Cuadro completo"
+    file_path = "D:\\STL\\Soporte celular auto"
     archivos = [arch.name for arch in os.scandir(file_path) if arch.is_file() and arch.name.endswith(".gcode")]
     path = "/productos"
     data = {

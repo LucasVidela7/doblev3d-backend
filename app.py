@@ -18,6 +18,7 @@ from resources.controller.configuracion import config_bp
 from resources.controller.balance import balance_bp
 from resources.controller.carrito import carrito_bp
 from resources.controller.clientes import clientes_bp
+from resources.controller.ofertas import ofertas_bp
 
 app = Flask(__name__)
 create_tables()
@@ -37,6 +38,7 @@ app.register_blueprint(extras_bp)
 app.register_blueprint(login_bp)
 app.register_blueprint(carrito_bp)
 app.register_blueprint(clientes_bp)
+app.register_blueprint(ofertas_bp)
 
 app.config['SECRET_KEY'] = os.getenv('JWT_SECRET')
 
