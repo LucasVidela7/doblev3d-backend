@@ -20,6 +20,9 @@ class estadosVentas:
 
 
 def insertar_preventa(request):
+    sql = "delete from preventa where statement_timestamp() - creado > '00:30:00'::interval;"
+    db.delete_sql(sql)
+
     response = request.copy()
     hash = request['hash']
 
@@ -39,6 +42,8 @@ def insertar_preventa(request):
     for p in response['productos']:
         id_producto = str(p["id"])
         cantidad = int(p["cantidad"])
+        descuento_adicional = p['descuentoAdicional']
+        sumar_descuento = p['sumarDescuento']
         precios = cotizacion.precio_por_cantidad(id_producto, cantidades[id_producto])
         if precios:
             p['preciounitario'] = precios['precioReal']
@@ -49,9 +54,19 @@ def insertar_preventa(request):
         else:
             p['preciounitario'] = cotizacion.get_precio_unitario_by_product_id(id_producto)
             p['descuento'] = 0
-            p['descuentoTotal'] = p['descuentoAdicional']
+            p['descuentoTotal'] = 0
+            p['precioUnitarioFinal'] = p['preciounitario']
+            p['precioTotal'] = p['precioUnitarioFinal'] * cantidad
+
+        if descuento_adicional and sumar_descuento:
+            p['descuentoTotal'] += p['descuentoAdicional']
             p['precioUnitarioFinal'] = round((100 - p['descuentoTotal']) * p['preciounitario'] / 100, 2)
             p['precioTotal'] = p['precioUnitarioFinal'] * cantidad
+        elif descuento_adicional and not sumar_descuento:
+            p['precioUnitarioFinal'] = round((100 - p['descuentoAdicional']) * p['precioUnitarioFinal'] / 100, 2)
+            p['precioTotal'] = p['precioUnitarioFinal'] * cantidad
+            p['descuentoTotal'] = int(100 - (p['precioUnitarioFinal'] * 100 / p['preciounitario']))
+
 
     sql = f"""INSERT INTO preventa (response, hash) VALUES ('{json.dumps(response)}', '{hash}') RETURNING id;"""
     id = db.insert_sql(sql, key='id')

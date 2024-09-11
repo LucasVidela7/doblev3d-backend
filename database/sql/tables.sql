@@ -74,7 +74,8 @@ CREATE TABLE IF NOT EXISTS carrito(
 CREATE TABLE IF NOT EXISTS preventa(
     id SERIAL PRIMARY KEY,
     response TEXT,
-    hash TEXT
+    hash TEXT,
+    creado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 
