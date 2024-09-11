@@ -8,6 +8,15 @@ from resources.service.usuarios import token_required
 ventas_bp = Blueprint("routes-ventas", __name__)
 
 
+@ventas_bp.route('/preVenta', methods=['POST'])
+@token_required
+def pre_venta():
+    uuid = ventas.insertar_preventa(request.json)
+    if uuid:
+        return jsonify({"preVenta": uuid, "status": True})
+    return jsonify({"status": False})
+
+
 @ventas_bp.route('/ventas', methods=['POST'])
 @token_required
 def add_venta():

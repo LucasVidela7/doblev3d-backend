@@ -66,15 +66,24 @@ CREATE TABLE IF NOT EXISTS carrito(
     time TIMESTAMP DEFAULT now()
 );
 
+--DROP TABLE preventa;
 --DROP TABLE ventas;
 --DROP TABLE ventas_productos;
 --DROP TABLE ventas_productos_detalle;
 
+CREATE TABLE IF NOT EXISTS preventa(
+    id SERIAL PRIMARY KEY,
+    response TEXT,
+    hash TEXT,
+    creado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+
 CREATE TABLE IF NOT EXISTS ventas(
     id SERIAL PRIMARY KEY,
-    idcliente INTEGER,
+    cliente TEXT NOT NULL,
     fechaCreacion DATE,
-    idestado INTEGER NOT NULL,
+    contacto TEXT NOT NULL,
     estado TEXT NOT NULL
 );
 
@@ -86,6 +95,7 @@ CREATE TABLE IF NOT EXISTS ventas_productos(
     costototal FLOAT,
     gananciaunidad FLOAT,
     gananciatotal FLOAT,
+    precioreal FLOAT,
     preciounidad FLOAT,
     cantidad INTEGER NOT NULL,
     descuento FLOAT DEFAULT 0,
