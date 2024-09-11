@@ -50,23 +50,22 @@ def insertar_preventa(request):
             p['descuento'] = precios['descuento']
             p['descuentoTotal'] = precios['descuento']
             p['precioUnitarioFinal'] = precios['unidad']
-            p['precioTotal'] = precios['unidad'] * cantidad
+            p['precioTotal'] = round(precios['unidad'] * cantidad, 2)
         else:
             p['preciounitario'] = cotizacion.get_precio_unitario_by_product_id(id_producto)
             p['descuento'] = 0
             p['descuentoTotal'] = 0
             p['precioUnitarioFinal'] = p['preciounitario']
-            p['precioTotal'] = p['precioUnitarioFinal'] * cantidad
+            p['precioTotal'] = round(p['precioUnitarioFinal'] * cantidad, 2)
 
         if descuento_adicional and sumar_descuento:
             p['descuentoTotal'] += p['descuentoAdicional']
             p['precioUnitarioFinal'] = round((100 - p['descuentoTotal']) * p['preciounitario'] / 100, 2)
-            p['precioTotal'] = p['precioUnitarioFinal'] * cantidad
+            p['precioTotal'] = round(p['precioUnitarioFinal'] * cantidad, 2)
         elif descuento_adicional and not sumar_descuento:
             p['precioUnitarioFinal'] = round((100 - p['descuentoAdicional']) * p['precioUnitarioFinal'] / 100, 2)
-            p['precioTotal'] = p['precioUnitarioFinal'] * cantidad
+            p['precioTotal'] = round(p['precioUnitarioFinal'] * cantidad, 2)
             p['descuentoTotal'] = int(100 - (p['precioUnitarioFinal'] * 100 / p['preciounitario']))
-
 
     sql = f"""INSERT INTO preventa (response, hash) VALUES ('{json.dumps(response)}', '{hash}') RETURNING id;"""
     id = db.insert_sql(sql, key='id')
