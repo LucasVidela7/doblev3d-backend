@@ -190,9 +190,10 @@ def detalle_venta(_id):
     elif pendiente == cant:
         estado = estadosVentas.PENDIENTE
 
-    sql = f"UPDATE ventas SET estado = '{estado}' WHERE id='{_id}';"
-    db.update_sql(sql)
-    venta['estado'] = estado
+    if venta['estado'] != estado:
+        sql = f"UPDATE ventas SET estado = '{estado}' WHERE id='{_id}';"
+        db.update_sql(sql)
+        venta['estado'] = estado
     return venta
 
 
