@@ -174,11 +174,26 @@ def detalle_venta(_id):
            f"FROM ventas_productos_detalle where idventa='{_id}'")
     detalles = db.select_multiple(sql)
     detalles = dict(map(lambda x: (x["itemid"], x), detalles))
-
+    cant = 0
+    pendiente = 0
+    listo = 0
     for dv in venta['productos']:
         dv['detalle'] = detalles[dv['itemid']]
+        cant += dv['cantidad']
+        pendiente += dv['detalle']['pendiente']
+        listo += dv['detalle']['listo']
         del dv['detalle']['itemid']
 
+    estado = estadosVentas.EN_PROCESO
+    if listo == cant:
+        estado = estadosVentas.TERMINADO
+    elif pendiente == cant:
+        estado = estadosVentas.PENDIENTE
+
+    if venta['estado'] != estado:
+        sql = f"UPDATE ventas SET estado = '{estado}' WHERE id='{_id}';"
+        db.update_sql(sql)
+        venta['estado'] = estado
     return venta
 
 
