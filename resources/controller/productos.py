@@ -16,7 +16,7 @@ products_bp = Blueprint("routes-products", __name__)
 @products_bp.route('/productos/precioPieza', methods=['POST'])
 @token_required
 def agregar_producto():
-    pieza = calcular_precio_pieza(request.json)
+    pieza = products.calcular_precio_pieza(request.json)
     return jsonify({"status": bool(pieza), "pieza": pieza})
 
 
