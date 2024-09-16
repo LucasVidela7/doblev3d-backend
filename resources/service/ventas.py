@@ -197,61 +197,6 @@ def detalle_venta(_id):
     return venta
 
 
-def select_venta_by_id(_id):
-    # Obtener venta
-    sql = f"SELECT v.*, (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia, " \
-          f"(SELECT COALESCE(SUM(vp.preciounidad),0) FROM ventas_productos vp WHERE vp.idventa = v.id) AS preciototal " \
-          f"FROM ventas AS v WHERE v.id= {_id};"
-    venta = db.select_first(sql)
-
-    if not venta:
-        return jsonify({"mensaje": "Venta no existe"}), 404
-
-    venta["fechacreacion"] = venta["fechacreacion"].strftime('%Y-%m-%d')
-    venta["estado"] = estados.order_estados(estados.get_estados_ventas(), venta["idestado"])
-    venta.pop("idestado", None)
-    venta["productos"] = []
-    venta["resumen"] = []
-
-    # Obtener productos
-    sql = f"SELECT vp.*, CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion FROM ventas_productos AS vp " \
-          f"INNER JOIN productos AS p ON vp.idproducto=p.id " \
-          f"INNER JOIN categorias AS cats ON cats.id=p.idcategoria " \
-          f"WHERE idventa= {_id} " \
-          f"ORDER BY vp.id DESC;"
-    productos = db.select_multiple(sql)
-
-    if venta["estado"]["actual"]["estado"] in ("ENTREGADO", "CANCELADO"):
-        sql = f"""
-                SELECT count(vp.idproducto) as cantidad, CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion 
-                FROM ventas_productos AS vp 
-                INNER JOIN productos AS p ON vp.idproducto=p.id 
-                INNER JOIN categorias AS cats ON cats.id=p.idcategoria 
-                WHERE idventa= '{_id}'
-                GROUP BY descripcion, cats.categoria;
-                """
-        venta["resumen"] = db.select_multiple(sql)
-        return jsonify(venta), 200
-
-    # Performance
-    estados_productos = estados.get_estados_productos()
-    ids_products = list(str(x["idproducto"]) for x in productos)
-    sql = f"select * from piezas where idproducto in ({','.join(ids_products)});"
-    piezas = db.select_multiple(sql)
-
-    for p in productos:
-        p["estado"] = estados.order_estados(copy.deepcopy(estados_productos), p["idestado"])
-
-        # Obtener piezas
-        p["piezas"] = [pi for pi in piezas if pi["idproducto"] == p["idproducto"]]
-        p.pop("idestado", None)
-        p.pop("idventa", None)
-        p.pop("idproducto", None)
-
-    venta["productos"] = productos
-    return jsonify(venta), 200
-
-
 def obtener_todas_las_ventas():
     sql = f"SELECT v.*, " \
           f" (SELECT (SELECT COALESCE(SUM(vp.cantidad),0)) FROM ventas_productos vp WHERE vp.idventa = v.id) AS productos, " \
@@ -259,7 +204,7 @@ def obtener_todas_las_ventas():
           f" (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia " \
           f" FROM ventas AS v " \
           f" WHERE estado <>  '{estadosVentas.CANCELADO}'" \
-          f" ORDER BY id ASC, senia DESC, productos DESC;"
+          f" ORDER BY estado DESC, id ASC, senia DESC, productos DESC;"
     ventas = db.select_multiple(sql)
     for v in ventas:
         v["fechacreacion"] = v["fechacreacion"].strftime('%Y-%m-%d')

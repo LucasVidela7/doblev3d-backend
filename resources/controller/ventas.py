@@ -1,4 +1,3 @@
-from flasgger import swag_from
 from flask import request, jsonify, Blueprint
 from resources.service import ventas as ventas
 from resources.service import pagos as pagos
@@ -31,12 +30,6 @@ def add_venta():
 def all_ventas():
     list_ventas = ventas.obtener_todas_las_ventas()
     return jsonify({"ventas": list_ventas})
-
-
-@ventas_bp.route('/ventas/<int:id_venta>', methods=['GET'])
-@token_required
-def select_venta(id_venta):
-    return ventas.select_venta_by_id(id_venta)
 
 
 @ventas_bp.route('/ventas/<int:id_venta>/detalle', methods=['GET'])
