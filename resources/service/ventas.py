@@ -165,12 +165,14 @@ def estado_venta(venta):
         del dv['detalle']['itemid']
 
     estado = estadosVentas.EN_PROCESO
-    if listo == cant:
+    if venta['estado'] == estadosVentas.ENTREGADO:
+        estado = estadosVentas.ENTREGADO
+    elif listo == cant:
         estado = estadosVentas.TERMINADO
     elif pendiente == cant:
         estado = estadosVentas.PENDIENTE
 
-    if venta['estado'] != estado and venta['estado'] != estadosVentas.ENTREGADO:
+    if venta['estado'] != estado:
         sql = f"UPDATE ventas SET estado = '{estado}' WHERE id='{venta['id']}';"
         db.update_sql(sql)
     return estado
