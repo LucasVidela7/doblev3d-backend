@@ -208,7 +208,7 @@ def obtener_todas_las_ventas():
           f" (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia " \
           f" FROM ventas AS v " \
           f" WHERE estado <>  '{estadosVentas.CANCELADO}' and estado <> '{estadosVentas.ENTREGADO}'" \
-          f" ORDER BY estado DESC, id ASC, senia DESC, productos DESC;"
+          f" ORDER BY id ASC, estado DESC, senia DESC, productos DESC;"
     ventas = db.select_multiple(sql)
     for v in ventas:
         v["fechacreacion"] = v["fechacreacion"].strftime('%Y-%m-%d')
@@ -221,6 +221,19 @@ def obtener_todas_las_ventas():
             aux_ventas.append(v)
 
     return aux_ventas
+
+
+def obtener_pedidos():
+    sql = f"SELECT v.*, " \
+          f" (SELECT (SELECT COALESCE(SUM(vp.cantidad),0)) FROM ventas_productos vp WHERE vp.idventa = v.id) AS productos, " \
+          f" (SELECT sum(vp.total) FROM ventas_productos vp WHERE vp.idventa = v.id) AS precioTotal, " \
+          f" (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia " \
+          f" FROM ventas AS v " \
+          f" ORDER BY id ASC, estado DESC, senia DESC, productos DESC;"
+    pedidos = db.select_multiple(sql)
+    for v in pedidos:
+        v["fechacreacion"] = v["fechacreacion"].strftime('%Y-%m-%d')
+    return pedidos
 
 
 def detalle_item(id_venta, item_id):

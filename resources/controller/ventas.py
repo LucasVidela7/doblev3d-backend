@@ -24,6 +24,13 @@ def add_venta():
     return jsonify({"status": False})
 
 
+@ventas_bp.route('/pedidos', methods=['GET'])
+@token_required
+def obtener_pedidos():
+    pedidos = ventas.obtener_pedidos()
+    return jsonify(pedidos)
+
+
 @ventas_bp.route('/ventas', methods=['GET'])
 @token_required
 def all_ventas():
