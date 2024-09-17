@@ -7,7 +7,6 @@ from flask import jsonify
 
 from resources.service import extras as extras
 from resources.service import cotizacion as cotizacion
-from resources.service import estados as estados
 from database import utils as db
 
 
@@ -148,6 +147,36 @@ def get_ventas_by_product_id(product_id):
     return db.select_multiple(sql)
 
 
+def estado_venta(venta):
+    # DETALLE de items
+    sql = (f"SELECT pendiente, imprimiendo, listo, errores, cancelados, itemid "
+           f"FROM ventas_productos_detalle where idventa='{venta['id']}'")
+    detalles = db.select_multiple(sql)
+    detalles = dict(map(lambda x: (x["itemid"], x), detalles))
+    cant = 0
+    pendiente = 0
+    listo = 0
+    for dv in venta['productos']:
+        dv['detalle'] = detalles[dv['itemid']]
+        cant += dv['cantidad']
+        pendiente += dv['detalle']['pendiente']
+        listo += dv['detalle']['listo']
+        del dv['detalle']['itemid']
+
+    estado = estadosVentas.EN_PROCESO
+    if venta['estado'] == estadosVentas.ENTREGADO:
+        estado = estadosVentas.ENTREGADO
+    elif listo == cant:
+        estado = estadosVentas.TERMINADO
+    elif pendiente == cant:
+        estado = estadosVentas.PENDIENTE
+
+    if venta['estado'] != estado:
+        sql = f"UPDATE ventas SET estado = '{estado}' WHERE id='{venta['id']}';"
+        db.update_sql(sql)
+    return estado
+
+
 def detalle_venta(_id):
     sql = f"SELECT v.*, (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia, " \
           f"(SELECT COALESCE(SUM(vp.total),0) FROM ventas_productos vp WHERE vp.idventa = v.id) AS preciototal " \
@@ -168,88 +197,8 @@ def detalle_venta(_id):
           f"WHERE idventa= {_id} " \
           f"ORDER BY vp.id DESC;"
     venta['productos'] = db.select_multiple(sql)
-
-    # DETALLE de items
-    sql = (f"SELECT pendiente, imprimiendo, listo, errores, cancelados, itemid "
-           f"FROM ventas_productos_detalle where idventa='{_id}'")
-    detalles = db.select_multiple(sql)
-    detalles = dict(map(lambda x: (x["itemid"], x), detalles))
-    cant = 0
-    pendiente = 0
-    listo = 0
-    for dv in venta['productos']:
-        dv['detalle'] = detalles[dv['itemid']]
-        cant += dv['cantidad']
-        pendiente += dv['detalle']['pendiente']
-        listo += dv['detalle']['listo']
-        del dv['detalle']['itemid']
-
-    estado = estadosVentas.EN_PROCESO
-    if listo == cant:
-        estado = estadosVentas.TERMINADO
-    elif pendiente == cant:
-        estado = estadosVentas.PENDIENTE
-
-    if venta['estado'] != estado:
-        sql = f"UPDATE ventas SET estado = '{estado}' WHERE id='{_id}';"
-        db.update_sql(sql)
-        venta['estado'] = estado
+    venta['estado'] = estado_venta(venta)
     return venta
-
-
-def select_venta_by_id(_id):
-    # Obtener venta
-    sql = f"SELECT v.*, (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia, " \
-          f"(SELECT COALESCE(SUM(vp.preciounidad),0) FROM ventas_productos vp WHERE vp.idventa = v.id) AS preciototal " \
-          f"FROM ventas AS v WHERE v.id= {_id};"
-    venta = db.select_first(sql)
-
-    if not venta:
-        return jsonify({"mensaje": "Venta no existe"}), 404
-
-    venta["fechacreacion"] = venta["fechacreacion"].strftime('%Y-%m-%d')
-    venta["estado"] = estados.order_estados(estados.get_estados_ventas(), venta["idestado"])
-    venta.pop("idestado", None)
-    venta["productos"] = []
-    venta["resumen"] = []
-
-    # Obtener productos
-    sql = f"SELECT vp.*, CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion FROM ventas_productos AS vp " \
-          f"INNER JOIN productos AS p ON vp.idproducto=p.id " \
-          f"INNER JOIN categorias AS cats ON cats.id=p.idcategoria " \
-          f"WHERE idventa= {_id} " \
-          f"ORDER BY vp.id DESC;"
-    productos = db.select_multiple(sql)
-
-    if venta["estado"]["actual"]["estado"] in ("ENTREGADO", "CANCELADO"):
-        sql = f"""
-                SELECT count(vp.idproducto) as cantidad, CONCAT(cats.categoria, ' - ', p.descripcion) as descripcion 
-                FROM ventas_productos AS vp 
-                INNER JOIN productos AS p ON vp.idproducto=p.id 
-                INNER JOIN categorias AS cats ON cats.id=p.idcategoria 
-                WHERE idventa= '{_id}'
-                GROUP BY descripcion, cats.categoria;
-                """
-        venta["resumen"] = db.select_multiple(sql)
-        return jsonify(venta), 200
-
-    # Performance
-    estados_productos = estados.get_estados_productos()
-    ids_products = list(str(x["idproducto"]) for x in productos)
-    sql = f"select * from piezas where idproducto in ({','.join(ids_products)});"
-    piezas = db.select_multiple(sql)
-
-    for p in productos:
-        p["estado"] = estados.order_estados(copy.deepcopy(estados_productos), p["idestado"])
-
-        # Obtener piezas
-        p["piezas"] = [pi for pi in piezas if pi["idproducto"] == p["idproducto"]]
-        p.pop("idestado", None)
-        p.pop("idventa", None)
-        p.pop("idproducto", None)
-
-    venta["productos"] = productos
-    return jsonify(venta), 200
 
 
 def obtener_todas_las_ventas():
@@ -258,8 +207,8 @@ def obtener_todas_las_ventas():
           f" (SELECT sum(vp.total) FROM ventas_productos vp WHERE vp.idventa = v.id) AS precioTotal, " \
           f" (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia " \
           f" FROM ventas AS v " \
-          f" WHERE estado <>  '{estadosVentas.CANCELADO}'" \
-          f" ORDER BY id ASC, senia DESC, productos DESC;"
+          f" WHERE estado <>  '{estadosVentas.CANCELADO}' and estado <> '{estadosVentas.ENTREGADO}'" \
+          f" ORDER BY estado DESC, id ASC, senia DESC, productos DESC;"
     ventas = db.select_multiple(sql)
     for v in ventas:
         v["fechacreacion"] = v["fechacreacion"].strftime('%Y-%m-%d')
@@ -277,7 +226,12 @@ def obtener_todas_las_ventas():
 def detalle_item(id_venta, item_id):
     sql = (f"SELECT pendiente, imprimiendo, listo, errores, cancelados "
            f"FROM ventas_productos_detalle WHERE idventa='{id_venta}' and itemid='{item_id}';")
-    return db.select_first(sql)
+    detalle = db.select_first(sql)
+
+    if detalle:
+        detalle['estado'] = detalle_venta(id_venta)['estado']
+
+    return detalle
 
 
 def modificar_item(id_venta, item_id, request):
@@ -317,3 +271,14 @@ def cancelar_venta(id_venta):
     # Cambiar estado productos
     sql = f"UPDATE ventas SET estado = '{estadosVentas.CANCELADO}' where id='{id_venta}';"
     db.update_sql(sql)
+
+
+def entregar_ventas(id_venta):
+    estado = detalle_venta(id_venta)['estado']
+
+    if estado != estadosVentas.TERMINADO:
+        return False
+
+    sql = f"UPDATE ventas SET estado = '{estadosVentas.ENTREGADO}' WHERE id='{id_venta}';"
+    db.update_sql(sql)
+    return True

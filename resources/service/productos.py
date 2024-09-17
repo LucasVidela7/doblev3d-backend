@@ -11,6 +11,20 @@ from resources.service.cotizacion import prices_db, insert_precio_unitario
 from resources.service.ventas import get_ventas_by_product_id
 
 
+def calcular_precio_pieza(request):
+    if "time" not in request or "filament_used" not in request:
+        return {}
+
+    time = int(request["time"])
+    filament = float(request["filament_used"])
+    filament_kg = 300  # 1kg filamento TODO Setear por base
+    peso = int(filament * 1000 / filament_kg) + 1  # Regla de 3 simple para calcular peso
+
+    minutes, seconds = divmod(time, 60)
+    hours, minutes = divmod(minutes, 60)
+    return {"peso": peso, "horas": hours, "minutos": minutes}
+
+
 def insert_product(request):
     descripcion = request['descripcion']
     id_categoria = request['idCategoria']
@@ -22,18 +36,6 @@ def insert_product(request):
 
     if id_product:
         piezas = request.get("piezas", [])
-        drag_and_drop = request.get("dragAndDrop", [])
-        if drag_and_drop:
-            for p in drag_and_drop:
-                for descripcion, values in p.items():
-                    time = int(values["time"])
-                    filament = float(values["filament_used"])
-                    filament_kg = 300  # 1kg filamento TODO Setear por base
-                    peso = int(filament * 1000 / filament_kg) + 1  # Regla de 3 simple para calcular peso
-
-                    minutes, seconds = divmod(time, 60)
-                    hours, minutes = divmod(minutes, 60)
-                    piezas.append({"descripcion": descripcion, "peso": peso, "horas": hours, "minutos": minutes})
 
         if piezas:
             sql = "INSERT INTO piezas(descripcion, peso, horas, minutos, idProducto) VALUES "
@@ -137,7 +139,7 @@ def update_product(id_product, request):
 
 def delete_product(id_producto):
     if get_ventas_by_product_id(id_producto):
-        return jsonify({"message": "No se puede borrar producto porque ventas"}), 406
+        return jsonify({"message": "No se puede borrar producto porque tiene ventas"}), 406
 
     sql = f"delete from productos where id={id_producto}; " \
           f"delete from piezas where idproducto={id_producto};"

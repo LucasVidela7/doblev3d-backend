@@ -1,8 +1,6 @@
-from flasgger import swag_from
 from flask import request, jsonify, Blueprint
 from resources.service import ventas as ventas
 from resources.service import pagos as pagos
-from resources.service import estados as estados
 from resources.service.usuarios import token_required
 
 ventas_bp = Blueprint("routes-ventas", __name__)
@@ -31,12 +29,6 @@ def add_venta():
 def all_ventas():
     list_ventas = ventas.obtener_todas_las_ventas()
     return jsonify({"ventas": list_ventas})
-
-
-@ventas_bp.route('/ventas/<int:id_venta>', methods=['GET'])
-@token_required
-def select_venta(id_venta):
-    return ventas.select_venta_by_id(id_venta)
 
 
 @ventas_bp.route('/ventas/<int:id_venta>/detalle', methods=['GET'])
@@ -82,5 +74,5 @@ def select_pagos_venta(id_venta):
 @ventas_bp.route('/ventas/<int:id_venta>/entregado', methods=['PUT'])
 @token_required
 def entregar_venta(id_venta):
-    estados.entregar_venta(id_venta)
-    return jsonify({"status": True})
+    entrega = ventas.entregar_ventas(id_venta)
+    return jsonify({"status": entrega})
