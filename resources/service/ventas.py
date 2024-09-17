@@ -208,7 +208,7 @@ def obtener_todas_las_ventas():
           f" (SELECT sum(vp.total) FROM ventas_productos vp WHERE vp.idventa = v.id) AS precioTotal, " \
           f" (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia " \
           f" FROM ventas AS v " \
-          f" WHERE estado <>  '{estadosVentas.CANCELADO}'" \
+          f" WHERE estado <>  '{estadosVentas.CANCELADO}' or estado <> '{estadosVentas.ENTREGADO}'" \
           f" ORDER BY estado DESC, id ASC, senia DESC, productos DESC;"
     ventas = db.select_multiple(sql)
     for v in ventas:
