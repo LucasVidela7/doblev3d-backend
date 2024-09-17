@@ -75,5 +75,5 @@ def select_pagos_venta(id_venta):
 @ventas_bp.route('/ventas/<int:id_venta>/entregado', methods=['PUT'])
 @token_required
 def entregar_venta(id_venta):
-    estados.entregar_venta(id_venta)
-    return jsonify({"status": True})
+    entrega = ventas.entregar_ventas(id_venta)
+    return jsonify({"status": entrega})

@@ -262,3 +262,9 @@ def cancelar_venta(id_venta):
     # Cambiar estado productos
     sql = f"UPDATE ventas SET estado = '{estadosVentas.CANCELADO}' where id='{id_venta}';"
     db.update_sql(sql)
+
+
+def entregar_ventas(id_venta):
+    sql = f"UPDATE ventas SET estado = '{estadosVentas.ENTREGADO}' WHERE id='{id_venta}';"
+    db.update_sql(sql)
+    return True
