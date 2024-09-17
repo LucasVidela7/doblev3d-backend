@@ -1,7 +1,6 @@
 from flask import request, jsonify, Blueprint
 from resources.service import ventas as ventas
 from resources.service import pagos as pagos
-from resources.service import estados as estados
 from resources.service.usuarios import token_required
 
 ventas_bp = Blueprint("routes-ventas", __name__)

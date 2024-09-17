@@ -7,7 +7,6 @@ from flask import jsonify
 
 from resources.service import extras as extras
 from resources.service import cotizacion as cotizacion
-from resources.service import estados as estados
 from database import utils as db
 
 

@@ -11,7 +11,6 @@ from resources.controller.productos import products_bp
 from resources.controller.categorias import categorias_bp
 from resources.controller.usuarios import login_bp
 from resources.controller.ventas import ventas_bp
-from resources.controller.estados import estados_bp
 from resources.controller.pagos import pagos_bp
 from resources.controller.gastos import gastos_bp
 from resources.controller.configuracion import config_bp
@@ -31,7 +30,6 @@ app.register_blueprint(balance_bp)
 app.register_blueprint(config_bp)
 app.register_blueprint(gastos_bp)
 app.register_blueprint(pagos_bp)
-app.register_blueprint(estados_bp)
 app.register_blueprint(products_bp)
 app.register_blueprint(categorias_bp)
 app.register_blueprint(extras_bp)
