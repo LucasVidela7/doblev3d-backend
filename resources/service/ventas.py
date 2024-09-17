@@ -148,6 +148,34 @@ def get_ventas_by_product_id(product_id):
     return db.select_multiple(sql)
 
 
+def estado_venta(venta):
+    # DETALLE de items
+    sql = (f"SELECT pendiente, imprimiendo, listo, errores, cancelados, itemid "
+           f"FROM ventas_productos_detalle where idventa='{venta['id']}'")
+    detalles = db.select_multiple(sql)
+    detalles = dict(map(lambda x: (x["itemid"], x), detalles))
+    cant = 0
+    pendiente = 0
+    listo = 0
+    for dv in venta['productos']:
+        dv['detalle'] = detalles[dv['itemid']]
+        cant += dv['cantidad']
+        pendiente += dv['detalle']['pendiente']
+        listo += dv['detalle']['listo']
+        del dv['detalle']['itemid']
+
+    estado = estadosVentas.EN_PROCESO
+    if listo == cant:
+        estado = estadosVentas.TERMINADO
+    elif pendiente == cant:
+        estado = estadosVentas.PENDIENTE
+
+    if venta['estado'] != estado and venta['estado'] != estadosVentas.ENTREGADO:
+        sql = f"UPDATE ventas SET estado = '{estado}' WHERE id='{venta['id']}';"
+        db.update_sql(sql)
+        venta['estado'] = estado
+    return venta
+
 def detalle_venta(_id):
     sql = f"SELECT v.*, (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia, " \
           f"(SELECT COALESCE(SUM(vp.total),0) FROM ventas_productos vp WHERE vp.idventa = v.id) AS preciototal " \
@@ -168,32 +196,7 @@ def detalle_venta(_id):
           f"WHERE idventa= {_id} " \
           f"ORDER BY vp.id DESC;"
     venta['productos'] = db.select_multiple(sql)
-
-    # DETALLE de items
-    sql = (f"SELECT pendiente, imprimiendo, listo, errores, cancelados, itemid "
-           f"FROM ventas_productos_detalle where idventa='{_id}'")
-    detalles = db.select_multiple(sql)
-    detalles = dict(map(lambda x: (x["itemid"], x), detalles))
-    cant = 0
-    pendiente = 0
-    listo = 0
-    for dv in venta['productos']:
-        dv['detalle'] = detalles[dv['itemid']]
-        cant += dv['cantidad']
-        pendiente += dv['detalle']['pendiente']
-        listo += dv['detalle']['listo']
-        del dv['detalle']['itemid']
-
-    estado = estadosVentas.EN_PROCESO
-    if listo == cant:
-        estado = estadosVentas.TERMINADO
-    elif pendiente == cant:
-        estado = estadosVentas.PENDIENTE
-
-    if venta['estado'] != estado:
-        sql = f"UPDATE ventas SET estado = '{estado}' WHERE id='{_id}';"
-        db.update_sql(sql)
-        venta['estado'] = estado
+    venta['estado'] = estado_venta(venta)
     return venta
 
 
