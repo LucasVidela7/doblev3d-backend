@@ -173,8 +173,8 @@ def estado_venta(venta):
     if venta['estado'] != estado and venta['estado'] != estadosVentas.ENTREGADO:
         sql = f"UPDATE ventas SET estado = '{estado}' WHERE id='{venta['id']}';"
         db.update_sql(sql)
-        venta['estado'] = estado
-    return venta
+    return estado
+
 
 def detalle_venta(_id):
     sql = f"SELECT v.*, (SELECT COALESCE(SUM(pg.monto),0) FROM pagos pg WHERE pg.idventa = v.id) AS senia, " \
@@ -225,7 +225,12 @@ def obtener_todas_las_ventas():
 def detalle_item(id_venta, item_id):
     sql = (f"SELECT pendiente, imprimiendo, listo, errores, cancelados "
            f"FROM ventas_productos_detalle WHERE idventa='{id_venta}' and itemid='{item_id}';")
-    return db.select_first(sql)
+    detalle = db.select_first(sql)
+
+    if detalle:
+        detalle['estado'] = detalle_venta(id_venta)['estado']
+
+    return detalle
 
 
 def modificar_item(id_venta, item_id, request):
@@ -268,6 +273,11 @@ def cancelar_venta(id_venta):
 
 
 def entregar_ventas(id_venta):
+    estado = detalle_venta(id_venta)['estado']
+
+    if estado != estadosVentas.TERMINADO:
+        return False
+
     sql = f"UPDATE ventas SET estado = '{estadosVentas.ENTREGADO}' WHERE id='{id_venta}';"
     db.update_sql(sql)
     return True
