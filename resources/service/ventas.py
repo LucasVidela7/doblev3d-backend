@@ -164,8 +164,8 @@ def estado_venta(venta):
         del dv['detalle']['itemid']
 
     estado = estadosVentas.EN_PROCESO
-    if venta['estado'] == estadosVentas.ENTREGADO:
-        estado = estadosVentas.ENTREGADO
+    if venta['estado'] in [estadosVentas.ENTREGADO, estadosVentas.CANCELADO]:
+        estado = venta['estado']
     elif listo == cant:
         estado = estadosVentas.TERMINADO
     elif pendiente == cant:
