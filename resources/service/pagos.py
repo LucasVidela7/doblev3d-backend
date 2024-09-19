@@ -33,7 +33,7 @@ def get_all_pagos(mes=None, anio=None):
 def get_all_pagos_by_id_venta(id_venta):
     sql = f"select p.*, mp.descripcion FROM pagos as p " \
           f"INNER JOIN medios_pago AS mp ON mp.id = p.idMedioPago " \
-          f"WHERE idventa = '{id_venta}';"
+          f"WHERE idventa = '{id_venta}' ORDER BY id ASC;"
     pagos = db.select_multiple(sql)
     for p in pagos:
         p["fechapago"] = p["fechapago"].strftime('%Y-%m-%d')
@@ -48,3 +48,9 @@ def get_all_medios_pago():
 def borrar_pago(id_pago):
     sql = f"delete from pagos where id='{id_pago}';"
     return db.delete_sql(sql)
+
+
+def mover_pago(id_pago, medio="MERCADO PAGO"):
+    sql = f"UPDATE pagos SET idmediopago = (select id from medios_pago where descripcion = '{medio}') WHERE id='{id_pago}';"
+    db.update_sql(sql)
+    return True
