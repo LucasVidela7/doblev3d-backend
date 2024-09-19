@@ -40,5 +40,6 @@ def all_medios_de_pagos():
 @token_required
 def mover_pago():
     id_pago = request.json['idPago']
-    mover = pagos.mover_pago(id_pago)
+    id_medio_pago = request.json['idMedioPago']
+    mover = pagos.mover_pago(id_pago, id_medio_pago)
     return jsonify({"status": mover})

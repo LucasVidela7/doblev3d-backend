@@ -50,7 +50,7 @@ def borrar_pago(id_pago):
     return db.delete_sql(sql)
 
 
-def mover_pago(id_pago, medio="MERCADO PAGO"):
-    sql = f"UPDATE pagos SET idmediopago = (select id from medios_pago where descripcion = '{medio}') WHERE id='{id_pago}';"
+def mover_pago(id_pago, id_medio_pago):
+    sql = f"UPDATE pagos SET idmediopago = '{id_medio_pago}' WHERE id='{id_pago}';"
     db.update_sql(sql)
     return True
