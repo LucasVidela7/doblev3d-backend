@@ -199,20 +199,19 @@ def get_costo_total(id_producto):
 
 
 def precios_por_mayor(id_producto, unidades_minimas=5, unidades_maximas=100):
-    precio_u = get_precio_unitario_by_product_id(id_producto)
-
+    precios = get_precio_unitario(id_producto)
+    precio_u = precios['preciounitario']
     # Rango de unidades
     p_maximo = unidades_maximas - unidades_minimas
-    margen_producto = get_margen(id_producto)
-    precio_minimo = (100 - margen_producto) * precio_u / 100  # TODO Configurable
-    precio_maximo = 97.5 * precio_u / 100  # TODO Configurable
+    precio_minimo = precios['costototal'] + (precios['ganancia'] * 0.6)  # TODO Configurable
+    precio_maximo = 95 * precio_u / 100  # TODO Configurable
     diferencia = precio_maximo - precio_minimo
 
     saltos = 5  # TODO Configurable
 
     precios = []
     for x in range(unidades_minimas, unidades_maximas + saltos, saltos):
-        y = x + 1 - unidades_minimas
+        y = x + 2 - unidades_minimas
         porcentaje = min(round(y * 100 / p_maximo, 2), 100)
         p = (precio_minimo + (diferencia * (100 - porcentaje) / 100)) * x
         p = 50 * ceil(p / 50)
