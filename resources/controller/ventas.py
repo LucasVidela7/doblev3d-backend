@@ -66,12 +66,6 @@ def cancelar_venta(id_venta):
     return jsonify({"status": True})
 
 
-@ventas_bp.route('/ventas/producto/<int:id_producto>', methods=['DELETE'])
-@token_required
-def cancelar_producto(id_producto):
-    return estados.cancelar_producto(id_producto)
-
-
 @ventas_bp.route('/ventas/<int:id_venta>/pagos', methods=['GET'])
 @token_required
 def select_pagos_venta(id_venta):

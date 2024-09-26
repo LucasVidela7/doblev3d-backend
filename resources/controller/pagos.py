@@ -34,3 +34,12 @@ def delete_pago(id_pago):
 @token_required
 def all_medios_de_pagos():
     return jsonify({"mediosDePago": pagos.get_all_medios_pago()})
+
+
+@pagos_bp.route('/moverPago', methods=['PUT'])
+@token_required
+def mover_pago():
+    id_pago = request.json['idPago']
+    id_medio_pago = request.json['idMedioPago']
+    mover = pagos.mover_pago(id_pago, id_medio_pago)
+    return jsonify({"status": mover})
