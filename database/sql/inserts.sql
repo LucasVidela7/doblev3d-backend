@@ -34,7 +34,7 @@ INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('LIS
 INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('ENTREGADO'  ,'1','0','0','0', 'bx-time-five' );
 INSERT INTO estados (estado, ventas, productos,piezas,saltear,icono) VALUES('CANCELADO'  ,'1','1','1','0', 'bx-time-five' );
 
-DELETE FROM medios_pago;
-INSERT INTO medios_pago (descripcion) VALUES('MERCADO PAGO');
-INSERT INTO medios_pago (descripcion) VALUES('EFECTIVO');
-INSERT INTO medios_pago (descripcion) VALUES('BANCO SANTANDER');
+--DELETE FROM medios_pago;
+--INSERT INTO medios_pago (descripcion) VALUES('MERCADO PAGO');
+--INSERT INTO medios_pago (descripcion) VALUES('EFECTIVO');
+--INSERT INTO medios_pago (descripcion) VALUES('BANCO SANTANDER');
