@@ -70,7 +70,7 @@ def login(auth):
         # generates the JWT Token
         token = jwt.encode({
             'public_id': user[0],
-            'exp': datetime.utcnow() + timedelta(minutes=30)
+            'exp': datetime.utcnow() + timedelta(seconds=30)
         }, os.getenv('JWT_SECRET'))
         return jsonify({'token': token.decode('UTF-8'), "expires_in": 30 * 60}), 200
     # returns 403 if password is wrong
